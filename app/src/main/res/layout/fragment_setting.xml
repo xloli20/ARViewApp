@@ -3,12 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingFragment">
+    tools:context=".profile.SettingFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- TODO: *add phone  *add curent location  * log out  *email  -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:text="Setting fragment" />
+
+
+
 
 </FrameLayout>

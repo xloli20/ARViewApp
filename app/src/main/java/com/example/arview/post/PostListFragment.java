@@ -1,4 +1,4 @@
-package com.example.arview;
+package com.example.arview.post;
 
 import android.content.Context;
 import android.net.Uri;
@@ -9,21 +9,19 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.TextView;
+
+import com.example.arview.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link PostDetailsFragment.OnFragmentInteractionListener} interface
+ * {@link PostListFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link PostDetailsFragment#newInstance} factory method to
+ * Use the {@link PostListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PostDetailsFragment extends Fragment {
+public class PostListFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -35,7 +33,7 @@ public class PostDetailsFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public PostDetailsFragment() {
+    public PostListFragment() {
         // Required empty public constructor
     }
 
@@ -45,15 +43,14 @@ public class PostDetailsFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment PostDetailsFragment.
+     * @return A new instance of fragment PostListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    //public static PostDetailsFragment newInstance(String param1, String param2) {
-    public static PostDetailsFragment newInstance() {
-            PostDetailsFragment fragment = new PostDetailsFragment();
+    public static PostListFragment newInstance(String param1, String param2) {
+        PostListFragment fragment = new PostListFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,20 +62,14 @@ public class PostDetailsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_post_details, container, false);
-
-
-        return view;
+        return inflater.inflate(R.layout.fragment_post_list, container, false);
     }
-
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

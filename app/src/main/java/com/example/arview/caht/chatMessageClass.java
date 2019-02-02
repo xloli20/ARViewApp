@@ -1,8 +1,6 @@
-package com.example.arview;
+package com.example.arview.caht;
 
 public class chatMessageClass {
-
-
 
     private String text;
     private String name;

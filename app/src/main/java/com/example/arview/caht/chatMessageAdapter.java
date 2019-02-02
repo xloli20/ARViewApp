@@ -1,4 +1,4 @@
-package com.example.arview;
+package com.example.arview.caht;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,7 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.arview.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class chatMessageAdapter extends ArrayAdapter<chatMessageClass> {
@@ -44,5 +46,21 @@ public class chatMessageAdapter extends ArrayAdapter<chatMessageClass> {
         authorTextView.setText(message.getName());
 
         return convertView;
+    }
+
+    public static class postLikeClass {
+
+        private String postId;
+        private ArrayList<String> userNames;
+
+        public postLikeClass(){}
+        public postLikeClass(String postId){
+            this.postId = postId;
+        }
+
+        public void addlike (String userNAme){
+            userNames.add(userNAme);
+        }
+
     }
 }

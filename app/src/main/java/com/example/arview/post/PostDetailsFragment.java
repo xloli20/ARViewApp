@@ -1,4 +1,4 @@
-package com.example.arview;
+package com.example.arview.post;
 
 import android.content.Context;
 import android.net.Uri;
@@ -9,17 +9,15 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.example.arview.R;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ProfileEditFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ProfileEditFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ProfileEditFragment extends Fragment {
+public class PostDetailsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -29,26 +27,22 @@ public class ProfileEditFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+
+    //
+    private ListView commentList;
     private OnFragmentInteractionListener mListener;
 
-    public ProfileEditFragment() {
+    public PostDetailsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProfileEditFragment.
-     */
     // TODO: Rename and change types and number of parameters
-    public static ProfileEditFragment newInstance(String param1, String param2) {
-        ProfileEditFragment fragment = new ProfileEditFragment();
+    //public static PostDetailsFragment newInstance(String param1, String param2) {
+    public static PostDetailsFragment newInstance() {
+            PostDetailsFragment fragment = new PostDetailsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        //args.putString(ARG_PARAM1, param1);
+        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,14 +54,58 @@ public class ProfileEditFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile_edit, container, false);
+        View view = inflater.inflate(R.layout.fragment_post_details, container, false);
+
+        commentList = (ListView) view.findViewById(R.id.commentList);
+        PostDetailsFragment.CustomAdapter CA = new PostDetailsFragment.CustomAdapter();
+        commentList.setAdapter(CA);
+
+        return view;
     }
+
+    class CustomAdapter extends BaseAdapter {
+
+        private ImageButton proImg;
+        private TextView Uname;
+        private TextView comment;
+        private TextView commentDate;
+
+        @Override
+        public int getCount() {
+            return 10;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            view = getLayoutInflater().inflate(R.layout.layout_comment_list, null);
+
+            proImg = (ImageButton) view.findViewById(R.id.imageButton);
+            Uname = (TextView) view.findViewById(R.id.textView);
+            comment = (TextView) view.findViewById(R.id.textView1);
+            commentDate = (TextView) view.findViewById(R.id.textView2);
+
+            return view;
+        }
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -93,16 +131,7 @@ public class ProfileEditFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
