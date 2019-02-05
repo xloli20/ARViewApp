@@ -1,16 +1,16 @@
-package com.example.arview.post;
+package com.example.arview.databaseClasses;
 
 import java.util.Date;
 
-public class commentClass {
+public class comment {
 
     private String postId;
     private String userName;
     private Date commentDate;
     private String comment;
 
-    public commentClass(){}
-    public commentClass(String postId,String userName, Date commentDate ,String comment  ){
+    public comment(){}
+    public comment(String postId, String userName, Date commentDate , String comment  ){
         this.postId = postId;
         this.userName = userName;
         this.commentDate = commentDate;

@@ -1,15 +1,15 @@
-package com.example.arview.caht;
+package com.example.arview.databaseClasses;
 
-public class chatMessageClass {
+public class chatMessage {
 
     private String text;
     private String name;
     private String photoURL ;
 
-    public chatMessageClass() {
+    public chatMessage() {
     }
 
-    public chatMessageClass(String text, String name, String photoURL){
+    public chatMessage(String text, String name, String photoURL){
         this.text = text;
         this.name = name;
         this.photoURL = photoURL;

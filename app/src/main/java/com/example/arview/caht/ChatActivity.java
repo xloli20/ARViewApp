@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.arview.R;
+import com.example.arview.databaseClasses.chatMessage;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -95,7 +96,7 @@ public class ChatActivity extends FragmentActivity {
         signOut = (Button) findViewById(R.id.signOut);
 
         // Initialize message ListView and its adapter
-        List<chatMessageClass> friendlyMessages = new ArrayList<>();
+        List<chatMessage> friendlyMessages = new ArrayList<>();
         mMessageAdapter = new chatMessageAdapter(this, R.layout.layout_item_message, friendlyMessages);
         mMessageListView.setAdapter(mMessageAdapter);
 
@@ -139,7 +140,7 @@ public class ChatActivity extends FragmentActivity {
             @Override
             public void onClick(View view) {
                 // Send messages on click
-                chatMessageClass chatText = new chatMessageClass(mMessageEditText.getText().toString(), mUsername, null);
+                chatMessage chatText = new chatMessage(mMessageEditText.getText().toString(), mUsername, null);
                 mMessagesDatabaseReference.push().setValue(chatText);
 
                 // Clear input box
@@ -244,7 +245,7 @@ public class ChatActivity extends FragmentActivity {
                     if (task.isSuccessful()) {
                         Uri downloadUri = task.getResult();
                         // Set the download URL to the message box, so that the user can send it to the database
-                        chatMessageClass friendlyMessage = new chatMessageClass(null, mUsername, downloadUri.toString());
+                        chatMessage friendlyMessage = new chatMessage(null, mUsername, downloadUri.toString());
                         mMessagesDatabaseReference.push().setValue(friendlyMessage);
 
                     } else {
@@ -290,7 +291,7 @@ public class ChatActivity extends FragmentActivity {
             mChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    chatMessageClass chatTExt = dataSnapshot.getValue(chatMessageClass.class);
+                    chatMessage chatTExt = dataSnapshot.getValue(chatMessage.class);
                     mMessageAdapter.add(chatTExt);
                 }
 

@@ -1,6 +1,7 @@
 package com.example.arview.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -9,18 +10,16 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.arview.R;
+import com.example.arview.caht.ChatActivity;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ChatFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ChatFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ChatFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -31,21 +30,14 @@ public class ChatFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    //wedgets
+    private ListView chatsList;
+
     private OnFragmentInteractionListener mListener;
 
     public ChatFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ChatFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ChatFragment newInstance() {
         ChatFragment fragment = new ChatFragment();
         Bundle args = new Bundle();
@@ -65,11 +57,75 @@ public class ChatFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false);
+        View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        setupListView(view);
+
+
+
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    private void setupListView(View view){
+        chatsList = (ListView) view.findViewById(R.id.chatsListview);
+        ChatFragment.CustomAdapter CA = new ChatFragment.CustomAdapter();
+        chatsList.setAdapter(CA);
+
+        chatsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), ChatActivity.class);
+                startActivity(intent);
+                }
+        });
+    }
+
+
+    class CustomAdapter extends BaseAdapter {
+
+        private ImageView proImg, chatMenu;
+        private TextView Uname;
+        private TextView name;
+        private TextView lastmessage;
+
+        @Override
+        public int getCount() {
+            return 10;
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            view = getLayoutInflater().inflate(R.layout.layout_chats_list, null);
+
+            proImg = (ImageView) view.findViewById(R.id.profile_photo);
+            chatMenu = (ImageView) view.findViewById(R.id.chatsMenu);
+            Uname = (TextView) view.findViewById(R.id.name);
+            name = (TextView) view.findViewById(R.id.userName);
+            lastmessage = (TextView) view.findViewById(R.id.textView);
+
+            return view;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    /****************************************************/
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -93,18 +149,7 @@ public class ChatFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

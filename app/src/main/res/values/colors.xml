@@ -6,6 +6,12 @@
 
     <color name="backgrondDark">#222a35</color>
     <color name="backgrondLight">#adb9ca</color>
+    <color name="Light">#D8DFEB</color>
     <color name="skyblue">#6ea0cd</color>
     <color name="sun">#f4c34a</color>
+
+    <color name="grey">#bfbfbf</color>
+    <color name="link_blue">#4d94ff</color>
+
+
 </resources>

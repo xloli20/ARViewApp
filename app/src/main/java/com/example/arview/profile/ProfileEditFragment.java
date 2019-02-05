@@ -9,18 +9,13 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.arview.R;
+import com.example.arview.utils.UniversalImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ProfileEditFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ProfileEditFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ProfileEditFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -31,26 +26,18 @@ public class ProfileEditFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    //widget
+    ImageView backArrow, profilePhoto;
+
     private OnFragmentInteractionListener mListener;
 
     public ProfileEditFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProfileEditFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ProfileEditFragment newInstance(String param1, String param2) {
+    public static ProfileEditFragment newInstance() {
         ProfileEditFragment fragment = new ProfileEditFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,18 +54,47 @@ public class ProfileEditFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        View view= inflater.inflate(R.layout.fragment_profile_edit, container, false);
+        setUpProfileEditWidget(view);
 
-        //TODO: set test from profile object to edite test
-        return inflater.inflate(R.layout.fragment_profile_edit, container, false);
+        //setup the backarrow
+        backArrow = (ImageView) view.findViewById(R.id.backArrow);
+        backArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closefragment();
+            }
+        });
+
+
+        setProfileimage();
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    private void setProfileimage(){
+        String imgURL = "https://www.android.com/static/2016/img/share/andy-lg.png";
+        UniversalImageLoader.setImage(imgURL, profilePhoto, null , "https://");
+
+    }
+
+
+    private void closefragment() {
+        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+    }
+
+    private void setUpProfileEditWidget(View view){
+        backArrow = (ImageView) view.findViewById(R.id.backArrow);
+        profilePhoto = (ImageView) view.findViewById(R.id.profile_photo);
+    }
+
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
+
+    /************************************************************************************/
 
     @Override
     public void onAttach(Context context) {
@@ -97,18 +113,7 @@ public class ProfileEditFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

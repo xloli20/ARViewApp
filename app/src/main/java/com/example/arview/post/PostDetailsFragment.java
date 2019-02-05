@@ -61,14 +61,19 @@ public class PostDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_post_details, container, false);
 
+        setupListView(view);
+
+
+        return view;
+    }
+
+    private void setupListView(View view){
         commentList = (ListView) view.findViewById(R.id.commentList);
         PostDetailsFragment.CustomAdapter CA = new PostDetailsFragment.CustomAdapter();
         commentList.setAdapter(CA);
 
-        return view;
     }
 
     class CustomAdapter extends BaseAdapter {

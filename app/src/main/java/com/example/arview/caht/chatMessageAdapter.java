@@ -10,12 +10,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.arview.R;
+import com.example.arview.databaseClasses.chatMessage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class chatMessageAdapter extends ArrayAdapter<chatMessageClass> {
-    public chatMessageAdapter(Context context, int resource, List<chatMessageClass> objects) {
+public class chatMessageAdapter extends ArrayAdapter<chatMessage> {
+    public chatMessageAdapter(Context context, int resource, List<chatMessage> objects) {
         super(context, resource, objects);
     }
 
@@ -29,7 +30,7 @@ public class chatMessageAdapter extends ArrayAdapter<chatMessageClass> {
         TextView messageTextView = (TextView) convertView.findViewById(R.id.messageTextView);
         TextView authorTextView = (TextView) convertView.findViewById(R.id.nameTextView);
 
-        chatMessageClass message = getItem(position);
+        chatMessage message = getItem(position);
 
         boolean isPhoto = message.getPhotoURL() != null;
         if (isPhoto) {
