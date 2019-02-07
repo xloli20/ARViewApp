@@ -37,7 +37,7 @@
         android:textStyle="bold"
         android:textAllCaps="false"/>
 
-    <Button
+    <com.google.android.gms.common.SignInButton
         android:id="@+id/btn_Glogin"
         style="?android:textAppearanceSmall"
         android:layout_width="match_parent"
@@ -48,6 +48,13 @@
         android:text="Sign in with Google"
         android:textStyle="bold"
         android:textAllCaps="false"/>
+
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
 
 
 

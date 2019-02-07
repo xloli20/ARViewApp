@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.databaseClasses.user;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -84,7 +85,7 @@ public class FirebaseMethods {
     } */
 
 
-    public void registerNewEmail(final String email, String password, final String username){
+    public void registerNewEmail(final String email, String password, final String username, final String name){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -95,15 +96,18 @@ public class FirebaseMethods {
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Toast.makeText(mContext, R.string.auth_failed,
-                                    Toast.LENGTH_SHORT).show();
-
+                            Toast.makeText(mContext, R.string.auth_failed , Toast.LENGTH_SHORT).show();
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         }
                         else if(task.isSuccessful()){
                             //send verificaton email
                             //sendVerificationEmail();
 
                             userID = mAuth.getCurrentUser().getUid();
+
+                            //add new user classes to the database
+                            addNewUser(email, username,name, "");
+
                             Log.d(TAG, "onComplete: Authstate changed: " + userID);
                         }
 
@@ -112,25 +116,7 @@ public class FirebaseMethods {
     }
 
 
-    //TODO: fix
-    public boolean checkIfUsernameExists(String username, DataSnapshot datasnapshot){
-        Log.d(TAG, "checkIfUsernameExists: checking if " + username + " already exists.");
 
-        user user = new user();
-
-        for (DataSnapshot ds: datasnapshot.child("user").getChildren()){
-            Log.d(TAG, "checkIfUsernameExists: datasnapshot: " + ds);
-
-            user.setUserName(ds.getValue(user.class).getUserName());
-            Log.d(TAG, "checkIfUsernameExists: username: " + user.getUserName());
-
-            if((user.getUserName()).equals(username)){
-                Log.d(TAG, "checkIfUsernameExists: FOUND A MATCH: " + user.getUserName());
-                return true;
-            }
-        }
-        return false;
-    }
 
 /*
     public void sendVerificationEmail(){
@@ -152,13 +138,16 @@ public class FirebaseMethods {
     }
 */
 
-    public void addNewUser(String email, String username , String profile_photo){
+    public void addNewUser(String email, String username , String name , String profile_photo){
+
+        userID = mAuth.getCurrentUser().getUid();
+
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date createdAt = new Date();
-        String strcreatedAt = "yyyy/MM/dd HH:mm:ss";
+        String strcreatedAt = dateFormat.format(createdAt);
 
-        user user = new user( userID,  username, username,  email, strcreatedAt, strcreatedAt , 1 );
+        user user = new user( userID,  username, name,  email, strcreatedAt, strcreatedAt , 1 );
 
         myRef.child("user")
                 .child(userID)

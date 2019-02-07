@@ -14,6 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.arview.R;
+import com.example.arview.databaseClasses.user;
+import com.example.arview.main.MainActivity;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,6 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -42,15 +45,24 @@ public class RegisterActivity extends AppCompatActivity {
     private String append = "";
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
         initWidgets();
         firebaseMethods = new FirebaseMethods(mContext);
-        setupFirebaseAuth();
-        init();
 
+        setupFirebaseAuth();
+
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                init();
+            }
+        });
 
         TextView linkSignip = (TextView) findViewById(R.id.link_login);
         linkSignip.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
 
     }
 
@@ -92,18 +105,12 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
+    private String formatingUsername ( String username){
+        String UserName = username.toLowerCase().replaceAll("\\s+|\\W","");
 
-
-    private boolean isStringNull(String string){
-        Log.d(TAG, "isStringNull: checking string if null.");
-
-        if(string.equals("")){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return UserName;
     }
+
 
 
     /*
@@ -114,19 +121,61 @@ public class RegisterActivity extends AppCompatActivity {
 
 
     private void init(){
-        btnRegister.setOnClickListener(new View.OnClickListener() {
+        email = mEmail.getText().toString();
+        username = mUsername.getText().toString();
+        password = mPassword.getText().toString();
+        mConPass = mConPassword.getText().toString();
+
+        if(checkInputs(email, username, password , mConPass)){
+            mProgressBar.setVisibility(View.VISIBLE);
+
+            checkIfUsernameExists(username);
+
+        }
+    }
+
+    private void checkIfUsernameExists(final String username) {
+        Log.d(TAG, "checkIfUsernameExists: Checking if  " + username + " already exists.");
+
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child("user").orderByChild("userName").equalTo(username);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                email = mEmail.getText().toString();
-                username = mUsername.getText().toString();
-                password = mPassword.getText().toString();
-                mConPass = mConPassword.getText().toString();
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if(checkInputs(email, username, password , mConPass)){
-                    mProgressBar.setVisibility(View.VISIBLE);
+                for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()){
+                    if (singleSnapshot.exists()){
+                        //TODO : random num for append
+                        //TODO : check again after append add
 
-                    firebaseMethods.registerNewEmail(email, password, username);
+                        Log.d(TAG, "checkIfUsernameExists: FOUND A MATCH: " + singleSnapshot.getValue(user.class).getUserName());
+                        append = String.valueOf(myRef.push().getKey().substring(3,10));
+                        Log.d(TAG, "onDataChange: username already exists. Appending random string to name: " + append);
+                    }
                 }
+
+                String mUsername = "";
+
+                mUsername = formatingUsername(username) +"." + formatingUsername(append);
+
+                firebaseMethods.registerNewEmail(email, password, mUsername, formatingUsername(username));
+
+                Toast.makeText(mContext, "Signup successful. Sending verification email.", Toast.LENGTH_SHORT).show();
+
+                mAuth.signOut();
+                mProgressBar.setVisibility(View.GONE);
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }
@@ -136,8 +185,6 @@ public class RegisterActivity extends AppCompatActivity {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
 
         mAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = mFirebaseDatabase.getReference();
 
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -149,25 +196,6 @@ public class RegisterActivity extends AppCompatActivity {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
 
-                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (firebaseMethods.checkIfUsernameExists(username, dataSnapshot)){
-                                Toast.makeText(mContext, "username exist", Toast.LENGTH_SHORT).show();
-                                mProgressBar.setVisibility(View.GONE);
-                            }
-
-                            firebaseMethods.addNewUser(email,username,"");
-                            Toast.makeText(mContext, "Signup successful. Sending verification email.", Toast.LENGTH_SHORT).show();
-                            mProgressBar.setVisibility(View.GONE);
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
 
                 } else {
                     // User is signed out

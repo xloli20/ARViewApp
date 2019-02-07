@@ -19,14 +19,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <ImageView
                 android:id="@+id/Icone"
                 android:layout_width="237dp"
                 android:layout_height="200dp"
-                android:paddingRight="15dp"
                 android:layout_gravity="center_horizontal"
+                android:paddingRight="15dp"
                 app:srcCompat="@drawable/icone" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -76,15 +77,6 @@
                 android:text="Log in"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/btn_Glogin"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/white_rounded_button"
-                android:text="Sign in with Google account"
-                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/forget"

@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,6 +25,8 @@ import com.example.arview.post.PostDetailsFragment;
 import com.example.arview.R;
 import com.example.arview.profile.setting.SettingActivity;
 import com.example.arview.utils.UniversalImageLoader;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class ProfileActivity extends AppCompatActivity implements PostDetailsFragment.OnFragmentInteractionListener,
                                                                     ProfileEditFragment.OnFragmentInteractionListener {
@@ -39,6 +42,11 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
     private ProgressBar mProgressBar;
 
 
+    //firebase
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +56,8 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
 
         mProgressBar.setVisibility(View.GONE);
         setProfileimage();
+
+        setupFirebaseAuth();
 
         //setting
         profileMenu.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +73,11 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openProfileEditFragment();
+                //openProfileEditFragment();
+
+
+                mAuth.getInstance().signOut();
+                finish();
             }
         });
 
@@ -174,6 +188,50 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
     }
 
 
+
+
+      /*
+    ------------------------------------ Firebase ---------------------------------------------
+     */
+
+    private void setupFirebaseAuth(){
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged( FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+      /*
+    ------------------------------------ Firebase ---------------------------------------------
+     */
 
     public void onFragmentInteraction(Uri uri){
         //you can leave it empty
