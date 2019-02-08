@@ -77,9 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                 String email = mEmail.getText().toString();
                 String password = mPassword.getText().toString();
 
-                if(isStringNull(email) && isStringNull(password)){
-                    Toast.makeText(LoginActivity.this, "You must fill out all the fields", Toast.LENGTH_SHORT).show();
-                }else{
+                if (!isStringNull(email) && !isStringNull(password)){
                     mProgressBar.setVisibility(View.VISIBLE);
 
                     mAuth.signInWithEmailAndPassword(email, password)
@@ -123,6 +121,8 @@ public class LoginActivity extends AppCompatActivity {
                                     // ...
                                 }
                             });
+                }else {
+                    Toast.makeText(LoginActivity.this, "You must fill out all the fields", Toast.LENGTH_SHORT).show();
                 }
 
             }
