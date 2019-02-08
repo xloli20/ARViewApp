@@ -14,8 +14,7 @@ public class profile {
     private String userLocation;
     private String profilePhoto;
     private String profileDescription;
-    //private Date followRequestDate;
-    //private String followRequestName;
+
     private int followers;
     private int following;
     private int post;

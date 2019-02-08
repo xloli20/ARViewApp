@@ -8,11 +8,15 @@
     android:background="#ffffff">
 
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="88dp"
-        android:layout_height="84dp"
-        tools:src="@tools:sample/avatars[1]" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_photo"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        app:civ_border_color="#000000"
+        app:civ_border_width="2dp"
+        />
+
 
     <TextView
         android:id="@+id/UserName"
@@ -35,19 +39,19 @@
         android:id="@+id/postDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/imageView"
+        android:layout_below="@id/profile_photo"
         android:layout_marginTop="5dp"
         android:text="postDescription" />
 
     <ImageView
         android:id="@+id/heart"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_below="@id/postDescription"
         android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
-        android:src="@android:drawable/toast_frame"
-        tools:src="@drawable/fui_idp_button_background_email" />
+        android:src="@mipmap/ic_empty_like"
+        />
 
     <TextView
         android:id="@+id/likeNum"
@@ -55,20 +59,19 @@
         android:layout_height="20dp"
         android:layout_below="@id/postDescription"
         android:layout_marginStart="35dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:text="##" />
 
     <ImageView
         android:id="@+id/location"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_below="@id/postDescription"
         android:layout_marginStart="70dp"
         android:layout_marginTop="5dp"
-        android:src="@android:drawable/toast_frame"
-        tools:src="@drawable/fui_idp_button_background_email" />
+        android:src="@mipmap/ic_place" />
 
-    <ImageView
+    <!--ImageView
         android:id="@+id/request"
         android:layout_width="20dp"
         android:layout_height="20dp"
@@ -77,18 +80,17 @@
         android:layout_marginRight="100dp"
         android:layout_marginTop="5dp"
         android:src="@android:drawable/toast_frame"
-        tools:src="@drawable/fui_idp_button_background_email" />
+        tools:src="@drawable/fui_idp_button_background_email" /-->
 
     <ImageView
         android:id="@+id/clockCalnder"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_below="@id/postDescription"
         android:layout_alignParentEnd="true"
-        android:layout_marginRight="65dp"
+        android:layout_marginRight="60dp"
         android:layout_marginTop="5dp"
-        android:src="@android:drawable/toast_frame"
-        tools:src="@drawable/fui_idp_button_background_email" />
+        android:src="@mipmap/ic_endafter" />
 
     <TextView
         android:id="@+id/limit"
@@ -97,7 +99,7 @@
         android:layout_below="@id/postDescription"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:text="#####" />
 
     <View

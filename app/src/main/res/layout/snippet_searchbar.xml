@@ -1,20 +1,25 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     >
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/white_grey_border_bottom"
-        >
-
-        <androidx.appcompat.widget.Toolbar
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/profileToolBar">
+            android:layout_height="40dp"
+            android:orientation="horizontal"
+            android:background="@drawable/white_grey_rounded_border_bottom"
+            >
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_weight="7"
+                android:paddingLeft="5dp"
+                android:src="@mipmap/ic_search" />
 
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="93">
 
 
                 <EditText
@@ -31,11 +36,6 @@
 
             </RelativeLayout>
 
-
-        </androidx.appcompat.widget.Toolbar>
-
-
-
-    </com.google.android.material.appbar.AppBarLayout>
+        </LinearLayout>
 
 </merge>

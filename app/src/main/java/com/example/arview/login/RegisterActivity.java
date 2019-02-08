@@ -14,8 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.arview.R;
-import com.example.arview.databaseClasses.user;
-import com.example.arview.main.MainActivity;
+import com.example.arview.databaseClasses.users;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,7 +41,6 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
 
-    private String append = "";
 
 
 
@@ -105,11 +103,6 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
-    private String formatingUsername ( String username){
-        String UserName = username.toLowerCase().replaceAll("\\s+|\\W","");
-
-        return UserName;
-    }
 
 
 
@@ -129,72 +122,46 @@ public class RegisterActivity extends AppCompatActivity {
         if(checkInputs(email, username, password , mConPass)){
             mProgressBar.setVisibility(View.VISIBLE);
 
-            checkIfUsernameExists(username);
+            firebaseMethods.registerNewEmail(email, password,username);
 
         }
     }
 
-    private void checkIfUsernameExists(final String username) {
-        Log.d(TAG, "checkIfUsernameExists: Checking if  " + username + " already exists.");
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = mFirebaseDatabase.getReference();
-
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference.child("user").orderByChild("userName").equalTo(username);
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()){
-                    if (singleSnapshot.exists()){
-                        //TODO : random num for append
-                        //TODO : check again after append add
-
-                        Log.d(TAG, "checkIfUsernameExists: FOUND A MATCH: " + singleSnapshot.getValue(user.class).getUserName());
-                        append = String.valueOf(myRef.push().getKey().substring(3,10));
-                        Log.d(TAG, "onDataChange: username already exists. Appending random string to name: " + append);
-                    }
-                }
-
-                String mUsername = "";
-
-                mUsername = formatingUsername(username) +"." + formatingUsername(append);
-
-                firebaseMethods.registerNewEmail(email, password, mUsername, formatingUsername(username));
-
-                Toast.makeText(mContext, "Signup successful. Sending verification email.", Toast.LENGTH_SHORT).show();
-
-                mAuth.signOut();
-                mProgressBar.setVisibility(View.GONE);
-
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
 
 
     private void setupFirebaseAuth(){
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
 
         mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
 
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged( FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+
+                    myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            firebaseMethods.checkIfUsernameExists(username);
+                            mProgressBar.setVisibility(View.GONE);
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    finish();
 
 
                 } else {

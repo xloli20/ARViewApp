@@ -6,7 +6,7 @@ import com.firebase.ui.auth.data.model.PhoneNumber;
 
 import java.util.Date;
 
-public class user {
+public class users {
 
     private String userId;
     private String userName;
@@ -16,10 +16,10 @@ public class user {
     private String updatedAt;
     private long phoneNumber;
 
-    public user() {
+    public users() {
     }
 
-    public user(String userId, String userName, String name, String email, String createdAt, String updatedAt, long phoneNumber) {
+    public users(String userId, String userName, String name, String email, String createdAt, String updatedAt, long phoneNumber) {
         this.userId = userId;
         this.userName = userName;
         this.name = name;
@@ -32,7 +32,7 @@ public class user {
 
     @Override
     public String toString() {
-        return "user{" +
+        return "users{" +
                 "userName='" + userName + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +

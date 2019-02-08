@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -78,7 +79,7 @@ public class PostDetailsFragment extends Fragment {
 
     class CustomAdapter extends BaseAdapter {
 
-        private ImageButton proImg;
+        private ImageView proImg;
         private TextView Uname;
         private TextView comment;
         private TextView commentDate;
@@ -102,7 +103,7 @@ public class PostDetailsFragment extends Fragment {
         public View getView(int i, View view, ViewGroup viewGroup) {
             view = getLayoutInflater().inflate(R.layout.layout_comment_list, null);
 
-            proImg = (ImageButton) view.findViewById(R.id.imageButton);
+            proImg = (ImageView) view.findViewById(R.id.profile_photo);
             Uname = (TextView) view.findViewById(R.id.textView);
             comment = (TextView) view.findViewById(R.id.textView1);
             commentDate = (TextView) view.findViewById(R.id.textView2);

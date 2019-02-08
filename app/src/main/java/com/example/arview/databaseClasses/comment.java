@@ -4,26 +4,18 @@ import java.util.Date;
 
 public class comment {
 
-    private String postId;
+    //private String postId;
     private String userName;
-    private Date commentDate;
+    private String commentDate;
     private String comment;
 
-    public comment(){}
-    public comment(String postId, String userName, Date commentDate , String comment  ){
-        this.postId = postId;
+    public comment() {
+    }
+
+    public comment(String userName, String commentDate, String comment) {
         this.userName = userName;
         this.commentDate = commentDate;
         this.comment = comment;
-    }
-
-
-    public String getPostId() {
-        return postId;
-    }
-
-    public void setPostId(String postId) {
-        this.postId = postId;
     }
 
     public String getUserName() {
@@ -34,11 +26,11 @@ public class comment {
         this.userName = userName;
     }
 
-    public Date getCommentDate() {
+    public String getCommentDate() {
         return commentDate;
     }
 
-    public void setCommentDate(Date commentDate) {
+    public void setCommentDate(String commentDate) {
         this.commentDate = commentDate;
     }
 

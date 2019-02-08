@@ -2,20 +2,26 @@ package com.example.arview.utils;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.arview.R;
+import com.example.arview.databaseClasses.chats;
+import com.example.arview.databaseClasses.followers;
+import com.example.arview.databaseClasses.following;
 import com.example.arview.databaseClasses.profile;
-import com.example.arview.databaseClasses.user;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.example.arview.databaseClasses.users;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -45,6 +51,9 @@ public class FirebaseMethods {
     //vars
     private Context mContext;
     private double mPhotoUploadProgress = 0;
+
+    private String append = "";
+
 
     public FirebaseMethods(Context context) {
         mAuth = FirebaseAuth.getInstance();
@@ -85,28 +94,25 @@ public class FirebaseMethods {
     } */
 
 
-    public void registerNewEmail(final String email, String password, final String username, final String name){
+    public void registerNewEmail(final String email, String password, final String username){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
-                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // If sign in fails, display a message to the users. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
+                        // signed in users can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Toast.makeText(mContext, R.string.auth_failed , Toast.LENGTH_SHORT).show();
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         }
                         else if(task.isSuccessful()){
-                            //send verificaton email
-                            //sendVerificationEmail();
+
+                            sendVerificationEmail();
 
                             userID = mAuth.getCurrentUser().getUid();
-
-                            //add new user classes to the database
-                            addNewUser(email, username,name, "");
 
                             Log.d(TAG, "onComplete: Authstate changed: " + userID);
                         }
@@ -117,8 +123,6 @@ public class FirebaseMethods {
 
 
 
-
-/*
     public void sendVerificationEmail(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -128,6 +132,8 @@ public class FirebaseMethods {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful()){
+                                Toast.makeText(mContext, "Send verification email.", Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "onComplete: sendEmailVerification: " + userID);
 
                             }else{
                                 Toast.makeText(mContext, "couldn't send verification email.", Toast.LENGTH_SHORT).show();
@@ -136,7 +142,58 @@ public class FirebaseMethods {
                     });
         }
     }
-*/
+
+    public String formatingUsername ( String username){
+        String UserName = username.toLowerCase().replaceAll("\\s+|\\W","");
+        return UserName;
+    }
+
+    public void checkIfUsernameExists(final String username) {
+        Log.d(TAG, "checkIfUsernameExists: Checking if  " + username + " already exists.");
+
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
+        final FirebaseUser user = mAuth.getCurrentUser();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child("users").orderByChild("userName").equalTo(username);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()){
+                    if (singleSnapshot.exists()){
+                        //TODO : random num for append
+                        //TODO : check again after append add
+
+                        Log.d(TAG, "checkIfUsernameExists: FOUND A MATCH: " + singleSnapshot.getValue(users.class).getUserName());
+                        append = String.valueOf(myRef.push().getKey().substring(3,10));
+                        Log.d(TAG, "onDataChange: username already exists. Appending random string to name: " + append);
+                    }
+                }
+
+                String mUsername = "";
+
+                mUsername = formatingUsername(username) +"." + formatingUsername(append);
+
+                //add new users classes to the database
+                addNewUser(user.getEmail(), mUsername, user.getDisplayName(), user.getPhotoUrl().toString());
+
+                Toast.makeText(mContext, "Signup successful. Sending verification email.", Toast.LENGTH_SHORT).show();
+
+                mAuth.signOut();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
 
     public void addNewUser(String email, String username , String name , String profile_photo){
 
@@ -147,17 +204,38 @@ public class FirebaseMethods {
         Date createdAt = new Date();
         String strcreatedAt = dateFormat.format(createdAt);
 
-        user user = new user( userID,  username, name,  email, strcreatedAt, strcreatedAt , 1 );
+        users users = new users( userID,  username, name,  email, strcreatedAt, strcreatedAt , 1 );
 
-        myRef.child("user")
+        myRef.child("users")
                 .child(userID)
-                .setValue(user);
+                .setValue(users);
 
         profile profile = new profile( username, "" ,profile_photo, "" ,0,0,0);
 
-        myRef.child("profile")
+        myRef.child("users")
                 .child(userID)
+                .child("profile")
                 .setValue(profile);
+
+        followers followers = new followers();
+
+        myRef.child("users")
+                .child(userID)
+                .child("followers")
+                .setValue(followers);
+
+        following following = new following();
+
+        myRef.child("users")
+                .child(userID)
+                .child("following")
+                .setValue(following);
+
+        chats chats= new chats();
+        myRef.child("users")
+                .child(userID)
+                .child("chats")
+                .setValue(chats);
 
     }
 

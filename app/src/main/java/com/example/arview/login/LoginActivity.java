@@ -89,9 +89,9 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                                     FirebaseUser user = mAuth.getCurrentUser();
 
-                                    // If sign in fails, display a message to the user. If sign in succeeds
+                                    // If sign in fails, display a message to the users. If sign in succeeds
                                     // the auth state listener will be notified and logic to handle the
-                                    // signed in user can be handled in the listener.
+                                    // signed in users can be handled in the listener.
                                     if (!task.isSuccessful()) {
                                         Log.w(TAG, "signInWithEmail:failed", task.getException());
 
@@ -106,16 +106,13 @@ public class LoginActivity extends AppCompatActivity {
                                                     Log.d(TAG, "onComplete: success. email is verified.");
                                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                                     startActivity(intent);
-                                                }else{
-                                                    Toast.makeText(LoginActivity.this, "Email is not verified \n check your email inbox.", Toast.LENGTH_SHORT).show();
-                                                    mProgressBar.setVisibility(View.GONE);
-                                                    mAuth.signOut();
                                                 }
                                             }
                                             else{
-                                                Log.d(TAG, "onComplete: success. email is verified.");
-                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                                startActivity(intent);
+                                                Log.d(TAG, "onComplete: success. email is not verified.");
+                                                Toast.makeText(LoginActivity.this, "Email is not verified \n check your email inbox.", Toast.LENGTH_SHORT).show();
+                                                mAuth.signOut();
+                                                mProgressBar.setVisibility(View.GONE);
                                             }
 
                                         }catch (NullPointerException e){
@@ -142,13 +139,13 @@ public class LoginActivity extends AppCompatActivity {
         });
 
          /*
-         If the user is logged in then navigate to HomeActivity and call 'finish()'
-          */
+         If the users is logged in then navigate to HomeActivity and call 'finish()'
+
         if(mAuth.getCurrentUser() != null){
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
-        }
+        }*/
     }
 
 

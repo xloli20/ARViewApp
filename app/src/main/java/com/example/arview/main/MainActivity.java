@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
      */
 
     private void checkCurrentUser(FirebaseUser user){
-        Log.d(TAG, "checkCurrentUser: checking if user is logged in.");
+        Log.d(TAG, "checkCurrentUser: checking if users is logged in.");
 
         if(user == null){
             Intent intent = new Intent(this, SiginActivity.class);
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
             public void onAuthStateChanged( FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                //check if the user is logged in
+                //check if the users is logged in
                 checkCurrentUser(user);
 
                 if (user != null) {

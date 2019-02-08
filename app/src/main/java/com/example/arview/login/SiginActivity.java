@@ -130,18 +130,17 @@ public class SiginActivity extends AppCompatActivity implements usenameFragment.
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+                            // Sign in success, update UI with the signed-in users's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            //TODO: sent display name to fragment and ask user to make it uniqe make sure that don't show every time log in
+                            //TODO: sent display name to fragment and ask users to make it uniqe make sure that don't show every time log in
 
-                            firebaseMethods.addNewUser(user.getEmail(), user.getDisplayName() ,user.getDisplayName(), user.getPhotoUrl().toString());
+                            firebaseMethods.checkIfUsernameExists(user.getDisplayName());
 
                         } else {
-                            // If sign in fails, display a message to the user.
+                            // If sign in fails, display a message to the users.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            //Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                         }
 
                         // ...

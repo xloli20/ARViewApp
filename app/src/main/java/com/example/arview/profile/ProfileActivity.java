@@ -114,10 +114,10 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
 
 
     class CustomAdapter extends BaseAdapter {
-        public ImageButton location;
-        public ImageButton limit;
-        public ImageButton like;
-        public ImageButton comment;
+        public ImageView location;
+        public ImageView limit;
+        public ImageView like;
+        public ImageView comment;
 
         public TextView UName;
         public TextView desc;
@@ -145,10 +145,10 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
         public View getView(int i, View view, ViewGroup viewGroup) {
             view = getLayoutInflater().inflate(R.layout.layout_post_list, null);
 
-            location = (ImageButton) view.findViewById(R.id.imageButton);
-            limit = (ImageButton) view.findViewById(R.id.imageButton1);
-            like = (ImageButton) view.findViewById(R.id.imageButton2);
-            comment = (ImageButton) view.findViewById(R.id.imageButton3);
+            location = (ImageView) view.findViewById(R.id.location);
+            limit = (ImageView) view.findViewById(R.id.imageButton1);
+            like = (ImageView) view.findViewById(R.id.imageButton2);
+            comment = (ImageView) view.findViewById(R.id.imageButton3);
 
             UName = (TextView) view.findViewById(R.id.textView);
             desc = (TextView) view.findViewById(R.id.textView1);
@@ -156,7 +156,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
             Ncomment = (TextView) view.findViewById(R.id.textView3);
             limitTime = (TextView) view.findViewById(R.id.textView4);
 
-            UName.setText("user name blala");
+            UName.setText("users name blala");
 
 
             return view;
