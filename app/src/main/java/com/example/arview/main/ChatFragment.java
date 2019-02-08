@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.arview.R;
+import com.example.arview.caht.ChatActivity;
 
 
 public class ChatFragment extends Fragment {
@@ -72,8 +73,8 @@ public class ChatFragment extends Fragment {
         chatsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Intent intent = new Intent(getActivity(), ChatActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(getActivity(), ChatActivity.class);
+                startActivity(intent);
                 }
         });
     }
