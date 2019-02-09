@@ -87,6 +87,7 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                                     FirebaseUser user = mAuth.getCurrentUser();
 
+                                    mAuth.getCurrentUser().reload();
                                     // If sign in fails, display a message to the users. If sign in succeeds
                                     // the auth state listener will be notified and logic to handle the
                                     // signed in users can be handled in the listener.
@@ -99,12 +100,10 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                     else{
                                         try{
-                                            if(CHECK_IF_VERIFIED){
-                                                if(user.isEmailVerified()){
-                                                    Log.d(TAG, "onComplete: success. email is verified.");
-                                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                                    startActivity(intent);
-                                                }
+                                            if(user.isEmailVerified()){
+                                                Log.d(TAG, "onComplete: success. email is verified.");
+                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                startActivity(intent);
                                             }
                                             else{
                                                 Log.d(TAG, "onComplete: success. email is not verified.");
@@ -138,14 +137,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-         /*
-         If the users is logged in then navigate to HomeActivity and call 'finish()'
-
-        if(mAuth.getCurrentUser() != null){
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }*/
     }
 
 

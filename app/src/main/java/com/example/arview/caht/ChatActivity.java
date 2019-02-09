@@ -45,7 +45,6 @@ public class ChatActivity extends FragmentActivity {
 
     private static final String TAG = "MainActivity";
 
-    public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
 
     public static final int RC_SIGN_IN = 1;
@@ -77,7 +76,6 @@ public class ChatActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        mUsername = ANONYMOUS;
 
         //Initialize Firebase components
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -281,7 +279,6 @@ public class ChatActivity extends FragmentActivity {
     }
 
     private void onSignedOutCleanup() {
-        mUsername = ANONYMOUS;
         mMessageAdapter.clear();
         detachDatabaseReadListener();
     }

@@ -1,22 +1,28 @@
 package com.example.arview.profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.arview.R;
-import com.example.arview.utils.UniversalImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.example.arview.login.SiginActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class ProfileEditFragment extends Fragment {
+
+    private static final String TAG = "ProfileEditFragment";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,6 +34,11 @@ public class ProfileEditFragment extends Fragment {
 
     //widget
     ImageView backArrow, profilePhoto;
+
+    //firebase
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -55,8 +66,9 @@ public class ProfileEditFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_profile_edit, container, false);
-        setUpProfileEditWidget(view);
 
+        setupFirebaseAuth();
+        profilePhoto = (ImageView) view.findViewById(R.id.profile_photo);
         //setup the backarrow
         backArrow = (ImageView) view.findViewById(R.id.backArrow);
         backArrow.setOnClickListener(new View.OnClickListener() {
@@ -66,35 +78,72 @@ public class ProfileEditFragment extends Fragment {
             }
         });
 
-
-        setProfileimage();
         return view;
     }
 
-    private void setProfileimage(){
-        String imgURL = "https://www.android.com/static/2016/img/share/andy-lg.png";
-        UniversalImageLoader.setImage(imgURL, profilePhoto, null , "https://");
 
-    }
 
 
     private void closefragment() {
         getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
     }
 
-    private void setUpProfileEditWidget(View view){
-        backArrow = (ImageView) view.findViewById(R.id.backArrow);
-        profilePhoto = (ImageView) view.findViewById(R.id.profile_photo);
+
+
+     /*
+    ------------------------------------ Firebase ---------------------------------------------
+     */
+
+    private void setupFirebaseAuth(){
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged( FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                    Intent intent = new Intent(getActivity(), SiginActivity.class);
+                    startActivity(intent);
+                }
+                // ...
+            }
+        };
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+    /*
+    ------------------------------------ Firebase ---------------------------------------------
+     */
+
+
+    /************************************************************************************/
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-
-    /************************************************************************************/
 
     @Override
     public void onAttach(Context context) {

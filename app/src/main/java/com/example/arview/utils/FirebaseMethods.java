@@ -156,7 +156,7 @@ public class FirebaseMethods {
         final FirebaseUser user = mAuth.getCurrentUser();
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference.child("users").orderByChild("userName").equalTo(username);
+        Query query = reference.child("users").orderByChild("userName").equalTo(username + ".");
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -178,7 +178,7 @@ public class FirebaseMethods {
                 mUsername = formatingUsername(username) +"." + formatingUsername(append);
 
                 //add new users classes to the database
-                addNewUser(user.getEmail(), mUsername, user.getDisplayName(), user.getPhotoUrl().toString());
+                addNewUser(user.getEmail(), mUsername, username, "");
 
                 Toast.makeText(mContext, "Signup successful. Sending verification email.", Toast.LENGTH_SHORT).show();
 

@@ -19,19 +19,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".login.SiginActivity"></activity>
+        <activity android:name=".location.MapActivity"></activity>
+        <activity android:name=".login.SiginActivity" />
         <activity android:name=".login.RegisterActivity" />
         <activity android:name=".login.LoginActivity" />
         <activity android:name=".profile.setting.SettingActivity" />
-        <activity android:name=".main.MainActivity" android:exported="true">
+        <activity
+            android:name=".main.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".DrawActivity" />
         <activity android:name=".profile.ProfileActivity" />
-        <activity android:name=".caht.ChatActivity"/>
+        <activity android:name=".caht.ChatActivity" />
     </application>
 
 </manifest>

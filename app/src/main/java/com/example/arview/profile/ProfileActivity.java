@@ -1,7 +1,6 @@
 package com.example.arview.profile;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -24,7 +22,6 @@ import android.widget.TextView;
 import com.example.arview.post.PostDetailsFragment;
 import com.example.arview.R;
 import com.example.arview.profile.setting.SettingActivity;
-import com.example.arview.utils.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -34,10 +31,10 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
     private static final String TAG = "ProfileActivity";
 
     //widget
-    public Button profileButton;
-    public ListView postlist;
-    private Toolbar toolbar;
-    private ImageView profileMenu ,profilePhoto;
+    private Button profileButton;
+    private ListView postlist;
+
+    private ImageView profileMenu ,profilePhoto ,backArrow;
     private FrameLayout profileContainer;
     private ProgressBar mProgressBar;
 
@@ -54,8 +51,17 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
         setContentView(R.layout.activity_profile);
         setUpProfileWidget();
 
+        backArrow = (ImageView) findViewById(R.id.backArrow);
+        //setup the backarrow
+        backArrow = (ImageView) findViewById(R.id.backArrow);
+        backArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         mProgressBar.setVisibility(View.GONE);
-        setProfileimage();
 
         setupFirebaseAuth();
 
@@ -95,16 +101,10 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
     }
 
 
-    private void setProfileimage(){
-        String imgURL = "https://www.android.com/static/2016/img/share/andy-lg.png";
-        UniversalImageLoader.setImage(imgURL, profilePhoto, null , "https://");
-
-    }
 
     private void setUpProfileWidget(){
         profileContainer = (FrameLayout) findViewById(R.id.profile_container);
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
-        toolbar = (Toolbar) findViewById(R.id.profileToolBar);
         profileMenu = (ImageView) findViewById(R.id.profileMenu);
         profileButton =(Button) findViewById(R.id.profileButton);
         postlist = (ListView) findViewById(R.id.postList);

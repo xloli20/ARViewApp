@@ -29,8 +29,10 @@ public class PostDetailsFragment extends Fragment {
     private String mParam2;
 
 
+
     //
     private ListView commentList;
+    private ImageView backArrow ;
     private OnFragmentInteractionListener mListener;
 
     public PostDetailsFragment() {
@@ -64,6 +66,17 @@ public class PostDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post_details, container, false);
 
+        backArrow = (ImageView) view.findViewById(R.id.backArrow);
+        //setup the backarrow
+        backArrow = (ImageView) view.findViewById(R.id.backArrow);
+        backArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closefragment();
+            }
+        });
+
+
         setupListView(view);
 
 
@@ -76,6 +89,12 @@ public class PostDetailsFragment extends Fragment {
         commentList.setAdapter(CA);
 
     }
+
+
+    private void closefragment() {
+        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+    }
+
 
     class CustomAdapter extends BaseAdapter {
 

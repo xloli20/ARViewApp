@@ -1,4 +1,4 @@
-package com.example.arview.post;
+package com.example.arview.databaseClasses;
 
 import android.location.Location;
 import android.net.Uri;

@@ -1,32 +1,19 @@
 package com.example.arview.main;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.example.arview.R;
-import com.example.arview.login.LoginActivity;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.utils.SectionsPagerAdapter;
-import com.example.arview.utils.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SearchFragment.OnFragmentInteractionListener , CameraFragment.OnFragmentInteractionListener, ChatFragment.OnFragmentInteractionListener {
 
@@ -47,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
         setContentView(R.layout.activity_main);
 
         setupFirebaseAuth();
-        initImageLoder();
 
         setupViewPager();
 
@@ -114,10 +100,6 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
     ------------------------------------ Firebase ---------------------------------------------
      */
 
-    private void initImageLoder(){
-        UniversalImageLoader universalImageLoader =new UniversalImageLoader(this);
-        ImageLoader.getInstance().init(universalImageLoader.getConfig());
-    }
 
 
     public void onFragmentInteraction(Uri uri){
