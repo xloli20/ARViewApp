@@ -6,18 +6,33 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.example.arview.R;
 import com.example.arview.profile.ProfileEditFragment;
 
 public class MapActivity extends AppCompatActivity implements NearListFragment.OnFragmentInteractionListener{
 
+    //wedgets
+    private ImageView upArrow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        openNearListFragment();
+        upArrow = (ImageView) findViewById(R.id.upArrow);
+        upArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openNearListFragment();
+                upArrow.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        //TODO : get value from fragment when close to set arrow visibile again
+
     }
 
     public void openNearListFragment() {

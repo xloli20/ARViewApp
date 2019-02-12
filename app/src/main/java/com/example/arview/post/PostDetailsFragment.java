@@ -66,7 +66,6 @@ public class PostDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post_details, container, false);
 
-        backArrow = (ImageView) view.findViewById(R.id.backArrow);
         //setup the backarrow
         backArrow = (ImageView) view.findViewById(R.id.backArrow);
         backArrow.setOnClickListener(new View.OnClickListener() {

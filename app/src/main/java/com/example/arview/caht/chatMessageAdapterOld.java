@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -15,8 +16,8 @@ import com.example.arview.databaseClasses.chatMessage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class chatMessageAdapter extends ArrayAdapter<chatMessage> {
-    public chatMessageAdapter(Context context, int resource, List<chatMessage> objects) {
+public class chatMessageAdapterOld extends ArrayAdapter<chatMessage> {
+    public chatMessageAdapterOld(Context context, int resource, List<chatMessage> objects) {
         super(context, resource, objects);
     }
 
@@ -26,13 +27,23 @@ public class chatMessageAdapter extends ArrayAdapter<chatMessage> {
             convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.layout_item_message, parent, false);
         }
 
-        ImageView photoImageView = (ImageView) convertView.findViewById(R.id.photoImageView);
-        TextView messageTextView = (TextView) convertView.findViewById(R.id.messageTextView);
-        TextView authorTextView = (TextView) convertView.findViewById(R.id.nameTextView);
+        RelativeLayout right = (RelativeLayout) convertView.findViewById(R.id.right);
+        RelativeLayout left = (RelativeLayout) convertView.findViewById(R.id.left);
+
+        ImageView photoImageView = (ImageView) convertView.findViewById(R.id.messagePhoto);
+        TextView messageTextView = (TextView) convertView.findViewById(R.id.messsageText);
 
         chatMessage message = getItem(position);
 
         boolean isPhoto = message.getPhotoURL() != null;
+
+        if (message.getSender() != null){
+            left.setVisibility(View.GONE);
+        }else {
+            right.setVisibility(View.GONE);
+        }
+
+
         if (isPhoto) {
             messageTextView.setVisibility(View.GONE);
             photoImageView.setVisibility(View.VISIBLE);
@@ -44,24 +55,9 @@ public class chatMessageAdapter extends ArrayAdapter<chatMessage> {
             photoImageView.setVisibility(View.GONE);
             messageTextView.setText(message.getText());
         }
-        authorTextView.setText(message.getName());
 
         return convertView;
     }
 
-    public static class postLikeClass {
 
-        private String postId;
-        private ArrayList<String> userNames;
-
-        public postLikeClass(){}
-        public postLikeClass(String postId){
-            this.postId = postId;
-        }
-
-        public void addlike (String userNAme){
-            userNames.add(userNAme);
-        }
-
-    }
 }

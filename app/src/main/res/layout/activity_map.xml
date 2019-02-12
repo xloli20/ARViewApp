@@ -9,6 +9,13 @@
 
 
 
+    <ImageView
+        android:id="@+id/upArrow"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:src="@mipmap/ic_up_arrow"/>
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"

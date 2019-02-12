@@ -51,7 +51,7 @@ public class ChatActivity extends FragmentActivity {
     private static final int RC_PHOTO_PICKER =  2;
 
     private ListView mMessageListView;
-    private chatMessageAdapter mMessageAdapter;
+    private chatMessageAdapterOld mMessageAdapter;
     private ProgressBar mProgressBar;
     private ImageButton mPhotoPickerButton;
     private EditText mMessageEditText;
@@ -95,7 +95,7 @@ public class ChatActivity extends FragmentActivity {
 
         // Initialize message ListView and its adapter
         List<chatMessage> friendlyMessages = new ArrayList<>();
-        mMessageAdapter = new chatMessageAdapter(this, R.layout.layout_item_message, friendlyMessages);
+        mMessageAdapter = new chatMessageAdapterOld(this, R.layout.layout_item_message, friendlyMessages);
         mMessageListView.setAdapter(mMessageAdapter);
 
         // Initialize progress bar

@@ -1,4 +1,4 @@
-package com.example.arview.profile.setting;
+package com.example.arview.setting;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,10 +16,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.arview.R;
-import com.example.arview.login.LoginActivity;
-import com.example.arview.login.RegisterActivity;
 import com.example.arview.login.SiginActivity;
-import com.example.arview.main.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 

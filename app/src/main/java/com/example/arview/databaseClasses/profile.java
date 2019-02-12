@@ -11,10 +11,10 @@ public class profile {
 
 
     private String userName;
+    private String name;
     private String userLocation;
     private String profilePhoto;
     private String profileDescription;
-
     private int followers;
     private int following;
     private int post;
@@ -23,8 +23,9 @@ public class profile {
     public profile(){
     }
 
-    public profile(String userName, String userLocation, String profilePhoto, String profileDescription, int followers, int following, int post) {
+    public profile(String userName, String name, String userLocation, String profilePhoto, String profileDescription, int followers, int following, int post) {
         this.userName = userName;
+        this.name = name;
         this.userLocation = userLocation;
         this.profilePhoto = profilePhoto;
         this.profileDescription = profileDescription;
@@ -33,12 +34,34 @@ public class profile {
         this.post = post;
     }
 
+    @Override
+    public String toString() {
+        return "profile{" +
+                "userName='" + userName + '\'' +
+                ", name='" + name + '\'' +
+                ", userLocation='" + userLocation + '\'' +
+                ", profilePhoto='" + profilePhoto + '\'' +
+                ", profileDescription='" + profileDescription + '\'' +
+                ", followers=" + followers +
+                ", following=" + following +
+                ", post=" + post +
+                '}';
+    }
+
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getUserLocation() {
@@ -64,7 +87,6 @@ public class profile {
     public void setProfileDescription(String profileDescription) {
         this.profileDescription = profileDescription;
     }
-
 
     public int getFollowers() {
         return followers;

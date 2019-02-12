@@ -14,18 +14,20 @@
         android:orientation="horizontal">
 
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:id="@+id/profile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_person" />
+            app:civ_border_color="@color/skyblue"
+            app:civ_border_width="1dp"
+            android:layout_marginEnd="4dp"
+            />
 
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="90"
             android:layout_gravity="center_vertical">
-
             <include layout="@layout/snippet_searchbar"/>
 
         </RelativeLayout>

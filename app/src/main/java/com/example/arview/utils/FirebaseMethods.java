@@ -1,21 +1,26 @@
 package com.example.arview.utils;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.arview.R;
-import com.example.arview.databaseClasses.chats;
+import com.example.arview.databaseClasses.chatMessage;
+import com.example.arview.databaseClasses.chatUser;
 import com.example.arview.databaseClasses.followers;
 import com.example.arview.databaseClasses.following;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.databaseClasses.users;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,13 +29,18 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Created by User on 6/26/2017.
@@ -45,8 +55,14 @@ public class FirebaseMethods {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
+    private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
+    private UploadTask uploadTask;
     private String userID;
+    private ChildEventListener mChildEventListener;
+    private DatabaseReference mMessagesDatabaseReference;
+
+
 
     //vars
     private Context mContext;
@@ -54,12 +70,16 @@ public class FirebaseMethods {
 
     private String append = "";
 
+    private String defaultProfilePhoto = "https://firebasestorage.googleapis.com/v0/b/arview-b5eb3.appspot.com/o/profile_photo.png?alt=media&token=edd70c89-7133-49fb-928e-4a3c579bbcec";
+
+
 
     public FirebaseMethods(Context context) {
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
         mStorageReference = FirebaseStorage.getInstance().getReference();
+
         mContext = context;
 
         if(mAuth.getCurrentUser() != null){
@@ -67,31 +87,6 @@ public class FirebaseMethods {
         }
     }
 
-/*
-    public void updateUsername(String username){
-        Log.d(TAG, "updateUsername: upadting username to: " + username);
-
-        myRef.child(mContext.getString(R.string.dbname_users))
-                .child(userID)
-                .child(mContext.getString(R.string.field_username))
-                .setValue(username);
-
-        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
-                .child(userID)
-                .child(mContext.getString(R.string.field_username))
-                .setValue(username);
-    }
-
-
-    public void updateEmail(String email){
-        Log.d(TAG, "updateEmail: upadting email to: " + email);
-
-        myRef.child(mContext.getString(R.string.dbname_users))
-                .child(userID)
-                .child(mContext.getString(R.string.field_email))
-                .setValue(email);
-
-    } */
 
 
     public void registerNewEmail(final String email, String password, final String username){
@@ -120,8 +115,6 @@ public class FirebaseMethods {
                     }
                 });
     }
-
-
 
     public void sendVerificationEmail(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -177,8 +170,9 @@ public class FirebaseMethods {
 
                 mUsername = formatingUsername(username) +"." + formatingUsername(append);
 
+
                 //add new users classes to the database
-                addNewUser(user.getEmail(), mUsername, username, "");
+                addNewUser(user.getEmail(), mUsername, username);
 
                 Toast.makeText(mContext, "Signup successful. Sending verification email.", Toast.LENGTH_SHORT).show();
 
@@ -193,50 +187,594 @@ public class FirebaseMethods {
         });
     }
 
-
-
-    public void addNewUser(String email, String username , String name , String profile_photo){
+    public void addNewUser(String email, String username , String name){
 
         userID = mAuth.getCurrentUser().getUid();
 
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date createdAt = new Date();
-        String strcreatedAt = dateFormat.format(createdAt);
+        String StrCreatedAt = dateFormat.format(createdAt);
 
-        users users = new users( userID,  username, name,  email, strcreatedAt, strcreatedAt , 1 );
+        users users = new users(username,  email, StrCreatedAt, StrCreatedAt , 0 );
 
         myRef.child("users")
                 .child(userID)
                 .setValue(users);
 
-        profile profile = new profile( username, "" ,profile_photo, "" ,0,0,0);
 
-        myRef.child("users")
+
+        profile profile = new profile( username, name, "" ,defaultProfilePhoto, "" ,0,0,0);
+
+        myRef.child("profile")
                 .child(userID)
-                .child("profile")
                 .setValue(profile);
 
         followers followers = new followers();
 
-        myRef.child("users")
+        myRef.child("followers")
                 .child(userID)
-                .child("followers")
                 .setValue(followers);
 
         following following = new following();
 
-        myRef.child("users")
+        myRef.child("following")
                 .child(userID)
-                .child("following")
                 .setValue(following);
 
-        chats chats= new chats();
-        myRef.child("users")
+        chatUser chats= new chatUser();
+        myRef.child("chatUser")
                 .child(userID)
-                .child("chats")
                 .setValue(chats);
 
+
+    }
+
+
+
+    public Uri getProfilePhoto(DataSnapshot dataSnapshot){
+
+        Uri uri = null;
+
+        for(DataSnapshot ds: dataSnapshot.getChildren()){
+
+            if(ds.getKey().equals("profile")) {
+
+                try {
+
+                uri =Uri.parse (( ds.child(userID)
+                        .getValue(profile.class)
+                        .getProfilePhoto()));
+
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "getprofile: NullPointerException: " + e.getMessage());
+                }
+
+            }
+
+
+        }
+        return uri;
+    }
+
+
+    public profile getProfile(DataSnapshot dataSnapshot) throws IOException {
+        Log.d(TAG, "getProfile: retrieving profile from firebase.");
+
+        final profile profile  = new profile();
+
+        for(DataSnapshot ds: dataSnapshot.getChildren()){
+
+            // profile node
+            if(ds.getKey().equals("profile")) {
+                Log.d(TAG, "getProfile: user profile node datasnapshot: " + ds);
+
+                try {
+
+                    profile.setUserName(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getUserName()
+                    );
+                    profile.setName(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getName()
+                    );
+                    profile.setUserLocation(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getUserLocation()
+                    );
+                    profile.setProfilePhoto(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getProfilePhoto()
+                    );
+                    profile.setProfileDescription(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getProfileDescription()
+                    );
+
+                    profile.setFollowers(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getFollowers()
+                    );
+
+                    profile.setFollowing(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getFollowing()
+                    );
+                    profile.setPost(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getPost()
+                    );
+
+
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "getprofile: NullPointerException: " + e.getMessage());
+                }
+
+            }
+
+
+        }
+
+        Log.d(TAG, "geProfile: retrieved profile information: " + profile.toString());
+
+        return profile;
+
+    }
+
+    public profile getProfile(DataSnapshot dataSnapshot , String userID) throws IOException {
+        Log.d(TAG, "getProfile: retrieving profile from firebase.");
+
+        final profile profile  = new profile();
+
+        for(DataSnapshot ds: dataSnapshot.getChildren()){
+
+            // profile node
+            if(ds.getKey().equals("profile")) {
+                Log.d(TAG, "getProfile: user profile node datasnapshot: " + ds);
+
+                try {
+
+                    profile.setUserName(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getUserName()
+                    );
+                    profile.setName(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getName()
+                    );
+                    profile.setUserLocation(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getUserLocation()
+                    );
+                    profile.setProfilePhoto(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getProfilePhoto()
+                    );
+                    profile.setProfileDescription(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getProfileDescription()
+                    );
+
+                    profile.setFollowers(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getFollowers()
+                    );
+
+                    profile.setFollowing(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getFollowing()
+                    );
+                    profile.setPost(
+                            ds.child(userID)
+                                    .getValue(profile.class)
+                                    .getPost()
+                    );
+
+
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "getprofile: NullPointerException: " + e.getMessage());
+                }
+
+            }
+
+
+        }
+
+        Log.d(TAG, "geProfile: retrieved profile information: " + profile.toString());
+
+        return profile;
+
+    }
+
+
+    public void deleteProfilePhoto(){
+
+        // delete from Storage
+        StorageReference delRef =  mStorageReference.child(userID).child("profilePhoto").child("profile_photo.png" );
+
+        delRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // File deleted successfully
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Uh-oh, an error occurred!
+            }
+        });
+
+        //delete download url from profile
+        myRef.child("profile")
+                .child(userID)
+                .child("profilePhoto")
+                .setValue(defaultProfilePhoto);
+
+    }
+
+    public void uploadPhoto( Uri selectedImageUri){
+
+        // Get a reference to store file
+        final StorageReference upRef =  mStorageReference.child(userID).child("profilePhoto").child("profile_photo.png" );
+
+        // Upload file to Firebase Storage
+        uploadTask = upRef.putFile(selectedImageUri);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+            }
+        });
+
+        // When the image has successfully uploaded, we get its download URL
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return upRef.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    String downloadURL = String.valueOf(downloadUri);
+                    // set download uri on profile
+                    myRef.child("profile")
+                            .child(userID)
+                            .child("profilePhoto")
+                            .setValue(downloadURL);
+
+                } else {
+                    // Handle failures
+                    // ...
+                }
+            }
+        });
+
+    }
+
+    public void uploadChatPhoto(Uri selectedImageUri, final String chatId){
+
+        // Get a reference to store file
+        final StorageReference upRef =  mStorageReference.child(userID).child("Chats").child(chatId).child(selectedImageUri.getLastPathSegment());
+
+        // Upload file to Firebase Storage
+        uploadTask = upRef.putFile(selectedImageUri);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+            }
+        });
+
+        // When the image has successfully uploaded, we get its download URL
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return upRef.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    String downloadURL = String.valueOf(downloadUri);
+                    // set download uri on profile
+
+                    chatMessage chatPhoto = new chatMessage(null, userID, downloadURL);
+
+                    sendMessage(chatId, chatPhoto);
+
+
+                } else {
+                    // Handle failures
+                    // ...
+                }
+            }
+        });
+
+    }
+
+    public void editProfile(String name , String desc){
+        myRef.child("profile")
+                .child(userID)
+                .child("name")
+                .setValue(name);
+
+        myRef.child("profile")
+                .child(userID)
+                .child("profileDescription")
+                .setValue(desc);
+
+    }
+
+
+    public users getUser(DataSnapshot dataSnapshot){
+        Log.d(TAG, "getUser: retrieving users from firebase.");
+
+        users user = new users();
+
+        for(DataSnapshot ds: dataSnapshot.getChildren()){
+
+            // users node
+            Log.d(TAG, "getUser: snapshot key: " + ds.getKey());
+            if(ds.getKey().equals(mContext.getString(R.string.dbname_users))) {
+                Log.d(TAG, "getUser: users node datasnapshot: " + ds);
+
+                user.setUserName(
+                        ds.child(userID)
+                                .getValue(users.class)
+                                .getUserName()
+                );
+                user.setEmail(
+                        ds.child(userID)
+                                .getValue(users.class)
+                                .getEmail()
+                );
+                user.setCreatedAt(
+                        ds.child(userID)
+                                .getValue(users.class)
+                                .getCreatedAt()
+                );
+                user.setUpdatedAt(
+                        ds.child(userID)
+                                .getValue(users.class)
+                                .getUpdatedAt()
+                );
+                user.setPhoneNumber(
+                        ds.child(userID)
+                                .getValue(users.class)
+                                .getPhoneNumber()
+                );
+
+                Log.d(TAG, "getUser: retrieved users information: " + user.toString());
+            }
+        }
+        return user;
+
+    }
+
+
+    public void addChat(String OthetUserID){
+
+        //TODO: check if other user was added
+
+        String chatID = String.valueOf(myRef.push().getKey());
+
+        myRef.child("userChat")
+                .child(userID)
+                .child(OthetUserID)
+                .setValue(chatID);
+
+        myRef.child("userChat")
+                .child(OthetUserID)
+                .child(userID)
+                .setValue(chatID);
+
+    }
+
+    public void sendMessage(String chatId, chatMessage chatMessge){
+
+        String MeassageID = String.valueOf(myRef.push().getKey());
+
+        myRef.child("Chats")
+                .child(chatId)
+                .child(MeassageID)
+                .setValue(chatMessge);
+
+
+    }
+
+    public List<chatUser> getAllchatsUsers(DataSnapshot dataSnapshot) throws IOException {
+        List<chatUser> chatUsersList = new ArrayList<>();
+        chatUser chatUser = new chatUser();
+
+        List<String> chatsUserId = getAllchatsUserID(dataSnapshot);
+
+        for (int i=0 ; i< chatsUserId.size() ; i++){
+
+            String otherUserID = chatsUserId.get(i);
+
+            chatUser.setOtherUserId(otherUserID);
+
+            chatUser.setOtherUserProfile( getProfile(dataSnapshot,otherUserID ));
+
+            for(DataSnapshot ds: dataSnapshot.getChildren()){
+
+                if(ds.getKey().equals("userChat")) {
+
+                    chatUser.setChatId(String.valueOf(
+                            ds.child(userID)
+                                    .child(otherUserID)
+                                    .getValue())
+                    );
+
+                }
+
+            }
+
+            Log.d(TAG, "getAllchatsUsers: snapshot key: " + chatUser.toString());
+            chatUsersList.add(chatUser);
+        }
+
+
+
+        return chatUsersList;
+    }
+
+    public List<String> getAllchatsUserID(DataSnapshot dataSnapshot){
+        List<String> chatsUserId = new ArrayList<>();
+
+        /*
+        for(DataSnapshot ds: dataSnapshot.getChildren()){
+            //TODO: fix and use quey
+            if(ds.getKey().equals("userChat")) {
+                chatsUserId.add(
+                        ds.child(userID)
+                                .getKey()
+
+                );
+            }
+        }
+        */
+        chatsUserId.add("LFvmo0NrcATUG4Y0O1IXNJrdw4a2");
+
+        Log.d(TAG, "getAllchatsUsersID: snapshot key: " + chatsUserId);
+        return chatsUserId;
+    }
+
+    public List<chatMessage> getAllChatMessage(DataSnapshot dataSnapshot,String chatID){
+        List<chatMessage> chatM = new ArrayList<>();
+        chatMessage CM = new chatMessage();
+
+        for(DataSnapshot ds: dataSnapshot.getChildren()){
+
+            if(ds.getKey().equals("Chats")) {
+
+                try {
+
+                    CM.setSender(
+                            ds.child(chatID)
+                                    .child("-LYVplWsSIp9l20VqHO7")
+                                    .child("sender")
+                                    .getValue().toString()
+
+                    );
+
+                    CM.setText(
+                            ds.child(chatID).child("-LYVplWsSIp9l20VqHO7")
+                                    .child("text")
+                                    .getValue().toString()
+                    );
+
+
+                    CM.setPhotoURL(
+                            ds.child(chatID)
+                                    .child("-LYVplWsSIp9l20VqHO7")
+                                    .child("photoURL")
+                                    .getValue().toString()
+                    );
+
+
+                } catch (NullPointerException e) {
+
+                }
+
+                Log.d(TAG, "getAllChatMessage: chatMessage" + CM.toString());
+                chatM.add(CM);
+
+            }
+
+        }
+
+        return chatM;
+    }
+
+
+    public  List<chatMessage> getAllChatMessageTest(String ChatID){
+
+        final List<chatMessage> chatM = new ArrayList<>();
+
+        mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("Chats").child(ChatID);
+
+
+        if (mChildEventListener == null) {
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    chatMessage chatTExt = dataSnapshot.getValue(chatMessage.class);
+                    chatM.add(chatTExt);
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            };
+            mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
+        }
+
+        return chatM;
     }
 
 

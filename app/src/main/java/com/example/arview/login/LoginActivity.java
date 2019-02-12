@@ -87,7 +87,6 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                                     FirebaseUser user = mAuth.getCurrentUser();
 
-                                    mAuth.getCurrentUser().reload();
                                     // If sign in fails, display a message to the users. If sign in succeeds
                                     // the auth state listener will be notified and logic to handle the
                                     // signed in users can be handled in the listener.

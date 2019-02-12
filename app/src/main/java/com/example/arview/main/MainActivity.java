@@ -10,12 +10,19 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.arview.R;
+import com.example.arview.caht.ChatsFragment;
+import com.example.arview.caht.InchatFragment;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.profile.ProfileFragment;
 import com.example.arview.utils.SectionsPagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity implements SearchFragment.OnFragmentInteractionListener , CameraFragment.OnFragmentInteractionListener, ChatFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements SearchFragment.OnFragmentInteractionListener ,
+                                                                CameraFragment.OnFragmentInteractionListener,
+                                                                ChatsFragment.OnFragmentInteractionListener,
+                                                                InchatFragment.OnFragmentInteractionListener,
+                                                                ProfileFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "MainActivity";
 
@@ -73,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
+                    Intent intent = new Intent(MainActivity.this, SiginActivity.class);
+                    startActivity(intent);
                 }
                 // ...
             }
@@ -101,19 +110,19 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
      */
 
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-    public void onFragmentInteraction(Uri uri){
-        //you can leave it empty
     }
 
-    // add search camera chat
+    // view pager for swap
     private void setupViewPager(){
         viewPager = (ViewPager) findViewById(R.id.pager);
 
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new SearchFragment()); //index 0
         adapter.addFragment(new CameraFragment()); //index 1
-        adapter.addFragment(new ChatFragment()); //index 2
+        adapter.addFragment(new ChatsFragment()); //index 2
 
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(1);

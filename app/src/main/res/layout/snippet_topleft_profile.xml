@@ -15,13 +15,13 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_centerHorizontal="true"
-        app:civ_border_color="#000000"
+        app:civ_border_color="@color/skyblue"
         app:civ_border_width="2dp"
         />
 
     <Button
         android:id="@+id/profileButton"
-        android:layout_width="80dp"
+        android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_below="@+id/profile_photo"
         android:layout_centerHorizontal="true"

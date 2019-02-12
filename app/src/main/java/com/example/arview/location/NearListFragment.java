@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.arview.R;
 
@@ -30,6 +31,9 @@ public class NearListFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    //wedgets
+    private ImageView downArrow;
 
     private OnFragmentInteractionListener mListener;
 
@@ -66,8 +70,23 @@ public class NearListFragment extends Fragment {
 
         getImages(view);
 
+        downArrow = (ImageView) view.findViewById(R.id.downArrow);
+        downArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closefragment();
+            }
+        });
+
+
         return view;
     }
+
+    private void closefragment() {
+        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+    }
+
+
 
 
     private void initRecyclerView(View view){

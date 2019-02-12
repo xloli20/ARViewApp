@@ -3,16 +3,25 @@ package com.example.arview.databaseClasses;
 public class chatMessage {
 
     private String text;
-    private String name;
+    private String sender;
     private String photoURL ;
 
     public chatMessage() {
     }
 
-    public chatMessage(String text, String name, String photoURL){
+    public chatMessage(String text, String sender, String photoURL){
         this.text = text;
-        this.name = name;
+        this.sender = sender;
         this.photoURL = photoURL;
+    }
+
+    @Override
+    public String toString() {
+        return "chatMessage{" +
+                "text='" + text + '\'' +
+                ", sender='" + sender + '\'' +
+                ", photoURL='" + photoURL + '\'' +
+                '}';
     }
 
     public String getText() {
@@ -23,12 +32,12 @@ public class chatMessage {
         this.text = text;
     }
 
-    public String getName() {
-        return name;
+    public String getSender() {
+        return sender;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
     public String getPhotoURL() {

@@ -8,9 +8,7 @@ import java.util.Date;
 
 public class users {
 
-    private String userId;
     private String userName;
-    private String name;
     private String email;
     private String createdAt;
     private String updatedAt;
@@ -19,10 +17,8 @@ public class users {
     public users() {
     }
 
-    public users(String userId, String userName, String name, String email, String createdAt, String updatedAt, long phoneNumber) {
-        this.userId = userId;
+    public users( String userName, String email, String createdAt, String updatedAt, long phoneNumber) {
         this.userName = userName;
-        this.name = name;
         this.email = email;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -34,7 +30,6 @@ public class users {
     public String toString() {
         return "users{" +
                 "userName='" + userName + '\'' +
-                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
@@ -48,14 +43,6 @@ public class users {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getEmail() {
@@ -90,13 +77,5 @@ public class users {
         this.phoneNumber = phoneNumber;
     }
 
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
 
 }

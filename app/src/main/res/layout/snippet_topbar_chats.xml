@@ -42,7 +42,7 @@
                     android:textSize="20sp"
                     android:textColor="#000"
                     android:layout_marginStart="5dp"
-                    android:id="@+id/chats"
+                    android:id="@+id/chatsSearch"
                     android:background="@null"/>
 
 

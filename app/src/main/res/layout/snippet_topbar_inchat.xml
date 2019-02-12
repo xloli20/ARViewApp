@@ -1,0 +1,61 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="#FFFFFF"
+        >
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:id="@+id/backArrow"
+                android:src="@mipmap/ic_back_arrow"/>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_photo"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="45dp"
+                app:civ_border_color="@android:color/background_light"
+                app:civ_border_width="1dp"
+                android:src="@mipmap/ic_profile_defuelt"
+                />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="100dp"
+                android:text="username "
+                android:textSize="20sp"
+                android:textColor="#000000"
+                android:id="@+id/username"/>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="20dp"
+                android:layout_centerVertical="true"
+                android:id="@+id/profileMenu"
+                android:src="@mipmap/ic_ellipses"/>
+
+        </RelativeLayout>
+
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+</merge>

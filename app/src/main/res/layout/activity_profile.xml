@@ -4,52 +4,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+
+
+    <ProgressBar
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:id="@+id/profileProgressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="100dp"/>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         >
 
-        <ProgressBar
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:id="@+id/profileProgressBar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="100dp"/>
+        <include layout="@layout/snippet_topbar_profile"/>
+        <include layout="@layout/snippet_top_profile"/>
 
-        <LinearLayout
+        <View
+            android:id="@+id/divider2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
+            android:layout_height="2dp"
+            android:layout_marginBottom="10dp"
+            android:background="?android:attr/listDivider" />
 
-            <include layout="@layout/snippet_topbar_profile"/>
-            <include layout="@layout/snippet_top_profile"/>
-
-            <View
-                android:id="@+id/divider2"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginBottom="10dp"
-                android:background="?android:attr/listDivider" />
-
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/postList"
-                >
-
-            </ListView>
-
-        </LinearLayout>
-
-
-        <FrameLayout
-            android:id="@+id/fragment_container"
+        <ListView
+            android:id="@+id/postList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"/>
 
-    </RelativeLayout>
+
+    </LinearLayout>
+
+
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+
 
     <FrameLayout
         android:id="@+id/profile_container"

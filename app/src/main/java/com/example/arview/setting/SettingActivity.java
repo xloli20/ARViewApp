@@ -1,4 +1,4 @@
-package com.example.arview.profile.setting;
+package com.example.arview.setting;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
