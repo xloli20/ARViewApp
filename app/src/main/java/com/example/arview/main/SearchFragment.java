@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,11 +37,6 @@ public class SearchFragment extends Fragment {
 
     private static final String TAG = "SearchFragment";
 
-
-
-    public ImageView profile;
-
-
     private OnFragmentInteractionListener mListener;
 
     //firebase
@@ -48,6 +45,12 @@ public class SearchFragment extends Fragment {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference myRef;
     private FirebaseMethods firebaseMethods;
+
+    //wedgets
+    public ImageView profile;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     public SearchFragment() {
     }
@@ -78,7 +81,8 @@ public class SearchFragment extends Fragment {
      */
 
       private void setupSearchWedgets(View view){
-          profile =(ImageView) view.findViewById(R.id.profile);
+          profile = view.findViewById(R.id.profile);
+          mRecyclerView = view.findViewById(R.id.recyclerView);
 
 
           profilePhoto();
@@ -95,6 +99,14 @@ public class SearchFragment extends Fragment {
                   startActivity(i);
               }
           });
+
+      }
+
+      private void RecyclerView(){
+          mRecyclerView.setNestedScrollingEnabled(false);
+          mRecyclerView.setHasFixedSize(true);
+          mLayoutManager = new LinearLayoutManager(getActivity());
+          mRecyclerView.setLayoutManager(mLayoutManager);
 
       }
 

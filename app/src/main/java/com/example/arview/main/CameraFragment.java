@@ -80,7 +80,6 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
 
         setupFirebaseAuth();
 
-        ImageView mFindUsers = view.findViewById(R.id.findUsers);
 
         //setup the backarrow
         map = (ImageView) view.findViewById(R.id.map);
@@ -102,12 +101,6 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
             mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         }
 
-        mFindUsers.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FindUsers();
-            }
-        });
 
         return view;
     }
@@ -115,11 +108,6 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
      /*
     ------------------------------------ Firebase ---------------------------------------------
      */
-     private void FindUsers() {
-         Intent intent = new Intent(getContext(), FindUsersActivity.class);
-         startActivity(intent);
-         return;
-     }
 
     private void setupFirebaseAuth(){
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
