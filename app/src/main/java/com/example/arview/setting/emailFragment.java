@@ -11,84 +11,50 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.example.arview.R;
 import com.example.arview.login.SiginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class SignOutFragment extends Fragment {
+public class emailFragment extends Fragment {
 
-    private static final String TAG = "SignOutFragment";
+    private static final String TAG = "emailFragment";
+
 
     private OnFragmentInteractionListener mListener;
+
 
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
-    //wedget
-    private Button signOut;
-    private ImageView close;
-    private ProgressBar progressBar;
 
-
-    public SignOutFragment() {
-        // Required empty public constructor
+    public emailFragment() {
     }
 
-    public static SignOutFragment newInstance() {
-        SignOutFragment fragment = new SignOutFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
+
+    public static emailFragment newInstance() {
+        emailFragment fragment = new emailFragment();
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sign_out, container, false);
+        View view = inflater.inflate(R.layout.fragment_pn, container, false);
 
         setupFirebaseAuth();
 
-        signOut = (Button)view.findViewById(R.id.btnConfirmSignout);
-        close = (ImageView)view.findViewById(R.id.close);
-        progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
-
-        progressBar.setVisibility(View.GONE);
-
-        signOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: sign Out'");
-                progressBar.setVisibility(View.VISIBLE);
-                mAuth.signOut();
-            }
-        });
-
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: sign Out'");
-                closefragment();
-            }
-        });
-
-
-
         return view;
     }
+
+
 
     private void closefragment() {
         getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
@@ -143,7 +109,23 @@ public class SignOutFragment extends Fragment {
      */
 
 
-    /**************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /***************************************************************************/
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -167,9 +149,7 @@ public class SignOutFragment extends Fragment {
         mListener = null;
     }
 
-
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
-
 }

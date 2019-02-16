@@ -7,10 +7,10 @@ import android.widget.Toast;
 
 import com.example.arview.R;
 import com.example.arview.databaseClasses.chatMessage;
-import com.example.arview.databaseClasses.chatUser;
 import com.example.arview.databaseClasses.followers;
 import com.example.arview.databaseClasses.following;
 import com.example.arview.databaseClasses.profile;
+import com.example.arview.databaseClasses.userChat;
 import com.example.arview.databaseClasses.users;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,6 +60,7 @@ public class FirebaseMethods {
     private UploadTask uploadTask;
     private String userID;
     private ChildEventListener mChildEventListener;
+    private ChildEventListener RChildEventListener;
     private DatabaseReference mMessagesDatabaseReference;
 
 
@@ -222,15 +223,12 @@ public class FirebaseMethods {
                 .child(userID)
                 .setValue(following);
 
-        chatUser chats= new chatUser();
-        myRef.child("chatUser")
-                .child(userID)
-                .setValue(chats);
 
 
     }
 
 
+    /*************************************************************************************/
 
     public Uri getProfilePhoto(DataSnapshot dataSnapshot){
 
@@ -403,6 +401,116 @@ public class FirebaseMethods {
     }
 
 
+    public profile getProfile(String uID){
+
+        final profile[] profile = {new profile()};
+
+        mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("profile").child(uID);
+
+
+        if (mChildEventListener == null) {
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    profile[0] = dataSnapshot.getValue(profile.class);
+
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            };
+            mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
+        }
+
+        return profile[0];
+    }
+
+
+    public List<String> getAllchatsgggUserID(DataSnapshot dataSnapshot){
+        List<String> chatsUserId = new ArrayList<>();
+
+
+        chatsUserId.add("LFvmo0NrcATUG4Y0O1IXNJrdw4a2");
+
+        Log.d(TAG, "getAllchatsUsersID: snapshot key: " + chatsUserId);
+        return chatsUserId;
+    }
+
+
+    public List<userChat> getAllchatsUser(){
+        final List<userChat> chatsUser = new ArrayList<>();
+
+        Log.d(TAG, "getAllchatsUser: chatUserList" + chatsUser.toString());
+
+        DatabaseReference R = mFirebaseDatabase.getReference().child("userChat").child(userID);
+
+
+        if (RChildEventListener == null) {
+                RChildEventListener = new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        userChat users = dataSnapshot.getValue(userChat.class);
+                        Log.d(TAG, "getAllchatsUser: chatUserList.1" + users.toString());
+                        chatsUser.add(users);
+
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                };
+
+            R.addChildEventListener(RChildEventListener);
+            Log.d(TAG, "getAllchatsUser: chatUserList * " + chatsUser.toString());
+
+        }
+
+        return chatsUser;
+    }
+
+
+
+
+    /*
+
+    PERFECT
+
+     */
+
     public void deleteProfilePhoto(){
 
         // delete from Storage
@@ -554,191 +662,59 @@ public class FirebaseMethods {
     }
 
 
-    public users getUser(DataSnapshot dataSnapshot){
-        Log.d(TAG, "getUser: retrieving users from firebase.");
-
-        users user = new users();
-
-        for(DataSnapshot ds: dataSnapshot.getChildren()){
-
-            // users node
-            Log.d(TAG, "getUser: snapshot key: " + ds.getKey());
-            if(ds.getKey().equals(mContext.getString(R.string.dbname_users))) {
-                Log.d(TAG, "getUser: users node datasnapshot: " + ds);
-
-                user.setUserName(
-                        ds.child(userID)
-                                .getValue(users.class)
-                                .getUserName()
-                );
-                user.setEmail(
-                        ds.child(userID)
-                                .getValue(users.class)
-                                .getEmail()
-                );
-                user.setCreatedAt(
-                        ds.child(userID)
-                                .getValue(users.class)
-                                .getCreatedAt()
-                );
-                user.setUpdatedAt(
-                        ds.child(userID)
-                                .getValue(users.class)
-                                .getUpdatedAt()
-                );
-                user.setPhoneNumber(
-                        ds.child(userID)
-                                .getValue(users.class)
-                                .getPhoneNumber()
-                );
-
-                Log.d(TAG, "getUser: retrieved users information: " + user.toString());
-            }
-        }
-        return user;
-
-    }
 
 
-    public void addChat(String OthetUserID){
-
-        //TODO: check if other user was added
+    public void addChat(final String OthetUserID){
 
         String chatID = String.valueOf(myRef.push().getKey());
 
-        myRef.child("userChat")
-                .child(userID)
-                .child(OthetUserID)
-                .setValue(chatID);
 
-        myRef.child("userChat")
-                .child(OthetUserID)
-                .child(userID)
-                .setValue(chatID);
+        final userChat chatUser = new userChat(OthetUserID, chatID);
+        final userChat chatUser1 = new userChat(userID , chatID);
+
+        final DatabaseReference chat =myRef.child("userChat").child(userID);
+
+        chat.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (!snapshot.hasChild(OthetUserID)) {
+
+                    chat.child(OthetUserID)
+                            .setValue(chatUser);
+
+                    myRef.child("userChat")
+                            .child(OthetUserID)
+                            .child(userID)
+                            .setValue(chatUser1);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
+
     public void sendMessage(String chatId, chatMessage chatMessge){
 
-        String MeassageID = String.valueOf(myRef.push().getKey());
+        String messageID = String.valueOf(myRef.push().getKey());
 
         myRef.child("Chats")
                 .child(chatId)
-                .child(MeassageID)
+                .child(messageID)
                 .setValue(chatMessge);
 
 
     }
 
-    public List<chatUser> getAllchatsUsers(DataSnapshot dataSnapshot) throws IOException {
-        List<chatUser> chatUsersList = new ArrayList<>();
-        chatUser chatUser = new chatUser();
 
-        List<String> chatsUserId = getAllchatsUserID(dataSnapshot);
+    public  ArrayList<chatMessage> getAllChatMessageTest(String ChatID){
 
-        for (int i=0 ; i< chatsUserId.size() ; i++){
-
-            String otherUserID = chatsUserId.get(i);
-
-            chatUser.setOtherUserId(otherUserID);
-
-            chatUser.setOtherUserProfile( getProfile(dataSnapshot,otherUserID ));
-
-            for(DataSnapshot ds: dataSnapshot.getChildren()){
-
-                if(ds.getKey().equals("userChat")) {
-
-                    chatUser.setChatId(String.valueOf(
-                            ds.child(userID)
-                                    .child(otherUserID)
-                                    .getValue())
-                    );
-
-                }
-
-            }
-
-            Log.d(TAG, "getAllchatsUsers: snapshot key: " + chatUser.toString());
-            chatUsersList.add(chatUser);
-        }
-
-
-
-        return chatUsersList;
-    }
-
-    public List<String> getAllchatsUserID(DataSnapshot dataSnapshot){
-        List<String> chatsUserId = new ArrayList<>();
-
-        /*
-        for(DataSnapshot ds: dataSnapshot.getChildren()){
-            //TODO: fix and use quey
-            if(ds.getKey().equals("userChat")) {
-                chatsUserId.add(
-                        ds.child(userID)
-                                .getKey()
-
-                );
-            }
-        }
-        */
-        chatsUserId.add("LFvmo0NrcATUG4Y0O1IXNJrdw4a2");
-
-        Log.d(TAG, "getAllchatsUsersID: snapshot key: " + chatsUserId);
-        return chatsUserId;
-    }
-
-    public List<chatMessage> getAllChatMessage(DataSnapshot dataSnapshot,String chatID){
-        List<chatMessage> chatM = new ArrayList<>();
-        chatMessage CM = new chatMessage();
-
-        for(DataSnapshot ds: dataSnapshot.getChildren()){
-
-            if(ds.getKey().equals("Chats")) {
-
-                try {
-
-                    CM.setSender(
-                            ds.child(chatID)
-                                    .child("-LYVplWsSIp9l20VqHO7")
-                                    .child("sender")
-                                    .getValue().toString()
-
-                    );
-
-                    CM.setText(
-                            ds.child(chatID).child("-LYVplWsSIp9l20VqHO7")
-                                    .child("text")
-                                    .getValue().toString()
-                    );
-
-
-                    CM.setPhotoURL(
-                            ds.child(chatID)
-                                    .child("-LYVplWsSIp9l20VqHO7")
-                                    .child("photoURL")
-                                    .getValue().toString()
-                    );
-
-
-                } catch (NullPointerException e) {
-
-                }
-
-                Log.d(TAG, "getAllChatMessage: chatMessage" + CM.toString());
-                chatM.add(CM);
-
-            }
-
-        }
-
-        return chatM;
-    }
-
-
-    public  List<chatMessage> getAllChatMessageTest(String ChatID){
-
-        final List<chatMessage> chatM = new ArrayList<>();
+        final ArrayList<chatMessage> chatM = new ArrayList<>();
 
         mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("Chats").child(ChatID);
 
@@ -776,8 +752,6 @@ public class FirebaseMethods {
 
         return chatM;
     }
-
-
 
 }
 

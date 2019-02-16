@@ -1,37 +1,41 @@
 package com.example.arview.databaseClasses;
 
 public class userChat {
-    private String chatID;
-    private String otherUserID;
 
-    public userChat(){
+    private String chatId;
+    private String otherUserId;
+
+    public userChat() {
     }
+
     public userChat(String chatID, String otherUserID) {
-        this.chatID = chatID;
-        this.otherUserID = otherUserID;
+        this.chatId = chatID;
+        this.otherUserId = otherUserID;
     }
 
     @Override
     public String toString() {
         return "userChat{" +
-                "chatID='" + chatID + '\'' +
-                ", otherUserID='" + otherUserID + '\'' +
+                "chatId='" + chatId + '\'' +
+                ", otherUserId='" + otherUserId + '\'' +
                 '}';
     }
 
-    public String getChatID() {
-        return chatID;
+    public String getChatId() {
+        return chatId;
     }
 
-    public void setChatID(String chatID) {
-        this.chatID = chatID;
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 
-    public String getOtherUserID() {
-        return otherUserID;
+    public String getOtherUserId() {
+        return otherUserId;
     }
 
-    public void setOtherUserID(String otherUserID) {
-        this.otherUserID = otherUserID;
+    public void setOtherUserId(String otherUserId) {
+        this.otherUserId = otherUserId;
     }
 }
+
+

@@ -49,6 +49,21 @@
             </ListView>
         </RelativeLayout>
 
+        <FrameLayout
+            android:id="@+id/fragment_container0"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_weight="1"/>
+
+        <FrameLayout
+            android:id="@+id/fragment_container1"
+            android:layout_width="300dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_weight="1"/>
+
     </RelativeLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -24,10 +24,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.arview.R;
-import com.example.arview.databaseClasses.chatUser;
 import com.example.arview.databaseClasses.profile;
+import com.example.arview.databaseClasses.userChat;
 import com.example.arview.login.SiginActivity;
-import com.example.arview.post.PostDetailsFragment;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,7 +36,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +50,7 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
     private ImageView addChat;
 
 
-    private List<chatUser> chatUserList ;
+    private List<userChat> chatUserList = new ArrayList<>() ;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -82,8 +80,11 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
+
         setupFirebaseAuth();
-        setupChatswedgets(view);
+        chatUserList(view);
+
+
 
 
 
@@ -96,36 +97,43 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
     -------------------------------wedget on click-----------------------------------------
      */
 
-     private void setupChatswedgets(View view){
+     private void chatUserList(View view){
          chatsList = (ListView) view.findViewById(R.id.chatsListview);
          chatsSearch = (EditText) view.findViewById(R.id.chatsSearch);
          addChat = (ImageView) view.findViewById(R.id.add_chat);
 
          addChat();
+         setupListView();
      }
 
      private void addChat(){
          addChat.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 //TODO: open search fragment to get new user id
+                 //TODO: open search fragment to get new user id then open inchatfragment
                  firebaseMethods.addChat("LFvmo0NrcATUG4Y0O1IXNJrdw4a2");
+                 firebaseMethods.addChat("ax2qqsPUjYZ2U0uwCOu8VgHTm5d2");
              }
          });
      }
 
-    private void setupListView( List<chatUser> list ){
 
-        chatUserList =  list ;
+
+    private void setupListView(){
+
+        chatUserList = firebaseMethods.getAllchatsUser();
+        Toast.makeText(getContext(), chatUserList.toString(), Toast.LENGTH_SHORT).show();
+
         ChatsFragment.CustomAdapter CA = new ChatsFragment.CustomAdapter();
+        CA.notifyDataSetChanged();
         chatsList.setAdapter(CA);
 
         chatsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                openInChatFragment(chatUserList.get(position).getChatId(), chatUserList.get(position).getOtherUserId());
-            }
+            openInChatFragment(chatUserList.get(position).getChatId(), chatUserList.get(position).getOtherUserId());
+        }
         });
     }
 
@@ -164,15 +172,16 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
             lastmessage = (TextView) view.findViewById(R.id.textView);
 
 
+            profile p = firebaseMethods.getProfile(chatUserList.get(i).getOtherUserId());
 
-            Uri uri = Uri.parse(chatUserList.get(i).getOtherUserProfile().getProfilePhoto());
+            Uri uri = Uri.parse(p.getProfilePhoto());
 
             Glide.with(proImg.getContext())
                     .load(uri)
                     .into(proImg);
 
-            name.setText(chatUserList.get(i).getOtherUserProfile().getName());
-            Uname.setText(chatUserList.get(i).getOtherUserProfile().getUserName());
+            name.setText(p.getName());
+            Uname.setText(p.getUserName());
 
 
             return view;
@@ -218,13 +227,6 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                try {
-                    setupListView(firebaseMethods.getAllchatsUsers(dataSnapshot));
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-
-                }
 
             }
 

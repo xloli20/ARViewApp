@@ -1,6 +1,8 @@
 package com.example.arview.setting;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
@@ -23,7 +25,10 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
-public class SettingActivity extends AppCompatActivity implements ProfileEditFragment.OnFragmentInteractionListener, SignOutFragment.OnFragmentInteractionListener{
+public class SettingActivity extends AppCompatActivity implements ProfileEditFragment.OnFragmentInteractionListener,
+                                                                PNFragment.OnFragmentInteractionListener,
+                                                                emailFragment.OnFragmentInteractionListener,
+                                                                SignOutFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "AccountSettingsActivity";
 
@@ -46,7 +51,6 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
 
         setupFirebaseAuth();
         setupSettingsList();
-        setupFragments();
 
 
         //setup the backarrow
@@ -68,7 +72,13 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
 
         ArrayList<String> options = new ArrayList<>();
         options.add("Edit Profile"); //fragment 0
-        options.add("Sign Out"); //fragement 1
+        options.add("Phone Number"); //fragment 1
+        options.add("Email"); //fragment 2
+        options.add("Password"); //fragment 3
+        options.add("Notification"); //fragment 4
+        options.add("Share Location"); //fragment 5
+        options.add("Support"); //fragment 6
+        options.add("Sign Out"); //fragement 7
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, options);
         listView.setAdapter(adapter);
@@ -78,13 +88,73 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "onItemClick: navigating to fragment#: " + position);
-                setViewPager(position);
+                openSettingFragment(position);
             }
         });
 
     }
 
-    //TODO: change
+
+    private void openSettingFragment(int i){
+
+        switch (i){
+            case 0:
+                ProfileEditFragment fragment = ProfileEditFragment.newInstance();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.addToBackStack(null);
+                transaction.remove(fragment);
+                transaction.replace(R.id.fragment_container0, fragment);
+                transaction.commit();
+
+            break;
+            case 1:
+                PNFragment fragment1 = PNFragment.newInstance();
+                FragmentManager fragmentManager1 = getSupportFragmentManager();
+                FragmentTransaction transaction1 = fragmentManager1.beginTransaction();
+                transaction1.addToBackStack(null);
+                transaction1.remove(fragment1);
+                transaction1.replace(R.id.fragment_container1, fragment1);
+                transaction1.commit();
+
+                break;
+            case 2:
+
+                break;
+            case 3:
+
+                break;
+            case 4:
+
+                break;
+            case 5:
+
+                break;
+            case 6:
+
+                break;
+            case 7:
+                SignOutFragment fragment7 = SignOutFragment.newInstance();
+                FragmentManager fragmentManager7 = getSupportFragmentManager();
+                FragmentTransaction transaction7 = fragmentManager7.beginTransaction();
+                //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+                transaction7.addToBackStack(null);
+                transaction7.remove(fragment7);
+                transaction7.replace(R.id.fragment_container0, fragment7);
+                transaction7.commit();
+
+                break;
+
+
+
+        }
+
+
+
+
+    }
+
+    /*
     private void setupFragments(){
         pagerAdapter = new SectionsStatePagerAdapter(getSupportFragmentManager());
         pagerAdapter.addFragment(new ProfileEditFragment(), "Edit Profile"); //fragment 0
@@ -97,7 +167,7 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
         mViewPager.setAdapter(pagerAdapter);
         mViewPager.setCurrentItem(fragmentNumber);
     }
-
+*/
 
      /*
     ------------------------------------ Firebase ---------------------------------------------

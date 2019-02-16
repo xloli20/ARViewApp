@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.InputFilter;
@@ -32,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.chatMessage;
 import com.example.arview.databaseClasses.profile;
+import com.example.arview.location.RecyclerViewAdapter;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.profile.ProfileFragment;
 import com.example.arview.utils.FirebaseMethods;
@@ -81,20 +84,18 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference myRef;
     private FirebaseMethods firebaseMethods;
-    private ChildEventListener mChildEventListener;
     private DatabaseReference mMessagesDatabaseReference;
-
-
-
-
 
 
     //wedgets
     private ImageView backArrow, imagePicker, profPhoto;
     private EditText messageEditText;
     private TextView SEND, userName;
-    private ListView chatListView;
+    private RecyclerView recyclerView ;
 
+
+    //var
+    private ArrayList<chatMessage> chatMessage = new ArrayList<>();
 
 
     private OnFragmentInteractionListener mListener;
@@ -119,6 +120,8 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
             chatID = getArguments().getString(ARG_PARAM1);
             otherUserID = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
     @Override
@@ -128,6 +131,10 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
 
         setupFirebaseAuth();
         setupWedgets(view);
+
+
+        chatMessage =firebaseMethods.getAllChatMessageTest(chatID);
+        initRecyclerView();
 
         return view;
     }
@@ -155,14 +162,14 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
         profPhoto = (ImageView) view.findViewById(R.id.profile_photo);
         userName = (TextView) view.findViewById(R.id.username);
         SEND = (TextView)view.findViewById(R.id.btnsendText);
-        chatListView = (ListView)view.findViewById(R.id.chatMessageListView);
+        recyclerView = view.findViewById(R.id.chatMessageRecyclerView);
 
 
         backArrow();
         otherUser();
         Message();
         imagePicker();
-        setupMessageCustomListView();
+        //setupMessageCustomListView();
     }
 
     private void backArrow(){
@@ -232,6 +239,7 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
 
         messageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
 
+
     }
 
     // Send button sends a message and clears the EditText
@@ -250,14 +258,21 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
 
     }
 
-    List<chatMessage> chatMessages = new ArrayList<>();
 
-    private void setupMessageCustomListView(){
+    private void initRecyclerView(){
+        Log.d(TAG, "initRecyclerView: init recyclerview");
 
-        chatMessages = firebaseMethods.getAllChatMessageTest(chatID);
 
-        InchatFragment.CustomAdapter CA = new InchatFragment.CustomAdapter();
-        chatListView.setAdapter(CA);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        //recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(layoutManager);
+        ChatsRecyclerViewAdapter adapter = new ChatsRecyclerViewAdapter(getContext(), chatMessage, mAuth.getUid());
+        recyclerView.setAdapter(adapter);
+
+        // Notify recycler view insert one new data.
+        adapter.notifyDataSetChanged();
+        layoutManager.setStackFromEnd(true);
+
 
     }
 
@@ -406,90 +421,4 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
         void onFragmentInteraction(Uri uri);
     }
 
-
-
-    public class CustomAdapter extends BaseAdapter{
-
-
-
-        @Override
-        public int getCount() {
-            return chatMessages.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return chatMessages.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            convertView = getLayoutInflater().inflate(R.layout.layout_item_message, null);
-
-            Log.d(TAG, "CustomAdapter:chatMessage" + chatMessages);
-
-
-            RelativeLayout right = (RelativeLayout) convertView.findViewById(R.id.right);
-            RelativeLayout left = (RelativeLayout) convertView.findViewById(R.id.left);
-
-            ImageView userPhoto = (ImageView) convertView.findViewById(R.id.profile_photoL);
-            ImageView photoImageView = (ImageView) convertView.findViewById(R.id.messagePhoto);
-            TextView messageTextView = (TextView) convertView.findViewById(R.id.messsageText);
-
-            ImageView userPhotoR = (ImageView) convertView.findViewById(R.id.profile_photoR);
-            ImageView photoImageViewR = (ImageView) convertView.findViewById(R.id.messagePhotoR);
-            TextView messageTextViewR = (TextView) convertView.findViewById(R.id.messsageTextR);
-
-
-
-            chatMessage message = chatMessages.get(position);
-
-
-            boolean isPhoto = message.getPhotoURL() != null;
-
-
-            if (message.getSender().equals(mAuth.getUid())){
-                left.setVisibility(View.GONE);
-
-                if (isPhoto) {
-                    messageTextViewR.setVisibility(View.GONE);
-                    photoImageViewR.setVisibility(View.VISIBLE);
-                    Glide.with(photoImageViewR.getContext())
-                            .load(message.getPhotoURL())
-                            .into(photoImageViewR);
-                } else {
-                    messageTextViewR.setVisibility(View.VISIBLE);
-                    photoImageViewR.setVisibility(View.GONE);
-                    messageTextViewR.setText(message.getText());
-                }
-
-            }else {
-                right.setVisibility(View.GONE);
-
-                if (isPhoto) {
-                    messageTextView.setVisibility(View.GONE);
-                    photoImageView.setVisibility(View.VISIBLE);
-                    Glide.with(photoImageView.getContext())
-                            .load(message.getPhotoURL())
-                            .into(photoImageView);
-                } else {
-                    messageTextView.setVisibility(View.VISIBLE);
-                    photoImageView.setVisibility(View.GONE);
-                    messageTextView.setText(message.getText());
-                }
-            }
-
-
-
-
-
-            return convertView;
-        }
-
-    }
 }
