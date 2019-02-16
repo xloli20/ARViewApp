@@ -109,13 +109,7 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
 
             break;
             case 1:
-                PNFragment fragment1 = PNFragment.newInstance();
-                FragmentManager fragmentManager1 = getSupportFragmentManager();
-                FragmentTransaction transaction1 = fragmentManager1.beginTransaction();
-                transaction1.addToBackStack(null);
-                transaction1.remove(fragment1);
-                transaction1.replace(R.id.fragment_container1, fragment1);
-                transaction1.commit();
+                
 
                 break;
             case 2:
