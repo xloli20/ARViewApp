@@ -27,15 +27,13 @@ public class chatMessageAdapterOld extends ArrayAdapter<chatMessage> {
             convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.layout_item_message, parent, false);
         }
 
-        RelativeLayout right = (RelativeLayout) convertView.findViewById(R.id.right);
-        RelativeLayout left = (RelativeLayout) convertView.findViewById(R.id.left);
+        RelativeLayout right =  convertView.findViewById(R.id.right);
+        RelativeLayout left =  convertView.findViewById(R.id.left);
 
-        ImageView photoImageView = (ImageView) convertView.findViewById(R.id.messagePhoto);
-        TextView messageTextView = (TextView) convertView.findViewById(R.id.messsageText);
+        ImageView photoImageView =  convertView.findViewById(R.id.messagePhoto);
+        TextView messageTextView =  convertView.findViewById(R.id.messsageText);
 
         chatMessage message = getItem(position);
-
-        boolean isPhoto = message.getPhotoURL() != null;
 
         if (message.getSender() != null){
             left.setVisibility(View.GONE);
@@ -43,7 +41,7 @@ public class chatMessageAdapterOld extends ArrayAdapter<chatMessage> {
             right.setVisibility(View.GONE);
         }
 
-
+        boolean isPhoto = message.getPhotoURL() != null;
         if (isPhoto) {
             messageTextView.setVisibility(View.GONE);
             photoImageView.setVisibility(View.VISIBLE);

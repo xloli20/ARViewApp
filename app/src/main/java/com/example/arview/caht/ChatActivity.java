@@ -56,7 +56,7 @@ public class ChatActivity extends FragmentActivity {
     private ImageButton mPhotoPickerButton;
     private EditText mMessageEditText;
     private Button mSendButton;
-    private Button signOut;
+    private Button signOut; //
 
     private String mUsername;
 
@@ -69,7 +69,7 @@ public class ChatActivity extends FragmentActivity {
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mChatPhotosStorageReference;
 
-    private UploadTask uploadTask;
+    private UploadTask uploadTask; //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,7 +202,7 @@ public class ChatActivity extends FragmentActivity {
                 Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
                 finish();
             }
-        }else if (requestCode == RC_PHOTO_PICKER || resultCode == RESULT_OK) {
+        }else if (requestCode == RC_PHOTO_PICKER || resultCode == RESULT_OK) { //
             Uri selectedImageUri = data.getData();
 
             // Get a reference to store file at chat_photos/<FILENAME>

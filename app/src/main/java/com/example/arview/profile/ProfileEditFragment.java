@@ -183,7 +183,7 @@ public class ProfileEditFragment extends Fragment {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_PHOTO_PICKER || resultCode == RESULT_OK) {
+        if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
             Uri selectedImageUri = data.getData();
 
             firebaseMethods.uploadPhoto(selectedImageUri);
