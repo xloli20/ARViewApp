@@ -14,19 +14,19 @@
 
         </RelativeLayout>
 
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/Topbar"
-            android:id="@+id/chatsListview">
+    <ListView
+        android:id="@+id/chatsListview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Topbar">
 
-        </ListView>
+    </ListView>
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
 
 </RelativeLayout>

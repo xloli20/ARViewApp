@@ -14,7 +14,8 @@
             android:layout_gravity="center"
             android:layout_weight="7"
             android:paddingLeft="5dp"
-            android:src="@mipmap/ic_search" />
+            android:src="@mipmap/ic_search"
+            android:id="@+id/search"/>
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -26,12 +27,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:hint="Search..."
+                android:hint="@string/search"
                 android:textSize="20sp"
                 android:textColor="#000"
                 android:layout_marginStart="5dp"
-                android:id="@+id/search"
-                android:background="@null"/>
+                android:id="@+id/input"
+                android:background="@null"
+                />
 
 
         </RelativeLayout>

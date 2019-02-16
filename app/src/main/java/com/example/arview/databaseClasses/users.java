@@ -25,6 +25,11 @@ public class users {
         this.phoneNumber = phoneNumber;
     }
 
+    public users(String userName, String email){
+        this.userName = userName;
+        this.email = email;
+    }
+
 
     @Override
     public String toString() {
