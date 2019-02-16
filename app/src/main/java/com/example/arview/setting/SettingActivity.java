@@ -1,5 +1,6 @@
 package com.example.arview.setting;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -12,9 +13,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.arview.R;
 import com.example.arview.login.SiginActivity;
@@ -26,8 +30,6 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 
 public class SettingActivity extends AppCompatActivity implements ProfileEditFragment.OnFragmentInteractionListener,
-                                                                PNFragment.OnFragmentInteractionListener,
-                                                                emailFragment.OnFragmentInteractionListener,
                                                                 SignOutFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "AccountSettingsActivity";
@@ -35,6 +37,13 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
     public SectionsStatePagerAdapter pagerAdapter;
     private ViewPager mViewPager;
     private RelativeLayout mRelativeLayout;
+
+    //wedgets
+    private EditText PN , email, oldPass, newPass, conPass;
+    private Button PNSave, emailSave, PassSave;
+    private ImageView backArrow;
+
+
 
     //firebase
     private FirebaseAuth mAuth;
@@ -46,15 +55,21 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
-        mViewPager = (ViewPager) findViewById(R.id.viewpager_container);
-        mRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout1);
+
 
         setupFirebaseAuth();
         setupSettingsList();
+        backarrow();
 
+
+
+
+    }
+
+    private void backarrow(){
+        backArrow = (ImageView) findViewById(R.id.backArrow);
 
         //setup the backarrow
-        ImageView backArrow = (ImageView) findViewById(R.id.backArrow);
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,7 +77,6 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
                 finish();
             }
         });
-
 
     }
 
@@ -109,20 +123,19 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
 
             break;
             case 1:
-                
-
+                PhoneNumberDialog();
                 break;
             case 2:
-
+                EmailDialog();
                 break;
             case 3:
-
+                PasswordDialog();
                 break;
             case 4:
-
+                NotificationDialog();
                 break;
             case 5:
-
+                LocationDialog();
                 break;
             case 6:
 
@@ -148,20 +161,94 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
 
     }
 
-    /*
-    private void setupFragments(){
-        pagerAdapter = new SectionsStatePagerAdapter(getSupportFragmentManager());
-        pagerAdapter.addFragment(new ProfileEditFragment(), "Edit Profile"); //fragment 0
-        pagerAdapter.addFragment(new SignOutFragment(),"Sign Out"); //fragment 1
+    private void PhoneNumberDialog(){
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(SettingActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_phone_number, null);
+
+        PN = (EditText) mView.findViewById(R.id.input_PN);
+        PNSave = (Button) mView.findViewById(R.id.btn_PN);
+
+        PNSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(SettingActivity.this, "save.", Toast.LENGTH_SHORT).show();
+
+
+            }
+        });
+
+        mBuilder.setView(mView);
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
     }
 
-    public void setViewPager(int fragmentNumber){
-        mRelativeLayout.setVisibility(View.GONE);
-        Log.d(TAG, "setViewPager: navigating to fragment #: " + fragmentNumber);
-        mViewPager.setAdapter(pagerAdapter);
-        mViewPager.setCurrentItem(fragmentNumber);
+    private void EmailDialog(){
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(SettingActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_email, null);
+
+        email = (EditText) mView.findViewById(R.id.input_email);
+        emailSave = (Button) mView.findViewById(R.id.btn_email);
+
+        emailSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(SettingActivity.this, "save.", Toast.LENGTH_SHORT).show();
+
+
+            }
+        });
+
+        mBuilder.setView(mView);
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
     }
-*/
+
+    private void PasswordDialog(){
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(SettingActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_password, null);
+
+        oldPass = (EditText) mView.findViewById(R.id.input_oldP);
+        newPass = (EditText) mView.findViewById(R.id.input_newP);
+        conPass = (EditText) mView.findViewById(R.id.input_confirm);
+        PassSave = (Button) mView.findViewById(R.id.btn_pass);
+
+        PassSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(SettingActivity.this, "save.", Toast.LENGTH_SHORT).show();
+
+
+            }
+        });
+
+        mBuilder.setView(mView);
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
+    }
+
+    private void NotificationDialog(){
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(SettingActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_notification, null);
+
+
+        mBuilder.setView(mView);
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
+    }
+
+    private void LocationDialog(){
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(SettingActivity.this);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_location, null);
+
+
+        mBuilder.setView(mView);
+        AlertDialog dialog = mBuilder.create();
+        dialog.show();
+    }
 
      /*
     ------------------------------------ Firebase ---------------------------------------------
