@@ -122,7 +122,9 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
                  //TODO: open search fragment
                  //            get new user id then open inchatfragment
                  firebaseMethods.addChat("LFvmo0NrcATUG4Y0O1IXNJrdw4a2");
-                 firebaseMethods.addChat("ax2qqsPUjYZ2U0uwCOu8VgHTm5d2");
+                 firebaseMethods.addChat("muxiRaCd6jchpaajZSaoa2TkyKw2");
+                 firebaseMethods.addChat("nuwoKZUa6Qfk7Vy0gdTnuhG55YK2");
+
              }
          });
      }
@@ -344,6 +346,13 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        chatUserprofileList = new ArrayList<>();
+    }
+
 
     /*
     ------------------------------------ Firebase ---------------------------------------------
