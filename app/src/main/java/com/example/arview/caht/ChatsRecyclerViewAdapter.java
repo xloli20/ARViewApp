@@ -1,6 +1,7 @@
 package com.example.arview.caht;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.chatMessage;
 
+import java.net.URI;
 import java.util.ArrayList;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,11 +32,13 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
     //vars
     private ArrayList<chatMessage> chatMessage = new ArrayList<>();
     private String userID;
+    private Uri uriP;
     private Context mContext;
 
-    public ChatsRecyclerViewAdapter(Context context, ArrayList<chatMessage> chatMessageS, String uID) {
+    public ChatsRecyclerViewAdapter(Context context, ArrayList<chatMessage> chatMessageS, String uID, Uri uri) {
         chatMessage = chatMessageS;
         userID = uID;
+        uriP = uri ;
         mContext = context;
     }
 
@@ -67,12 +71,16 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
         }else {
             holder.right.setVisibility(View.GONE);
 
+            Glide.with(mContext)
+                    .load(uriP)
+                    .into(holder.userPhoto);
+
             if (chatMessage.get(position).getPhotoURL() != null) {
                 holder.messageTextView.setVisibility(View.GONE);
                 holder.photoImageView.setVisibility(View.VISIBLE);
                 Glide.with(mContext)
                         .load(chatMessage.get(position).getPhotoURL())
-                        .into(holder.photoImageViewR);
+                        .into(holder.photoImageView);
             } else {
                 holder.messageTextView.setVisibility(View.VISIBLE);
                 holder.photoImageView.setVisibility(View.GONE);
@@ -96,7 +104,6 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
         ImageView photoImageView;
         TextView messageTextView;
 
-        ImageView userPhotoR ;
         ImageView photoImageViewR ;
         TextView messageTextViewR ;
 
@@ -109,11 +116,10 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
             photoImageView = (ImageView) itemView.findViewById(R.id.messagePhoto);
             messageTextView = (TextView) itemView.findViewById(R.id.messsageText);
 
-            userPhotoR = (ImageView) itemView.findViewById(R.id.profile_photoR);
             photoImageViewR = (ImageView) itemView.findViewById(R.id.messagePhotoR);
             messageTextViewR = (TextView) itemView.findViewById(R.id.messsageTextR);
         }
     }
 
-    
+
 }

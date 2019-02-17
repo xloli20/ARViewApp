@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.chatMessage;
 import com.example.arview.databaseClasses.profile;
+import com.example.arview.databaseClasses.userChat;
 import com.example.arview.location.RecyclerViewAdapter;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.profile.ProfileFragment;
@@ -84,7 +85,7 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference myRef;
     private FirebaseMethods firebaseMethods;
-    private DatabaseReference mMessagesDatabaseReference;
+
 
 
     //wedgets
@@ -97,8 +98,8 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
 
 
     //var
-    private ArrayList<chatMessage> chatMessage = new ArrayList<>();
-
+    private ArrayList<chatMessage> chatMessageList = new ArrayList<>();
+    public Uri uriOtherUser ;
 
     private OnFragmentInteractionListener mListener;
 
@@ -134,10 +135,6 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
         setupFirebaseAuth();
         setupWedgets(view);
 
-
-        chatMessage =firebaseMethods.getAllChatMessageTest(chatID);
-        initRecyclerView();
-
         return view;
     }
 
@@ -171,7 +168,6 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
         otherUser();
         Message();
         imagePicker();
-        //setupMessageCustomListView();
     }
 
     private void backArrow(){
@@ -261,22 +257,59 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
     }
 
 
-    private void initRecyclerView(){
+    private void initRecyclerView(profile p){
         Log.d(TAG, "initRecyclerView: init recyclerview");
 
+        uriOtherUser = Uri.parse(p.getProfilePhoto());
+
+        Glide.with(profPhoto.getContext())
+                .load(uriOtherUser)
+                .into(profPhoto);
+
+        userName.setText(p.getUserName());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new ChatsRecyclerViewAdapter(getContext(), chatMessage, mAuth.getUid());
+        adapter = new ChatsRecyclerViewAdapter(getContext(), chatMessageList, mAuth.getUid(), uriOtherUser);
         recyclerView.setAdapter(adapter);
+        layoutManager.setStackFromEnd(true);
 
-        // Notify recycler view insert one new data.
-        adapter.notifyDataSetChanged();
-        //layoutManager.setStackFromEnd(true);
+        DatabaseReference R = firebaseDatabase.getReference().child("Chats").child(chatID);
 
+        R.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                chatMessage CM =  dataSnapshot.getValue(chatMessage.class);
+                chatMessageList.add(CM);
+
+                Log.d(TAG, "initRecyclerView: chatMessageList" + chatMessageList);
+
+                adapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
-
 
 
      /*
@@ -288,19 +321,6 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
      */
 
 
-
-     private void setinChatuserWedget(profile p){
-
-         Uri uri = Uri.parse(p.getProfilePhoto());
-
-         Glide.with(profPhoto.getContext())
-                 .load(uri)
-                 .into(profPhoto);
-
-         userName.setText(p.getUserName());
-
-     }
-
     private void setupFirebaseAuth(){
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
 
@@ -308,8 +328,6 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
         firebaseDatabase = FirebaseDatabase.getInstance();
         myRef = firebaseDatabase.getReference();
         firebaseMethods = new FirebaseMethods(getContext());
-        mMessagesDatabaseReference = firebaseDatabase.getReference().child("Chats").child(chatID);
-
 
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -334,15 +352,11 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
+                //retrieve profile from the database
                 try {
-                    setinChatuserWedget(firebaseMethods.getProfile(dataSnapshot, otherUserID));
-
-
+                    initRecyclerView(firebaseMethods.getProfile(dataSnapshot, otherUserID));
                 } catch (IOException e) {
                     e.printStackTrace();
-
                 }
 
             }
@@ -352,6 +366,7 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
 
             }
         });
+
     }
 
     @Override

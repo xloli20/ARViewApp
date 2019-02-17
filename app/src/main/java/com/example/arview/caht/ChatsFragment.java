@@ -113,7 +113,6 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
 
          addChat();
          initRecyclerView();
-         //setupListView();
      }
 
      private void addChat(){
@@ -130,20 +129,14 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
 
 
 
-    private void setupListView(){
-
-
-    }
-
-
     private void initRecyclerView(){
         Log.d(TAG, "initRecyclerView: init recyclerview");
 
-
-        final RecyclerViewAdapter1 adapter = new RecyclerViewAdapter1(getContext(),chatUserprofileList );
-        recyclerView.setAdapter(adapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
+        final RecyclerViewAdapter1 adapter = new RecyclerViewAdapter1(getContext(),chatUserprofileList );
+        recyclerView.setAdapter(adapter);
+
 
         DatabaseReference R = firebaseDatabase.getReference().child("userChat").child(mAuth.getUid());
 
@@ -316,7 +309,6 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
 
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = firebaseDatabase.getReference();
         firebaseMethods = new FirebaseMethods(getContext());
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -337,19 +329,6 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
             }
         };
 
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Override
