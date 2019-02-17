@@ -584,8 +584,8 @@ public class FirebaseMethods {
         String chatID = String.valueOf(myRef.push().getKey());
 
 
-        final userChat chatUser = new userChat(OthetUserID, chatID);
-        final userChat chatUser1 = new userChat(userID , chatID);
+        final userChat chatUser = new userChat(chatID, OthetUserID );
+        final userChat chatUser1 = new userChat(chatID, userID );
 
         final DatabaseReference chat =myRef.child("userChat").child(userID);
 
