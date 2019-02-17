@@ -5,6 +5,7 @@ public class chatMessage {
     private String text;
     private String sender;
     private String photoURL ;
+    //date and time
 
     public chatMessage() {
     }

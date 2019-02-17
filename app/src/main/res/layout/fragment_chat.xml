@@ -15,13 +15,15 @@
 
         </RelativeLayout>
 
-    <ListView
-        android:id="@+id/chatsListview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Topbar">
 
-    </ListView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatMessageRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/Topbar"
+        >
+
+    </androidx.recyclerview.widget.RecyclerView>
 
     <FrameLayout
         android:id="@+id/fragment_container"

@@ -93,6 +93,8 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
     private TextView SEND, userName;
     private RecyclerView recyclerView ;
 
+    private ChatsRecyclerViewAdapter adapter;
+
 
     //var
     private ArrayList<chatMessage> chatMessage = new ArrayList<>();
@@ -264,14 +266,13 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
-        ChatsRecyclerViewAdapter adapter = new ChatsRecyclerViewAdapter(getContext(), chatMessage, mAuth.getUid());
+        adapter = new ChatsRecyclerViewAdapter(getContext(), chatMessage, mAuth.getUid());
         recyclerView.setAdapter(adapter);
 
         // Notify recycler view insert one new data.
         adapter.notifyDataSetChanged();
-        layoutManager.setStackFromEnd(true);
+        //layoutManager.setStackFromEnd(true);
 
 
     }

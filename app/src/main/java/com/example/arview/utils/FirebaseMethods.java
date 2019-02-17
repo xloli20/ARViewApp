@@ -454,55 +454,65 @@ public class FirebaseMethods {
     }
 
 
-    public List<userChat> getAllchatsUser(){
-        final List<userChat> chatsUser = new ArrayList<>();
+    public ArrayList<userChat> getAllchatsUser(){
+        final ArrayList<userChat> chatsUser = new ArrayList<>();
 
         Log.d(TAG, "getAllchatsUser: chatUserList" + chatsUser.toString());
 
         DatabaseReference R = mFirebaseDatabase.getReference().child("userChat").child(userID);
 
 
-        if (RChildEventListener == null) {
-                RChildEventListener = new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        userChat users = dataSnapshot.getValue(userChat.class);
-                        Log.d(TAG, "getAllchatsUser: chatUserList.1" + users.toString());
-                        chatsUser.add(users);
+        R.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                userChat users = dataSnapshot.getValue(userChat.class);
+                Log.d(TAG, "getAllchatsUser: chatUserList.1" + users.toString());
+                chatsUser.add(users);
+            }
 
-                    }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            }
 
-                    }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            }
 
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    }
+            }
 
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
+            }
+        });
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                };
-
-            R.addChildEventListener(RChildEventListener);
-            Log.d(TAG, "getAllchatsUser: chatUserList * " + chatsUser.toString());
-
-        }
+        Log.d(TAG, "getAllchatsUser: chatUserList * " + chatsUser.toString());
 
         return chatsUser;
     }
 
+    /*
+    test
+     */
 
+    public String substringUsername(String username){
+        String UserName = username.toLowerCase();
+        int index = username.lastIndexOf('.');
+        if (index != -1) {
+            UserName = username.substring(0, index);
+        }
+        return UserName;
+
+    }
+
+        /*
+    test
+     */
 
 
     /*
@@ -660,7 +670,6 @@ public class FirebaseMethods {
                 .setValue(desc);
 
     }
-
 
 
 
