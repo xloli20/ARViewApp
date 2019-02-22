@@ -10,8 +10,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.arview.R;
-import com.example.arview.caht.ChatsFragment;
-import com.example.arview.caht.InchatFragment;
+import com.example.arview.chat.ChatsFragment;
+import com.example.arview.chat.InchatFragment;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.profile.ProfileFragment;
 import com.example.arview.utils.SectionsPagerAdapter;
@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
 
 
     /*

@@ -6,9 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -30,7 +28,6 @@ import com.example.arview.post.PostDetailsFragment;
 import com.example.arview.R;
 import com.example.arview.setting.SettingActivity;
 import com.example.arview.utils.FirebaseMethods;
-import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -63,7 +60,6 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
     private FirebaseMethods firebaseMethods;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,8 +68,6 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
         setUpProfileWidget();
 
         setupFirebaseAuth();
-
-
 
     }
 
@@ -101,7 +95,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
          backArrow();
          setting();
          edit();
-         postlist();
+         postList();
 
      }
 
@@ -137,7 +131,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
     }
 
 
-    private void postlist(){
+    private void postList() {
 
         ProfileActivity.CustomAdapter CA = new ProfileActivity.CustomAdapter();
             postlist.setAdapter(CA);
@@ -170,6 +164,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
             return 0;
         }
 
+        @SuppressLint("ViewHolder")
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             view = getLayoutInflater().inflate(R.layout.layout_post_list, null);

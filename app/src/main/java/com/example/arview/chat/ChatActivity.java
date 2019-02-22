@@ -1,4 +1,4 @@
-package com.example.arview.caht;
+package com.example.arview.chat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

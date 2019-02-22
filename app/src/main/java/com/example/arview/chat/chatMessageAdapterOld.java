@@ -1,4 +1,4 @@
-package com.example.arview.caht;
+package com.example.arview.chat;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,7 +13,6 @@ import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.chatMessage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class chatMessageAdapterOld extends ArrayAdapter<chatMessage> {

@@ -39,7 +39,7 @@
         </activity>
         <activity android:name=".DrawActivity" />
         <activity android:name=".profile.ProfileActivity" />
-        <activity android:name=".caht.ChatActivity" />
+        <activity android:name=".chat.ChatActivity" />
     </application>
 
 </manifest>

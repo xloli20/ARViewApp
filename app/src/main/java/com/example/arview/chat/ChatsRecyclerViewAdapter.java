@@ -1,4 +1,4 @@
-package com.example.arview.caht;
+package com.example.arview.chat;
 
 import android.content.Context;
 import android.net.Uri;
@@ -9,17 +9,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.chatMessage;
 
-import java.net.URI;
 import java.util.ArrayList;
 
 import androidx.recyclerview.widget.RecyclerView;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by User on 2/12/2018.
