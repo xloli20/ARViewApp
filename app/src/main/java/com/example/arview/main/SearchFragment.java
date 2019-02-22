@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -34,7 +33,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -91,7 +89,7 @@ public class SearchFragment extends Fragment {
 
         RecyclerView();
 
-        mAdapter = new FollowAdapater(getDataSet(),getActivity());
+        mAdapter = new FollowAdapter(getDataSet(),getActivity());
         mRecyclerView.setAdapter(mAdapter);
 
         mSearch.setOnClickListener(new View.OnClickListener() {

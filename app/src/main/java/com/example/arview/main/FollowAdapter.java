@@ -14,12 +14,12 @@ import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-public class FollowAdapater extends RecyclerView.Adapter<FollowViewHolders>{
+public class FollowAdapter extends RecyclerView.Adapter<FollowViewHolders>{
 
     private List<following> usersList;
     private Context context;
 
-    public FollowAdapater(List<following> usersList, Context context){
+    public FollowAdapter(List<following> usersList, Context context){
         this.usersList = usersList;
         this.context = context;
     }
