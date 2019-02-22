@@ -194,14 +194,6 @@ public class SearchFragment extends Fragment {
         return results;
     }
 
-    private void FindUsers() {
-        Intent intent = new Intent(getContext(), FindUsersActivity.class);
-        startActivity(intent);
-        return;
-    }
-
-
-
 
 
 

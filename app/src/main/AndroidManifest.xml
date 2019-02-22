@@ -23,7 +23,6 @@
         android:roundIcon="@drawable/icone"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".main.FindUsersActivity"></activity>
         <activity android:name=".location.MapActivity" />
         <activity android:name=".login.SiginActivity" />
         <activity android:name=".login.RegisterActivity" />
