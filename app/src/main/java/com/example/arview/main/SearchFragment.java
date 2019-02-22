@@ -15,22 +15,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.example.arview.databaseClasses.following;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.profile.ProfileActivity;
 import com.example.arview.R;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class SearchFragment extends Fragment {
@@ -48,9 +53,12 @@ public class SearchFragment extends Fragment {
 
     //wedgets
     public ImageView profile;
+
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+
+    EditText mInput;
 
     public SearchFragment() {
     }
@@ -59,6 +67,7 @@ public class SearchFragment extends Fragment {
         SearchFragment fragment = new SearchFragment();
         return fragment;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,7 +82,68 @@ public class SearchFragment extends Fragment {
         setupFirebaseAuth();
         setupSearchWedgets(view);
 
+        ImageView mSearch = view.findViewById(R.id.search);
+        mInput = view.findViewById(R.id.input);
+
+
+
+        mRecyclerView = view.findViewById(R.id.recyclerView);
+
+        RecyclerView();
+
+        mAdapter = new FollowAdapater(getDataSet(),getActivity());
+        mRecyclerView.setAdapter(mAdapter);
+
+        mSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clear();
+                listenForData();
+            }
+        });
+
         return view;
+    }
+
+    private void listenForData() {
+        DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("users");
+        Query query = usersDb.orderByChild("email").startAt(mInput.getText().toString()).endAt(mInput.getText().toString() + "\uf8ff");
+        query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
+                String email = "";
+                String uid = dataSnapshot.getRef().getKey();
+                if(dataSnapshot.child("email").getValue() != null){
+                    email = dataSnapshot.child("email").getValue().toString();
+                }
+                if(!email.equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())){
+                    following obj = new following(email, uid);
+                    results.add(obj);
+                    mAdapter.notifyDataSetChanged();
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
       /*
@@ -110,8 +180,25 @@ public class SearchFragment extends Fragment {
 
       }
 
+    private void clear() {
+        int size = this.results.size();
+        this.results.clear();
+        mAdapter.notifyDataSetChanged();
+    }
 
 
+
+    private ArrayList<following> results = new ArrayList<>();
+    private ArrayList<following> getDataSet() {
+        listenForData();
+        return results;
+    }
+
+    private void FindUsers() {
+        Intent intent = new Intent(getContext(), FindUsersActivity.class);
+        startActivity(intent);
+        return;
+    }
 
 
 

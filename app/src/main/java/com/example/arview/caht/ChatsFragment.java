@@ -161,7 +161,7 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
 
                         profile p = dataSnapshot.getValue(profile.class);
 
-                        Log.d(TAG, "getAllchatsUser: chatUserList.2" + p.toString());
+                        Log.d(TAG, "getAllchatsUser: chatUserList.2" );
 
                         UCP.setProfile(p);
 

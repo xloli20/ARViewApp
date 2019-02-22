@@ -1,11 +1,8 @@
-package com.example.arview.databaseClasses;
+package com.example.arview.main;
 
 public class following {
     private String email;
     private String uid;
-
-    public following(){
-    }
 
     public following(String email, String uid){
         this.email = email;
