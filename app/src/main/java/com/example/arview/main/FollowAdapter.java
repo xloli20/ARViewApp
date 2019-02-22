@@ -11,7 +11,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
+import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class FollowAdapter extends RecyclerView.Adapter<FollowViewHolders>{
@@ -19,19 +21,20 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowViewHolders>{
     private List<following> usersList;
     private Context context;
 
-    public FollowAdapter(List<following> usersList, Context context){
+    FollowAdapter(List<following> usersList, Context context){
         this.usersList = usersList;
         this.context = context;
     }
+    @NonNull
     @Override
-    public FollowViewHolders onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FollowViewHolders onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recylerview_followers_item, null);
         FollowViewHolders rcv = new FollowViewHolders(layoutView);
         return rcv;
     }
 
     @Override
-    public void onBindViewHolder(final FollowViewHolders holder, int position) {
+    public void onBindViewHolder(@NonNull final FollowViewHolders holder, int position) {
         holder.mEmail.setText(usersList.get(position).getEmail());
 
         if(UserInformation.listFollowing.contains(usersList.get(holder.getLayoutPosition()).getUid())){
@@ -43,7 +46,7 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowViewHolders>{
         holder.mFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
                 if(!UserInformation.listFollowing.contains(usersList.get(holder.getLayoutPosition()).getUid())){
                     holder.mFollow.setText("following");
                     FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).setValue(true);

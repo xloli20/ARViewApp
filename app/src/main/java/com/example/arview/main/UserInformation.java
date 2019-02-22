@@ -8,9 +8,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Objects;
+
+import androidx.annotation.NonNull;
 
 public class UserInformation {
-    public static ArrayList<String> listFollowing = new ArrayList<>();
+    static ArrayList<String> listFollowing = new ArrayList<>();
 
     public void startFetching(){
         listFollowing.clear();
@@ -18,10 +21,10 @@ public class UserInformation {
     }
 
     private void getUserFollowing() {
-        DatabaseReference userFollowingDB = FirebaseDatabase.getInstance().getReference().child("users").child(FirebaseAuth.getInstance().getUid()).child("following");
+        DatabaseReference userFollowingDB = FirebaseDatabase.getInstance().getReference().child("users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).child("following");
         userFollowingDB.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
                 if (dataSnapshot.exists()){
                     String uid = dataSnapshot.getRef().getKey();
                     if (uid != null && !listFollowing.contains(uid)){
@@ -31,12 +34,12 @@ public class UserInformation {
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String s) {
 
             }
 
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     String uid = dataSnapshot.getRef().getKey();
                     if (uid != null){
@@ -46,12 +49,12 @@ public class UserInformation {
             }
 
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String s) {
 
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });

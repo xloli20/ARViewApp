@@ -34,6 +34,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class SearchFragment extends Fragment {
@@ -56,7 +57,7 @@ public class SearchFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    EditText mInput;
+    private EditText mInput;
 
     public SearchFragment() {
     }
@@ -73,7 +74,7 @@ public class SearchFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
@@ -112,9 +113,9 @@ public class SearchFragment extends Fragment {
                 String email = "";
                 String uid = dataSnapshot.getRef().getKey();
                 if(dataSnapshot.child("email").getValue() != null){
-                    email = dataSnapshot.child("email").getValue().toString();
+                    email = Objects.requireNonNull(dataSnapshot.child("email").getValue()).toString();
                 }
-                if(!email.equals(FirebaseAuth.getInstance().getCurrentUser().getEmail())){
+                if(!email.equals(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail())){
                     following obj = new following(email, uid);
                     results.add(obj);
                     mAdapter.notifyDataSetChanged();
@@ -123,22 +124,22 @@ public class SearchFragment extends Fragment {
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String s) {
 
             }
 
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
             }
 
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String s) {
 
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
@@ -224,7 +225,7 @@ public class SearchFragment extends Fragment {
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged( FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {

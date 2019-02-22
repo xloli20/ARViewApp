@@ -8,11 +8,11 @@ import com.example.arview.R;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-public class FollowViewHolders extends RecyclerView.ViewHolder{
-    public TextView mEmail;
-    public Button mFollow;
+class FollowViewHolders extends RecyclerView.ViewHolder{
+    TextView mEmail;
+    Button mFollow;
 
-    public FollowViewHolders(View itemView){
+    FollowViewHolders(View itemView){
         super(itemView);
         mEmail = itemView.findViewById(R.id.email);
         mFollow = itemView.findViewById(R.id.follow);
