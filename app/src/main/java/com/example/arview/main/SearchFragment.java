@@ -84,12 +84,8 @@ public class SearchFragment extends Fragment {
         ImageView mSearch = view.findViewById(R.id.search);
         mInput = view.findViewById(R.id.input);
 
-
-
         mRecyclerView = view.findViewById(R.id.recyclerView);
-
         RecyclerView();
-
         mAdapter = new FollowAdapter(getDataSet(),getActivity());
         mRecyclerView.setAdapter(mAdapter);
 
