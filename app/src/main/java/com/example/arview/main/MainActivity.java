@@ -14,6 +14,7 @@ import com.example.arview.chat.ChatsFragment;
 import com.example.arview.chat.InchatFragment;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.profile.ProfileFragment;
+import com.example.arview.search.SearchFragment;
 import com.example.arview.utils.SectionsPagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

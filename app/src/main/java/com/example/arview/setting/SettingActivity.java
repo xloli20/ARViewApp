@@ -56,12 +56,9 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
         setContentView(R.layout.activity_setting);
 
 
-
         setupFirebaseAuth();
         setupSettingsList();
         backarrow();
-
-
 
 
     }

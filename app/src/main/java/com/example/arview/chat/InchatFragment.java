@@ -181,6 +181,7 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
     }
     private void closefragment() {
         getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+        getActivity().getSupportFragmentManager().popBackStack();
     }
 
     //imagePicker

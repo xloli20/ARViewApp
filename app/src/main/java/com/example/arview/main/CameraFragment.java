@@ -21,7 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.arview.R;
-import com.example.arview.location.MapActivity;
+import com.example.arview.location.MapsActivity;
 import com.example.arview.login.SiginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -81,7 +81,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
         map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MapActivity.class);
+                Intent intent = new Intent(getActivity(), MapsActivity.class);
                 startActivity(intent);
             }
         });

@@ -1,4 +1,4 @@
-package com.example.arview.main;
+package com.example.arview.search;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;

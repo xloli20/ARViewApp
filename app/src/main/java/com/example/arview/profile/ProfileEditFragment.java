@@ -157,6 +157,7 @@ public class ProfileEditFragment extends Fragment {
 
     private void closefragment() {
         getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+        getActivity().getSupportFragmentManager().popBackStack();
     }
 
     private void changePhoto(){

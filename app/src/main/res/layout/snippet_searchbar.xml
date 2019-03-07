@@ -8,14 +8,7 @@
         android:background="@drawable/white_grey_rounded_border_bottom"
         >
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center"
-            android:layout_weight="7"
-            android:paddingLeft="5dp"
-            android:src="@mipmap/ic_search"
-            android:id="@+id/search"/>
+
 
         <RelativeLayout
             android:layout_width="0dp"
@@ -25,18 +18,28 @@
 
             <EditText
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:hint="@string/search"
                 android:textSize="20sp"
                 android:textColor="#000"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="10dp"
                 android:id="@+id/input"
                 android:background="@null"
                 />
 
 
         </RelativeLayout>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_weight="7"
+            android:paddingRight="5dp"
+            android:src="@mipmap/ic_search"
+            android:id="@+id/search"/>
+
 
     </LinearLayout>
 

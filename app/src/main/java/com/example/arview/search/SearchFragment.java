@@ -1,4 +1,4 @@
-package com.example.arview.main;
+package com.example.arview.search;
 
 import android.content.Context;
 import android.content.Intent;
