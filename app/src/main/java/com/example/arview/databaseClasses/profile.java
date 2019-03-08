@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class profile {
@@ -15,15 +16,15 @@ public class profile {
     private String userLocation;
     private String profilePhoto;
     private String profileDescription;
-    private int followers;
-    private int following;
+    private HashMap<String, Boolean> followers;
+    private HashMap<String, Boolean> following;
     private int post;
 
 
     public profile(){
     }
 
-    public profile(String userName, String name, String userLocation, String profilePhoto, String profileDescription, int followers, int following, int post) {
+    public profile(String userName, String name, String userLocation, String profilePhoto, String profileDescription, HashMap<String, Boolean> followers, HashMap<String, Boolean> following, int post) {
         this.userName = userName;
         this.name = name;
         this.userLocation = userLocation;
@@ -88,19 +89,19 @@ public class profile {
         this.profileDescription = profileDescription;
     }
 
-    public int getFollowers() {
+    public HashMap<String, Boolean> getFollowers() {
         return followers;
     }
 
-    public void setFollowers(int followers) {
+    public void setFollowers(HashMap<String, Boolean> followers) {
         this.followers = followers;
     }
 
-    public int getFollowing() {
+    public HashMap<String, Boolean> getFollowing() {
         return following;
     }
 
-    public void setFollowing(int following) {
+    public void setFollowing(HashMap<String, Boolean> following) {
         this.following = following;
     }
 

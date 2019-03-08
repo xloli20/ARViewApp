@@ -36,9 +36,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class ChatsFragment extends Fragment implements InchatFragment.OnFragmentInteractionListener{
@@ -151,7 +153,10 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        profile p = dataSnapshot.getValue(profile.class);
+                        GenericTypeIndicator<profile> genericTypeIndicator = new GenericTypeIndicator<profile>() {
+                        };
+
+                        profile p = dataSnapshot.getValue(genericTypeIndicator);
 
                         Log.d(TAG, "getAllchatsUser: chatUserList.2" );
 

@@ -25,6 +25,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -205,8 +206,7 @@ public class FirebaseMethods {
                 .setValue(users);
 
 
-
-        profile profile = new profile( username, name, "" ,defaultProfilePhoto, "" ,0,0,0);
+        profile profile = new profile(username, name, "", defaultProfilePhoto, "", null, null, 0);
 
         myRef.child("profile")
                 .child(userID)
@@ -240,9 +240,11 @@ public class FirebaseMethods {
             if(ds.getKey().equals("profile")) {
 
                 try {
+                    GenericTypeIndicator<profile> genericTypeIndicator = new GenericTypeIndicator<profile>() {
+                    };
 
                 uri =Uri.parse (( Objects.requireNonNull(ds.child(userID)
-                        .getValue(profile.class))
+                        .getValue(genericTypeIndicator))
                         .getProfilePhoto()));
 
                 } catch (NullPointerException e) {
