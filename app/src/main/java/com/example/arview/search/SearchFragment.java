@@ -101,15 +101,15 @@ public class SearchFragment extends Fragment {
     }
 
     private void listenForData() {
-        DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("users");
-        Query query = usersDb.orderByChild("email").startAt(mInput.getText().toString()).endAt(mInput.getText().toString() + "\uf8ff");
+        DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("profile");
+        Query query = usersDb.orderByChild("userName").startAt(mInput.getText().toString()).endAt(mInput.getText().toString() + "\uf8ff");
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
                 String email = "";
                 String uid = dataSnapshot.getRef().getKey();
-                if(dataSnapshot.child("email").getValue() != null){
-                    email = Objects.requireNonNull(dataSnapshot.child("email").getValue()).toString();
+                if(dataSnapshot.child("userName").getValue() != null){
+                    email = Objects.requireNonNull(dataSnapshot.child("userName").getValue()).toString();
                 }
                 if(!email.equals(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail())){
                     following obj = new following(email, uid);

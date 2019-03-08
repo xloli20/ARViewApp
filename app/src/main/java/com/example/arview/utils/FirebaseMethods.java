@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -240,8 +241,8 @@ public class FirebaseMethods {
 
                 try {
 
-                uri =Uri.parse (( ds.child(userID)
-                        .getValue(profile.class)
+                uri =Uri.parse (( Objects.requireNonNull(ds.child(userID)
+                        .getValue(profile.class))
                         .getProfilePhoto()));
 
                 } catch (NullPointerException e) {

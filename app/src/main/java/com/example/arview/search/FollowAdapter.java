@@ -49,10 +49,14 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowViewHolders>{
                 String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
                 if(holder.mFollow.getText().equals("follow")){
                     holder.mFollow.setText("following");
-                    FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).setValue(true);
+                    FirebaseDatabase.getInstance().getReference().child("profile").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).setValue(true);
+                    FirebaseDatabase.getInstance().getReference().child("profile").child(usersList.get(holder.getLayoutPosition()).getUid()).child("followers").child(userId).setValue(true);
+
                 }else{
                     holder.mFollow.setText("follow");
-                    FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).removeValue();
+                    FirebaseDatabase.getInstance().getReference().child("profile").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).removeValue();
+                    FirebaseDatabase.getInstance().getReference().child("profile").child(usersList.get(holder.getLayoutPosition()).getUid()).child("followers").child(userId).removeValue();
+
                 }
             }
         });

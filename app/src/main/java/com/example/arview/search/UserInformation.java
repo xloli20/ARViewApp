@@ -21,7 +21,7 @@ public class UserInformation {
     }
 
     private void getUserFollowing() {
-        DatabaseReference userFollowingDB = FirebaseDatabase.getInstance().getReference().child("users").child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).child("following");
+        DatabaseReference userFollowingDB = FirebaseDatabase.getInstance().getReference().child("profile").child(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).child("following");
         userFollowingDB.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
