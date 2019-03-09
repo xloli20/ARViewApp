@@ -11,7 +11,6 @@ import android.util.Log;
 
 import com.example.arview.R;
 import com.example.arview.chat.ChatsFragment;
-import com.example.arview.chat.InchatFragment;
 import com.example.arview.friend.FriendsFragment;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.profile.ProfileFragment;
@@ -23,7 +22,6 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity implements SearchFragment.OnFragmentInteractionListener ,
                                                                 CameraFragment.OnFragmentInteractionListener,
                                                                 ChatsFragment.OnFragmentInteractionListener,
-                                                                InchatFragment.OnFragmentInteractionListener,
                                                                 ProfileFragment.OnFragmentInteractionListener,
                                                                 UpdatedsFragment.OnFragmentInteractionListener,
                                                                 FriendsFragment.OnFragmentInteractionListener {

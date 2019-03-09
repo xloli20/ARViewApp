@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class ChatsFragment extends Fragment implements InchatFragment.OnFragmentInteractionListener{
+public class ChatsFragment extends Fragment{
 
     private static final String TAG = "ChatsFragment";
 
@@ -259,7 +259,10 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
             holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    openInChatFragment(UserprofileList.get(position).getUserChat().getChatId(), UserprofileList.get(position).getUserChat().getOtherUserId());
+                    Intent intent = new Intent(getActivity(), InChatActivity.class);
+                    intent.putExtra("ChatID",UserprofileList.get(position).getUserChat().getChatId());
+                    intent.putExtra("OtherUserId",UserprofileList.get(position).getUserChat().getOtherUserId());
+                    startActivity(intent);
                 }
             });
 
@@ -354,22 +357,6 @@ public class ChatsFragment extends Fragment implements InchatFragment.OnFragment
     /*
     ------------------------------------ Firebase ---------------------------------------------
      */
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    public void openInChatFragment(String chatID, String otherUserID) {
-        InchatFragment fragment = InchatFragment.newInstance(chatID,otherUserID);
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
-        transaction.addToBackStack(null);
-        transaction.remove(fragment);
-        transaction.replace(R.id.fragment_container, fragment);
-        transaction.commit();
-    }
 
 
     /*************************************************************************/

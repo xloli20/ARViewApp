@@ -1,25 +1,22 @@
 package com.example.arview.chat;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,25 +40,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static android.app.Activity.RESULT_OK;
+public class InChatActivity extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener {
 
-public class InchatFragment extends Fragment implements ProfileFragment.OnFragmentInteractionListener {
-
-    private static final String TAG = "InchatFragment";
+    private static final String TAG = "InChatActivity";
     private Context context;
 
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
     private static final int RC_PHOTO_PICKER =  1;
 
 
-
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-
-    private String chatID;
-    private String otherUserID;
+    private String chatID ;
+    private String otherUserID ;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -69,7 +58,6 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference myRef;
     private FirebaseMethods firebaseMethods;
-
 
 
     //wedgets
@@ -85,42 +73,21 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
     private ArrayList<chatMessage> chatMessageList = new ArrayList<>();
     public Uri uriOtherUser ;
 
-    private OnFragmentInteractionListener mListener;
-
-    public InchatFragment() {
-    }
-
-
-    public static InchatFragment newInstance(String chatID, String otherUserID) {
-        InchatFragment fragment = new InchatFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, chatID);
-        args.putString(ARG_PARAM2, otherUserID);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            chatID = getArguments().getString(ARG_PARAM1);
-            otherUserID = getArguments().getString(ARG_PARAM2);
-        }
+        setContentView(R.layout.activity_in_chat);
 
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_inchat, container, false);
+        chatID = getIntent().getStringExtra("ChatID");
+        otherUserID = getIntent().getStringExtra("OtherUserId");
 
         setupFirebaseAuth();
-        setupWedgets(view);
-
-        return view;
+        setupWedgets();
     }
+
+
+
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -138,15 +105,14 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
     -------------------------------wedget on click-----------------------------------------
      */
 
-    private void setupWedgets(View view){
-        backArrow = (ImageView) view.findViewById(R.id.backArrow);
-        imagePicker = (ImageView) view.findViewById(R.id.imagePicker);
-        messageEditText = (EditText)view.findViewById(R.id.messageEditText);
-        profPhoto = (ImageView) view.findViewById(R.id.profile_photo);
-        userName = (TextView) view.findViewById(R.id.username);
-        SEND = (TextView)view.findViewById(R.id.btnsendText);
-        recyclerView = view.findViewById(R.id.chatMessageRecyclerView);
-
+    private void setupWedgets(){
+        backArrow = findViewById(R.id.backArrow);
+        imagePicker = findViewById(R.id.imagePicker);
+        messageEditText = findViewById(R.id.messageEditText);
+        profPhoto = findViewById(R.id.profile_photo);
+        userName = findViewById(R.id.username);
+        SEND = findViewById(R.id.btnsendText);
+        recyclerView = findViewById(R.id.chatMessageRecyclerView);
 
         backArrow();
         otherUser();
@@ -159,7 +125,7 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                closefragment();
+                finish();
             }
         });
     }
@@ -178,10 +144,6 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
             }
         });
 
-    }
-    private void closefragment() {
-        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
-        getActivity().getSupportFragmentManager().popBackStack();
     }
 
     //imagePicker
@@ -296,22 +258,22 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
     ------------------------------------ Firebase ---------------------------------------------
      */
 
-     private void initPhoto(profile p){
-         uriOtherUser = Uri.parse(p.getProfilePhoto());
+    private void initPhoto(profile p){
+        uriOtherUser = Uri.parse(p.getProfilePhoto());
 
-         Glide.with(profPhoto.getContext())
-                 .load(uriOtherUser)
-                 .into(profPhoto);
+        Glide.with(profPhoto.getContext())
+                .load(uriOtherUser)
+                .into(profPhoto);
 
-         userName.setText(p.getUserName());
+        userName.setText(p.getUserName());
 
-         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-         recyclerView.setLayoutManager(layoutManager);
-         adapter = new ChatsRecyclerViewAdapter(getContext(), chatMessageList, mAuth.getUid(), uriOtherUser);
-         recyclerView.setAdapter(adapter);
-         layoutManager.setStackFromEnd(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new ChatsRecyclerViewAdapter(this, chatMessageList, mAuth.getUid(), uriOtherUser);
+        recyclerView.setAdapter(adapter);
+        layoutManager.setStackFromEnd(true);
 
-     }
+    }
 
 
     private void setupFirebaseAuth(){
@@ -320,7 +282,7 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
         myRef = firebaseDatabase.getReference();
-        firebaseMethods = new FirebaseMethods(getContext());
+        firebaseMethods = new FirebaseMethods(this);
 
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -335,7 +297,7 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
-                    Intent intent = new Intent(getActivity(), SiginActivity.class);
+                    Intent intent = new Intent(InChatActivity.this, SiginActivity.class);
                     startActivity(intent);
                 }
                 // ...
@@ -385,10 +347,9 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
     public void OnFragmentInteractionListener(Uri uri){
     }
 
-
     public void openProfileFragment() {
         ProfileFragment fragment = ProfileFragment.newInstance(otherUserID);
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
         transaction.addToBackStack(null);
@@ -399,33 +360,8 @@ public class InchatFragment extends Fragment implements ProfileFragment.OnFragme
 
 
 
-    /**********************************************************************/
 
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
 
 }
