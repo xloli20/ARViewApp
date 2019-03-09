@@ -12,6 +12,7 @@ import android.util.Log;
 import com.example.arview.R;
 import com.example.arview.chat.ChatsFragment;
 import com.example.arview.chat.InchatFragment;
+import com.example.arview.friend.FriendsFragment;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.profile.ProfileFragment;
 import com.example.arview.search.SearchFragment;
@@ -23,7 +24,9 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
                                                                 CameraFragment.OnFragmentInteractionListener,
                                                                 ChatsFragment.OnFragmentInteractionListener,
                                                                 InchatFragment.OnFragmentInteractionListener,
-                                                                ProfileFragment.OnFragmentInteractionListener {
+                                                                ProfileFragment.OnFragmentInteractionListener,
+                                                                UpdatedsFragment.OnFragmentInteractionListener,
+                                                                FriendsFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "MainActivity";
 
@@ -122,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new SearchFragment()); //index 0
         adapter.addFragment(new CameraFragment()); //index 1
-        adapter.addFragment(new ChatsFragment()); //index 2
+        adapter.addFragment(new UpdatedsFragment()); //index 2
 
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(1);
