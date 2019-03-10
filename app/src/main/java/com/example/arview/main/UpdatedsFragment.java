@@ -154,9 +154,6 @@ public class UpdatedsFragment extends Fragment implements ChatsFragment.OnFragme
         ChatsFragment fragment = ChatsFragment.newInstance();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
-        transaction.addToBackStack(null);
-        transaction.remove(fragment);
         transaction.replace(R.id.container, fragment);
         transaction.commit();
     }
@@ -165,9 +162,6 @@ public class UpdatedsFragment extends Fragment implements ChatsFragment.OnFragme
         FriendsFragment fragment = FriendsFragment.newInstance();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
-        transaction.addToBackStack(null);
-        transaction.remove(fragment);
         transaction.replace(R.id.container, fragment);
         transaction.commit();
     }

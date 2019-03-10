@@ -18,13 +18,10 @@ import java.util.ArrayList;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-/**
- * Created by User on 2/12/2018.
- */
 
 public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecyclerViewAdapter.ViewHolder> {
 
-    private static final String TAG = "RecyclerViewAdapter";
+    private static final String TAG = "ChatsRecyclerViewAdapter";
 
     //vars
     private ArrayList<chatMessage> chatMessage = new ArrayList<>();

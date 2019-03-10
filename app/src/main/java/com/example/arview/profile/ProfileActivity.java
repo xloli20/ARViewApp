@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.annotation.SuppressLint;
@@ -22,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.arview.databaseClasses.post;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.post.PostDetailsFragment;
@@ -37,6 +40,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
+import static java.security.AccessController.getContext;
 
 public class ProfileActivity extends AppCompatActivity implements PostDetailsFragment.OnFragmentInteractionListener,
                                                                     ProfileEditFragment.OnFragmentInteractionListener {
@@ -50,6 +56,9 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
     private ImageView profileMenu , backArrow;
     private CircleImageView profilePhoto;
     private ProgressBar mProgressBar;
+    private RecyclerView recyclerView;
+
+    private PostRecyclerViewAdapter adapter;
 
 
     //firebase
@@ -58,6 +67,10 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference myRef;
     private FirebaseMethods firebaseMethods;
+
+    //var
+    private ArrayList<post> Plist = new ArrayList<>() ;
+
 
 
     @Override
@@ -80,7 +93,6 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
          profileMenu = (ImageView) findViewById(R.id.profileMenu);
          backArrow = (ImageView) findViewById(R.id.backArrow);
          profileButton =(Button) findViewById(R.id.profileButton);
-         postlist = (ListView) findViewById(R.id.postList);
          profilePhoto = (CircleImageView) findViewById(R.id.profile_photo);
 
          UserName = (TextView) findViewById(R.id.username);
@@ -88,6 +100,8 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
          profileDescription = (TextView) findViewById(R.id.profileDesc);
          NFollowers = (TextView) findViewById(R.id.FollowersCount);
          NPost = (TextView) findViewById(R.id.postCount);
+
+         recyclerView = findViewById(R.id.postRecyclerView);
 
 
          mProgressBar.setVisibility(View.GONE);
@@ -133,59 +147,19 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
 
     private void postList() {
 
-        ProfileActivity.CustomAdapter CA = new ProfileActivity.CustomAdapter();
-            postlist.setAdapter(CA);
-            postlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                openPostDetailsFragment();
-            }
-        });
+         post p = new post("","","name","desc","","date",1,2,"","",true);
+
+        Plist.add(p);
+        Plist.add(p);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new PostRecyclerViewAdapter(this, Plist , "" );
+        recyclerView.setAdapter(adapter);
+
     }
 
 
-    class CustomAdapter extends BaseAdapter {
-        public ImageView location, limit, like, comment;
-        public TextView PostName, desc, Nlike, Ncomment, limitTime;
-
-
-        @Override
-        public int getCount() {
-            return 10;
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return 0;
-        }
-
-        @SuppressLint("ViewHolder")
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            view = getLayoutInflater().inflate(R.layout.layout_post_list, null);
-
-            location = (ImageView) view.findViewById(R.id.location);
-            limit = (ImageView) view.findViewById(R.id.imageButton1);
-            like = (ImageView) view.findViewById(R.id.imageButton2);
-            comment = (ImageView) view.findViewById(R.id.imageButton3);
-
-            PostName = (TextView) view.findViewById(R.id.textView);
-            desc = (TextView) view.findViewById(R.id.textView1);
-            Nlike = (TextView) view.findViewById(R.id.textView2);
-            Ncomment = (TextView) view.findViewById(R.id.textView3);
-            limitTime = (TextView) view.findViewById(R.id.textView4);
-
-            PostName.setText("post name");
-
-
-            return view;
-        }
-    }
 
     /*
     -------------------------------wedget on click-----------------------------------------

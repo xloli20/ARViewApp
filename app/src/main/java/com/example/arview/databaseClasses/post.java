@@ -2,24 +2,43 @@ package com.example.arview.databaseClasses;
 
 public class post {
 
-    //private String postId;
+    private String postId;
     private String ownerId;
     private String postName;
-    private String postPhoto;
     private String postDesc;
     private String postLocation;
     private String postCreatedDate;
+    private int likesCount;
+    private int commentsCount;
+    private String postEndDate;
+    private String postEndTime;
+    private boolean visibilty;
+
 
     public post() {
     }
 
-    public post(String ownerId, String postName, String postPhoto, String postDesc, String postLocation, String postCreatedDate) {
+
+    public post(String postId, String ownerId, String postName, String postDesc, String postLocation, String postCreatedDate, int likesCount, int commentsCount, String postEndDate, String postEndTime, boolean visibilty) {
+        this.postId = postId;
         this.ownerId = ownerId;
         this.postName = postName;
-        this.postPhoto = postPhoto;
         this.postDesc = postDesc;
         this.postLocation = postLocation;
         this.postCreatedDate = postCreatedDate;
+        this.likesCount = likesCount;
+        this.commentsCount = commentsCount;
+        this.postEndDate = postEndDate;
+        this.postEndTime = postEndTime;
+        this.visibilty = visibilty;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 
     public String getOwnerId() {
@@ -36,14 +55,6 @@ public class post {
 
     public void setPostName(String postName) {
         this.postName = postName;
-    }
-
-    public String getPostPhoto() {
-        return postPhoto;
-    }
-
-    public void setPostPhoto(String postPhoto) {
-        this.postPhoto = postPhoto;
     }
 
     public String getPostDesc() {
@@ -68,5 +79,45 @@ public class post {
 
     public void setPostCreatedDate(String postCreatedDate) {
         this.postCreatedDate = postCreatedDate;
+    }
+
+    public int getLikesCount() {
+        return likesCount;
+    }
+
+    public void setLikesCount(int likesCount) {
+        this.likesCount = likesCount;
+    }
+
+    public int getCommentsCount() {
+        return commentsCount;
+    }
+
+    public void setCommentsCount(int commentsCount) {
+        this.commentsCount = commentsCount;
+    }
+
+    public String getPostEndDate() {
+        return postEndDate;
+    }
+
+    public void setPostEndDate(String postEndDate) {
+        this.postEndDate = postEndDate;
+    }
+
+    public String getPostEndTime() {
+        return postEndTime;
+    }
+
+    public void setPostEndTime(String postEndTime) {
+        this.postEndTime = postEndTime;
+    }
+
+    public boolean isVisibilty() {
+        return visibilty;
+    }
+
+    public void setVisibilty(boolean visibilty) {
+        this.visibilty = visibilty;
     }
 }
