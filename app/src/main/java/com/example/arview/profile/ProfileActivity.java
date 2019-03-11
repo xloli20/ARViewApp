@@ -182,7 +182,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
           UserName.setText(p.getUserName());
           Name.setText(p.getName());
           profileDescription.setText(p.getProfileDescription());
-          NFollowers.setText(String.valueOf(p.getFollowers()));
+          NFollowers.setText(String.valueOf(p.getFollowers().size()));
           NPost.setText(String.valueOf(p.getPost()));
 
       }
