@@ -31,6 +31,8 @@ import com.example.arview.login.SiginActivity;
 import com.example.arview.main.MainActivity;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -49,9 +51,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, NearListFragment.OnFragmentInteractionListener {
 
@@ -67,6 +74,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng pickupLocation;
     private Marker pickupMarker;
 
+
+    private Boolean requestBol = true;
 
 
     //wedgets
@@ -98,9 +107,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setupFirebaseAuth();
         initWedjets();
 
-        //pickupLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        pickupLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         //pickupMarker = mMap.addMarker(new MarkerOptions().position(pickupLocation).title("Pickup Here").icon(BitmapDescriptorFactory.fromResource(R.mipmap.app_icone)));
-
 
     }
 
@@ -126,8 +134,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         mMap.setMyLocationEnabled(true);
-
-
 
     }
 
@@ -170,6 +176,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     };
 
+    // get close posts .....................
+    
 
 
     //  Permission ........................
@@ -211,10 +219,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
-
-
-
 
 
 

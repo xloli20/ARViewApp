@@ -1,6 +1,7 @@
 package com.example.arview.utils;
 
 import android.content.Context;
+import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
@@ -9,9 +10,13 @@ import com.example.arview.R;
 import com.example.arview.databaseClasses.chatMessage;
 import com.example.arview.databaseClasses.followers;
 import com.example.arview.databaseClasses.following;
+import com.example.arview.databaseClasses.post;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.databaseClasses.userChat;
 import com.example.arview.databaseClasses.users;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -44,9 +49,6 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-/**
- * Created by User on 6/26/2017.
- */
 
 public class FirebaseMethods {
 
@@ -54,25 +56,19 @@ public class FirebaseMethods {
 
     //firebase
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
-    private FirebaseStorage mFirebaseStorage;
     private StorageReference mStorageReference;
     private UploadTask uploadTask;
     private String userID;
     private ChildEventListener mChildEventListener;
-    private ChildEventListener RChildEventListener;
     private DatabaseReference mMessagesDatabaseReference;
 
 
 
     //vars
     private Context mContext;
-    private double mPhotoUploadProgress = 0;
-
     private String append = "";
-
     private String defaultProfilePhoto = "https://firebasestorage.googleapis.com/v0/b/arview-b5eb3.appspot.com/o/profile_photo.png?alt=media&token=edd70c89-7133-49fb-928e-4a3c579bbcec";
 
 
@@ -253,11 +249,9 @@ public class FirebaseMethods {
 
             }
 
-
         }
         return uri;
     }
-
 
     public profile getProfile(DataSnapshot dataSnapshot) throws IOException {
         Log.d(TAG, "getProfile: retrieving profile from firebase.");
@@ -416,6 +410,84 @@ public class FirebaseMethods {
             UserName = username.substring(0, index);
         }
         return UserName;
+
+    }
+
+
+    public void addPost(String postName, String postDesc, Location postLocation, String postEndDate, String postEndTime, boolean visibilty, boolean personal ){
+
+        String postID = String.valueOf(myRef.push().getKey());
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date postCreatedDate = new Date();
+        //String postCreatedDate = dateFormat.format(createdAt);
+
+        post post = new post(postID, userID, postName, postDesc, postCreatedDate, 0,0, postEndDate, postEndTime, visibilty, personal );
+
+
+
+        if (personal){
+
+            myRef.child("profile")
+                    .child(userID)
+                    .child("personalPosts")
+                    .child(postID)
+                    .setValue(post);
+
+            //use GeoFirebase
+            DatabaseReference GRef = mFirebaseDatabase.getInstance().getReference().child("profile").child(userID).child("personalPostsLocations");
+
+            GeoFire geoFire = new GeoFire(GRef);
+            geoFire.setLocation(postID, new GeoLocation(postLocation.getLatitude(), postLocation.getLongitude()),new
+                    GeoFire.CompletionListener(){
+                        @Override
+                        public void onComplete(String key, DatabaseError error) {
+                            Log.e(TAG, "GeoFire Complete");
+                        }
+                    });
+
+
+        }else {
+
+            if (visibilty){
+
+                myRef.child("posts")
+                        .child("public")
+                        .child(postID)
+                        .setValue(post);
+
+                //use GeoFirebase
+                DatabaseReference GRef = mFirebaseDatabase.getInstance().getReference().child("postsLocations").child("public");
+
+                GeoFire geoFire = new GeoFire(GRef);
+                geoFire.setLocation(postID, new GeoLocation(postLocation.getLatitude(), postLocation.getLongitude()),new
+                        GeoFire.CompletionListener(){
+                            @Override
+                            public void onComplete(String key, DatabaseError error) {
+                                Log.e(TAG, "GeoFire Complete");
+                            }
+                        });
+
+            }else {
+
+                myRef.child("posts")
+                        .child("private")
+                        .child(postID)
+                        .setValue(post);
+
+                //use GeoFirebase
+                DatabaseReference GRef = mFirebaseDatabase.getInstance().getReference().child("postsLocations").child("private");
+
+                GeoFire geoFire = new GeoFire(GRef);
+                geoFire.setLocation(postID, new GeoLocation(postLocation.getLatitude(), postLocation.getLongitude()),new
+                        GeoFire.CompletionListener(){
+                            @Override
+                            public void onComplete(String key, DatabaseError error) {
+                                Log.e(TAG, "GeoFire Complete");
+                            }
+                        });
+            }
+        }
 
     }
 

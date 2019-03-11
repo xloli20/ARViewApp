@@ -1,25 +1,33 @@
 package com.example.arview.databaseClasses;
 
+import android.location.Location;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.Date;
+
 public class post {
 
     private String postId;
     private String ownerId;
     private String postName;
     private String postDesc;
-    private String postLocation;
-    private String postCreatedDate;
+    private Location postLocation;
+    private Date postCreatedDate;
     private int likesCount;
     private int commentsCount;
     private String postEndDate;
     private String postEndTime;
     private boolean visibilty;
+    private boolean personal;
 
 
     public post() {
     }
 
 
-    public post(String postId, String ownerId, String postName, String postDesc, String postLocation, String postCreatedDate, int likesCount, int commentsCount, String postEndDate, String postEndTime, boolean visibilty) {
+    public post(String postId, String ownerId, String postName, String postDesc, Location postLocation, Date postCreatedDate, int likesCount, int commentsCount,
+                String postEndDate, String postEndTime, boolean visibilty, boolean personal) {
         this.postId = postId;
         this.ownerId = ownerId;
         this.postName = postName;
@@ -31,6 +39,22 @@ public class post {
         this.postEndDate = postEndDate;
         this.postEndTime = postEndTime;
         this.visibilty = visibilty;
+        this.personal = personal;
+    }
+
+    public post(String postId, String ownerId, String postName, String postDesc, Date postCreatedDate, int likesCount, int commentsCount,
+                String postEndDate, String postEndTime, boolean visibilty, boolean personal) {
+        this.postId = postId;
+        this.ownerId = ownerId;
+        this.postName = postName;
+        this.postDesc = postDesc;
+        this.postCreatedDate = postCreatedDate;
+        this.likesCount = likesCount;
+        this.commentsCount = commentsCount;
+        this.postEndDate = postEndDate;
+        this.postEndTime = postEndTime;
+        this.visibilty = visibilty;
+        this.personal = personal;
     }
 
     public String getPostId() {
@@ -65,19 +89,19 @@ public class post {
         this.postDesc = postDesc;
     }
 
-    public String getPostLocation() {
+    public Location getPostLocation() {
         return postLocation;
     }
 
-    public void setPostLocation(String postLocation) {
+    public void setPostLocation(Location postLocation) {
         this.postLocation = postLocation;
     }
 
-    public String getPostCreatedDate() {
+    public Date getPostCreatedDate() {
         return postCreatedDate;
     }
 
-    public void setPostCreatedDate(String postCreatedDate) {
+    public void setPostCreatedDate(Date postCreatedDate) {
         this.postCreatedDate = postCreatedDate;
     }
 
@@ -119,5 +143,13 @@ public class post {
 
     public void setVisibilty(boolean visibilty) {
         this.visibilty = visibilty;
+    }
+
+    public boolean isPersonal() {
+        return personal;
+    }
+
+    public void setPersonal(boolean personal) {
+        this.personal = personal;
     }
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.arview.R;
@@ -62,7 +63,7 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         if (PostList.get(position).getPostEndDate()== null && PostList.get(position).getPostEndTime() == null
                 || PostList.get(position).getPostEndDate()== "" && PostList.get(position).getPostEndTime() == "" ){
             holder.limit.setVisibility(View.INVISIBLE);
-            holder.limitTime.setText(PostList.get(position).getPostCreatedDate());
+            holder.limitTime.setText(PostList.get(position).getPostCreatedDate().toString());
         }
         else if (PostList.get(position).getPostEndDate()!=null) {
             holder.limit.setVisibility(View.VISIBLE);
@@ -77,16 +78,17 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         holder.location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(mContext, MapsActivity.class);
                 intent.putExtra("PostLocation", PostList.get(position).getPostLocation());
-                intent.setAction(Intent.ACTION_EDIT);
+                mContext.startActivity(intent);
+
             }
         });
 
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(mContext, "like ", Toast.LENGTH_LONG).show();
 
             }
         });

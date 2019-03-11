@@ -82,14 +82,16 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
         ListView listView = (ListView) findViewById(R.id.lvAccountSettings);
 
         ArrayList<String> options = new ArrayList<>();
-        options.add("Edit Profile"); //fragment 0
-        options.add("Phone Number"); //fragment 1
-        options.add("Email"); //fragment 2
-        options.add("Password"); //fragment 3
-        options.add("Notification"); //fragment 4
-        options.add("Share Location"); //fragment 5
-        options.add("Support"); //fragment 6
-        options.add("Sign Out"); //fragement 7
+        options.add("Edit Profile"); // 0
+        options.add("Phone Number"); // 1
+        options.add("Email"); // 2
+        options.add("Password"); // 3
+        options.add("My following"); // 4
+        options.add("Mu Personal Posts"); // 5
+        options.add("Notification"); // 6
+        options.add("Share Location"); // 7
+        options.add("Support"); // 8
+        options.add("Sign Out"); // 9
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, options);
         listView.setAdapter(adapter);
@@ -129,15 +131,21 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
                 PasswordDialog();
                 break;
             case 4:
-                NotificationDialog();
-                break;
-            case 5:
-                LocationDialog();
-                break;
-            case 6:
 
                 break;
+            case 5:
+
+                break;
+            case 6:
+                NotificationDialog();
+                break;
             case 7:
+                LocationDialog();
+                break;
+            case 8:
+
+                break;
+            case 9:
                 SignOutFragment fragment7 = SignOutFragment.newInstance();
                 FragmentManager fragmentManager7 = getSupportFragmentManager();
                 FragmentTransaction transaction7 = fragmentManager7.beginTransaction();

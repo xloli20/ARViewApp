@@ -41,6 +41,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static java.security.AccessController.getContext;
 
@@ -147,7 +148,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
 
     private void postList() {
 
-         post p = new post("","","name","desc","","date",1,2,"","",true);
+        post p = new post("","","name","desc",new Date(),0,0,"","",true,false);
 
         Plist.add(p);
         Plist.add(p);

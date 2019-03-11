@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.arview.R;
+import com.example.arview.databaseClasses.post;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.profile.PostRecyclerViewAdapter;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class FriendsFragment extends Fragment {
@@ -40,6 +45,14 @@ public class FriendsFragment extends Fragment {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference myRef;
     private FirebaseMethods firebaseMethods;
+
+    //wedgets
+    private RecyclerView recyclerView;
+
+    private PostRecyclerViewAdapter adapter;
+   //var
+    private ArrayList<post> Plist = new ArrayList<>() ;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -69,8 +82,10 @@ public class FriendsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
-
         setupFirebaseAuth();
+
+        recyclerView = view.findViewById(R.id.postRecyclerView);
+        postList();
 
         return view;
     }
@@ -78,6 +93,29 @@ public class FriendsFragment extends Fragment {
          /*
     -------------------------------wedget on click-----------------------------------------
      */
+
+    private void postList() {
+
+        post p = new post("","","name","desc",new Date(),0,0,"","",true,false);
+
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new PostRecyclerViewAdapter(getContext(), Plist , "" );
+        recyclerView.setAdapter(adapter);
+
+    }
+
 
 
      /*
