@@ -16,12 +16,14 @@ import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.chatMessage;
 import com.example.arview.databaseClasses.post;
+import com.example.arview.friend.FriendsFragment;
 import com.example.arview.location.MapsActivity;
 import com.example.arview.post.PostDetailsFragment;
 import com.example.arview.setting.SettingActivity;
 
 import java.util.ArrayList;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
@@ -96,9 +98,14 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mContext instanceof ProfileActivity) {
-                    ((ProfileActivity)mContext).openPostDetailsFragment();
-                }
+                PostDetailsFragment fragment = PostDetailsFragment.newInstance();
+                FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+                transaction.addToBackStack(null);
+                transaction.remove(fragment);
+                transaction.replace(R.id.fragment_container, fragment);
+                transaction.commit();
             }
         });
 

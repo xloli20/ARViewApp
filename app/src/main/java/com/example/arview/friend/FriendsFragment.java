@@ -1,11 +1,15 @@
 package com.example.arview.friend;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +21,7 @@ import android.view.ViewGroup;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.post;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.post.PostDetailsFragment;
 import com.example.arview.profile.PostRecyclerViewAdapter;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +36,7 @@ import java.util.Date;
 public class FriendsFragment extends Fragment {
 
     private static final String TAG = "FriendsFragment";
-
+    Context context;
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -58,6 +63,12 @@ public class FriendsFragment extends Fragment {
 
     public FriendsFragment() {
         // Required empty public constructor
+    }
+
+    @SuppressLint("ValidFragment")
+    public FriendsFragment(Context context) {
+        this.context = context;
+
     }
 
 
