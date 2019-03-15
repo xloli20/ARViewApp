@@ -3,13 +3,16 @@ package com.example.arview.databaseClasses;
 public class following {
     private String email;
     private String uid;
+    private String profilePhoto;
+
 
     public following(){
     }
 
-    public following(String email, String uid){
+    public following(String email, String uid, String profilePhoto) {
         this.email = email;
         this.uid = uid;
+        this.profilePhoto = profilePhoto;
     }
 
     public String getUid(){
@@ -24,5 +27,13 @@ public class following {
     }
     public void setEmail(String email){
         this.email = email;
+    }
+
+    public String getProfilePhoto() {
+        return profilePhoto;
+    }
+
+    public void setProfilePhoto(String profilePhoto) {
+        this.profilePhoto = profilePhoto;
     }
 }

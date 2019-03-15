@@ -173,42 +173,30 @@ public class ChatsFragment extends Fragment{
                         Log.d(TAG, "getAllchatsUser: chatUserList.size" + last);
 
                         adapter.notifyDataSetChanged();
-
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                     }
                 });
-
             }
-
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
-
-
-
     }
-
 
     public class RecyclerViewAdapter1 extends RecyclerView.Adapter<RecyclerViewAdapter1.ViewHolder> {
 
@@ -216,7 +204,6 @@ public class ChatsFragment extends Fragment{
 
         //vars
         private ArrayList<userChatProfile> UserprofileList ;
-
         private Context mContext;
 
         public RecyclerViewAdapter1(Context context, ArrayList<userChatProfile> List) {
@@ -224,22 +211,19 @@ public class ChatsFragment extends Fragment{
             mContext = context;
 
             Log.d(TAG, "RecyclerViewAdapter1: UserprofileList.*" + UserprofileList.toString());
-
         }
 
-
+        @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_chats_list, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, final int position) {
-
+        public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
 
             Log.d(TAG, "RecyclerViewAdapter1: UserprofileList.1" + UserprofileList.toString());
-
 
             profile p = UserprofileList.get(position).getProfile();
 
@@ -267,7 +251,6 @@ public class ChatsFragment extends Fragment{
             });
 
         }
-
 
         @Override
         public int getItemCount() {

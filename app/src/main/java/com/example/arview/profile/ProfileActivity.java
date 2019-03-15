@@ -8,15 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -42,8 +38,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-
-import static java.security.AccessController.getContext;
 
 public class ProfileActivity extends AppCompatActivity implements PostDetailsFragment.OnFragmentInteractionListener,
                                                                     ProfileEditFragment.OnFragmentInteractionListener {
@@ -93,7 +87,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
          mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
          profileMenu = (ImageView) findViewById(R.id.profileMenu);
          backArrow = (ImageView) findViewById(R.id.backArrow);
-         profileButton =(Button) findViewById(R.id.profileButton);
+         profileButton = (Button) findViewById(R.id.follow);
          profilePhoto = (CircleImageView) findViewById(R.id.profile_photo);
 
          UserName = (TextView) findViewById(R.id.username);
@@ -182,7 +176,10 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
           UserName.setText(p.getUserName());
           Name.setText(p.getName());
           profileDescription.setText(p.getProfileDescription());
-          NFollowers.setText(String.valueOf(p.getFollowers().size()));
+          if (p.getFollowers() != null)
+              NFollowers.setText(String.valueOf(p.getFollowers().size()));
+          else
+              NFollowers.setText("0");
           NPost.setText(String.valueOf(p.getPost()));
 
       }

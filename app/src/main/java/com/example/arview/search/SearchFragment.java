@@ -19,7 +19,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.arview.databaseClasses.following;
+import com.example.arview.databaseClasses.post;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.profile.PostRecyclerViewAdapter;
 import com.example.arview.profile.ProfileActivity;
 import com.example.arview.R;
 import com.example.arview.utils.FirebaseMethods;
@@ -35,6 +37,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -61,6 +64,12 @@ public class SearchFragment extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
 
     private EditText mInput;
+
+    private RecyclerView recyclerView;
+
+    private PostRecyclerViewAdapter adapter;
+    //var
+    private ArrayList<post> Plist = new ArrayList<>();
 
     public SearchFragment() {
     }
@@ -100,6 +109,9 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        recyclerView = view.findViewById(R.id.postRecyclerView);
+        postList();
+
         return view;
     }
 
@@ -111,11 +123,12 @@ public class SearchFragment extends Fragment {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
                 String email = "";
                 String uid = dataSnapshot.getRef().getKey();
+                String photo = dataSnapshot.getRef().getKey();
                 if(dataSnapshot.child("userName").getValue() != null){
                     email = Objects.requireNonNull(dataSnapshot.child("userName").getValue()).toString();
                 }
                 if(!email.equals(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail())){
-                    following obj = new following(email, uid);
+                    following obj = new following(email, uid, photo);
                     results.add(obj);
                     mAdapter.notifyDataSetChanged();
                 }
@@ -177,6 +190,28 @@ public class SearchFragment extends Fragment {
           mRecyclerView.setLayoutManager(mLayoutManager);
 
       }
+
+    private void postList() {
+
+        post p = new post("", "", "name", "desc", new Date(), 0, 0, "", "", true, false);
+
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+        Plist.add(p);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new PostRecyclerViewAdapter(getContext(), Plist, "");
+        recyclerView.setAdapter(adapter);
+
+    }
 
     private void clear() {
         int size = this.results.size();
@@ -244,8 +279,6 @@ public class SearchFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //retrieve profile from the database
-                GenericTypeIndicator<HashMap> genericTypeIndicator = new GenericTypeIndicator<HashMap>() {
-                };
 
                 setProfilePhoto(firebaseMethods.getProfilePhoto(dataSnapshot));
             }

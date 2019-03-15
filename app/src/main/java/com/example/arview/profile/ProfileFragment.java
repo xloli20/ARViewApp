@@ -17,10 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -45,6 +42,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 
 public class ProfileFragment extends Fragment implements PostDetailsFragment.OnFragmentInteractionListener{
@@ -59,7 +57,7 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
 
 
     //widget
-    private Button profileButton;
+    private Button mFollow;
     private ListView postlist;
     private TextView UserName, Name, profileDescription, NFollowers, NPost;
     private ImageView profileMenu , backArrow;
@@ -123,7 +121,7 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
         mProgressBar = (ProgressBar) view.findViewById(R.id.profileProgressBar);
         profileMenu = (ImageView)  view.findViewById(R.id.profileMenu);
         backArrow = (ImageView) view.findViewById(R.id.backArrow);
-        profileButton =(Button)  view.findViewById(R.id.profileButton);
+        mFollow = (Button) view.findViewById(R.id.follow);
         profilePhoto = (CircleImageView)  view.findViewById(R.id.profile_photo);
 
         UserName = (TextView)  view.findViewById(R.id.username);
@@ -168,15 +166,27 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
     }
 
     private void follow(){
-        profileButton.setText("Follow");
-        profileButton.setOnClickListener(new View.OnClickListener() {
+        mFollow.setText("Follow");
+        mFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //add follow
+                String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+
+                if (mFollow.getText().equals("follow")) {
+                    mFollow.setText("following");
+                    FirebaseDatabase.getInstance().getReference().child("profile").child(userId).child("following").child(FirebaseAuth.getInstance().getUid()).setValue(true);
+                    FirebaseDatabase.getInstance().getReference().child("profile").child(FirebaseAuth.getInstance().getUid()).child("followers").child(userId).setValue(true);
+
+                } else {
+                    mFollow.setText("follow");
+                    FirebaseDatabase.getInstance().getReference().child("profile").child(userId).child("following").child(FirebaseAuth.getInstance().getUid()).removeValue();
+                    FirebaseDatabase.getInstance().getReference().child("profile").child(FirebaseAuth.getInstance().getUid()).child("followers").child(userId).removeValue();
+
+                }
 
             }
         });
-    }
+    } 
 
 
     private void postlist(){
@@ -216,7 +226,10 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
         UserName.setText(p.getUserName());
         Name.setText(p.getName());
         profileDescription.setText(p.getProfileDescription());
-        NFollowers.setText(String.valueOf(p.getFollowers()));
+        if (p.getFollowers() != null)
+            NFollowers.setText(String.valueOf(p.getFollowers().size()));
+        else
+            NFollowers.setText("0");
         NPost.setText(String.valueOf(p.getPost()));
 
     }
