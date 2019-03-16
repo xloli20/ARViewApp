@@ -45,11 +45,11 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowViewHolders>{
     @Override
     public void onBindViewHolder(@NonNull final FollowViewHolders holder, final int position) {
         holder.mEmail.setText(usersList.get(position).getEmail());
-        Uri uri = Uri.parse(usersList.get(position).getProfilePhoto());
-        Glide.with(context)
+        Uri uri = Uri.parse(usersList.get(holder.getLayoutPosition()).getProfilePhoto());
+        /*Glide.with(context)
                 .load(uri)
-                .into(holder.proImg);
-        //holder.proImg.setImageURI(uri);
+                .into(holder.proImg);*/
+        holder.proImg.setImageURI(uri);
 
         holder.LinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override

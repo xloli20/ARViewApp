@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.arview.R;
+import com.example.arview.DrawActivity;
 import com.example.arview.location.MapsActivity;
 import com.example.arview.login.SiginActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,6 +50,8 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
 
     //wedget
     private ImageView map;
+    private ImageView draw;
+
 
 
     public CameraFragment() {
@@ -75,6 +78,14 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
 
         setupFirebaseAuth();
 
+        draw = (ImageView) view.findViewById(R.id.addPost);
+        draw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), DrawActivity.class);
+                startActivity(intent);
+            }
+        });
 
         //setup the backarrow
         map = (ImageView) view.findViewById(R.id.map);
