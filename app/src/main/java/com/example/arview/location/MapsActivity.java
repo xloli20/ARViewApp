@@ -7,28 +7,41 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.arview.R;
+import com.example.arview.databaseClasses.nearPost;
+import com.example.arview.databaseClasses.post;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.main.MainActivity;
+import com.example.arview.utils.FirebaseMethods;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -49,6 +62,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -57,42 +72,45 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, NearListFragment.OnFragmentInteractionListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final String TAG = "MapsActivity";
 
 
     private GoogleMap mMap;
-    GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     LocationRequest mLocationRequest;
     private FusedLocationProviderClient mFusedLocationClient;
 
     private LatLng pickupLocation;
-    private Marker pickupMarker;
-
-
-    private Boolean requestBol = true;
 
 
     //wedgets
     private ImageView upArrow;
-    private FrameLayout frameLayout;
+    private ImageView downArrow;
+    private RecyclerView recyclerView;
+    private RecyclerViewAdapter adapter;
 
-    private boolean fragOpen = false;
+    private ArrayList<nearPost> nearPostsList = new ArrayList<>();
 
 
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
+    private FirebaseMethods firebaseMethods;
 
 
-
-
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,14 +125,153 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setupFirebaseAuth();
         initWedjets();
 
-        pickupLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        //pickupMarker = mMap.addMarker(new MarkerOptions().position(pickupLocation).title("Pickup Here").icon(BitmapDescriptorFactory.fromResource(R.mipmap.app_icone)));
+
 
     }
 
+    // get intent location zoom to it
+
+    //
+    // get close posts .....................
+
+    List<Marker> markers = new ArrayList<Marker>();
+    private void getPostsAround(){
+        DatabaseReference PostsLocation = FirebaseDatabase.getInstance().getReference().child("postsLocations").child("public");
+
+        GeoFire geoFire = new GeoFire(PostsLocation);
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mLastLocation.getLongitude(), mLastLocation.getLatitude()), 100000);
+
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, final GeoLocation location) {
+
+                Log.e(TAG, "getPostsAround.onKeyEntered : key " + key );
+
+                for(Marker markerIt : markers){
+                    if(markerIt.getTag().equals(key))
+                        return;
+                }
 
 
+                final nearPost nearPost = new nearPost();
 
+                nearPost.setPostId(key);
+
+                DatabaseReference Postsinfo = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(key);
+
+                Postsinfo.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+
+                        nearPost.setOwnerId(map.get("ownerId").toString());
+                        nearPost.setPostName(map.get("postName").toString());
+                        nearPost.setLikeCount(map.get("likesCount").toString());
+
+
+                        DatabaseReference OwnerREf = FirebaseDatabase.getInstance().getReference().child("profile").child(nearPost.getOwnerId());
+                        OwnerREf.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                    if(map.get("name")!=null){
+                                        nearPost.setOwnerName(map.get("name").toString());
+                                    }
+                                    if(map.get("profilePhoto")!=null){
+                                        nearPost.setProfilePhoto(map.get("profilePhoto").toString());
+                                    }
+
+                                    final LatLng PostLocation = new LatLng(location.latitude, location.longitude);
+                                    nearPost.setLocation(PostLocation);
+
+
+                                    final Uri uri = Uri.parse(nearPost.getProfilePhoto());
+
+                                    Glide.with(getApplicationContext()).asBitmap()
+                                            .load(uri)
+                                            .into(new SimpleTarget<Bitmap>() {
+                                                @Override
+                                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+
+                                                    Bitmap icone = Bitmap.createScaledBitmap(resource, 70, 70, false);
+
+                                                    Marker mPostMarker = mMap.addMarker(new MarkerOptions().position(PostLocation)
+                                                            .title(nearPost.getPostName())
+                                                            .icon(BitmapDescriptorFactory.fromBitmap(icone)));
+
+                                                    mPostMarker.setTag(nearPost.getPostName());
+
+                                                    markers.add(mPostMarker);
+
+
+                                                }
+                                            });
+
+
+                                }
+
+                                nearPost.setDestinace("1km");
+
+                                nearPostsList.add(nearPost);
+                                adapter.notifyDataSetChanged();
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+                for(Marker markerIt : markers){
+                    if(markerIt.getTag().equals(key)){
+                        markerIt.remove();
+                    }
+                }
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+                for(Marker markerIt : markers){
+                    if(markerIt.getTag().equals(key)){
+                        markerIt.setPosition(new LatLng(location.latitude, location.longitude));
+                    }
+                }
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void moveCam(LatLng latLng){
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(9));
+    }
+
+    // ..............................
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -148,14 +305,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
 
-                    BitmapDrawable bitmapdraw = (BitmapDrawable)getResources().getDrawable(R.mipmap.app_icone);
-                    Bitmap b = bitmapdraw.getBitmap();
-                    Bitmap smallMarker = Bitmap.createScaledBitmap(b, 70, 70, false);
-
-                    mMap.addMarker(new MarkerOptions().position(latLng).title("me").icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
-
-                    //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    //mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
                     //use GeoFirebase
                     String userId = mAuth.getCurrentUser().getUid();
@@ -171,13 +320,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             });
 
 
+                    pickupLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+
+                    nearPostsList.clear();
+                    getPostsAround();
+
                 }
             }
         }
     };
-
-    // get close posts .....................
-    
 
 
     //  Permission ........................
@@ -228,37 +379,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void initWedjets(){
         upArrow = findViewById(R.id.upArrow);
-        frameLayout = findViewById(R.id.fragment_container);
+        downArrow =findViewById(R.id.downArrow);
+        recyclerView = findViewById(R.id.recyclerView);
 
-        if (fragOpen){
-            // set false when close
+        initiRecyclerView();
 
-        }else{
-            upArrow.setVisibility(View.VISIBLE);
-            frameLayout.setVisibility(View.VISIBLE);
-            upArrow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    upArrow.setVisibility(View.INVISIBLE);
-                    fragOpen = true;
-                    openNearListFragment();
-                }
-            });
+        recyclerView.setVisibility(View.INVISIBLE);
+        downArrow.setVisibility(View.INVISIBLE);
+        upArrow.setVisibility(View.VISIBLE);
 
-        }
+        upArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.setVisibility(View.VISIBLE);
+                upArrow.setVisibility(View.INVISIBLE);
+                downArrow.setVisibility(View.VISIBLE);
+            }
+        });
+
+        downArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.setVisibility(View.INVISIBLE);
+                downArrow.setVisibility(View.INVISIBLE);
+                upArrow.setVisibility(View.VISIBLE);
+            }
+        });
+
 
     }
 
-    public void openNearListFragment() {
-        NearListFragment fragment = NearListFragment.newInstance();
+    public void initiRecyclerView() {
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
-        transaction.addToBackStack(null);
-        transaction.remove(fragment);
-        transaction.replace(R.id.fragment_container, fragment);
-        transaction.commit();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new RecyclerViewAdapter(this, nearPostsList);
+        recyclerView.setAdapter(adapter);
+
     }
 
 
@@ -275,6 +432,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
 
         mAuth = FirebaseAuth.getInstance();
+        firebaseMethods = new FirebaseMethods(this);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -320,7 +478,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Log.e(TAG, "GeoFire Complete");
                     }
                 });
-
 
 
     }

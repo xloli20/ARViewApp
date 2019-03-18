@@ -1,15 +1,18 @@
 package com.example.arview.location;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.arview.R;
+import com.example.arview.databaseClasses.nearPost;
 
 import java.util.ArrayList;
 
@@ -25,13 +28,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private static final String TAG = "RecyclerViewAdapter";
 
     //vars
-    private ArrayList<String> mNames = new ArrayList<>();
-    private ArrayList<String> mImageUrls = new ArrayList<>();
+    private ArrayList<nearPost> nearPostList = new ArrayList<>();
     private Context mContext;
 
-    public RecyclerViewAdapter(Context context, ArrayList<String> names, ArrayList<String> imageUrls) {
-        mNames = names;
-        mImageUrls = imageUrls;
+    public RecyclerViewAdapter(Context context, ArrayList<nearPost> posts) {
+        nearPostList = posts;
         mContext = context;
     }
 
@@ -45,36 +46,55 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called.");
 
+        Uri uri = Uri.parse(nearPostList.get(position).getProfilePhoto());
         Glide.with(mContext)
-                .asBitmap()
-                .load(mImageUrls.get(position))
-                .into(holder.image);
+                .load(uri)
+                .into(holder.profileImage);
 
-        holder.name.setText(mNames.get(position));
+        holder.postName.setText(nearPostList.get(position).getPostName());
+        holder.userName.setText(nearPostList.get(position).getOwnerName());
+        holder.distance.setText(nearPostList.get(position).getDestinace());
+        holder.Nlike.setText(nearPostList.get(position).getLikeCount());
 
-        holder.image.setOnClickListener(new View.OnClickListener() {
+
+        holder.profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: clicked on an image: " + mNames.get(position));
-                Toast.makeText(mContext, mNames.get(position), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, nearPostList.get(position).getOwnerId(), Toast.LENGTH_SHORT).show();
+                // to user profile
+            }
+        });
+
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mContext, nearPostList.get(position).getPostId(), Toast.LENGTH_SHORT).show();
+                ((MapsActivity)mContext).moveCam(nearPostList.get(position).getLocation());
+                // to post details
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mImageUrls.size();
+        return nearPostList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        CircleImageView image;
-        TextView name;
+        CircleImageView profileImage;
+        TextView postName, userName, distance, Nlike;
+        RelativeLayout relativeLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            image = itemView.findViewById(R.id.profile_photo);
-            name = itemView.findViewById(R.id.text);
+            profileImage = itemView.findViewById(R.id.profile_photo);
+            postName = itemView.findViewById(R.id.postName);
+            userName = itemView.findViewById(R.id.username);
+            distance = itemView.findViewById(R.id.far);
+            Nlike = itemView.findViewById(R.id.likeNum);
+            relativeLayout = itemView.findViewById(R.id.NRelativeLayout);
+
         }
     }
 }

@@ -489,7 +489,11 @@ public class FirebaseMethods {
             }
         }
 
+
+        //TODO: update post counter in profile
+
     }
+
 
         /*
     test
@@ -653,7 +657,6 @@ public class FirebaseMethods {
     }
 
 
-
     public void addChat(final String OthetUserID){
 
         String chatID = String.valueOf(myRef.push().getKey());
@@ -701,47 +704,6 @@ public class FirebaseMethods {
 
     }
 
-
-    public  ArrayList<chatMessage> getAllChatMessageTest(String ChatID){
-
-        final ArrayList<chatMessage> chatM = new ArrayList<>();
-
-        mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("Chats").child(ChatID);
-
-
-        if (mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    chatMessage chatTExt = dataSnapshot.getValue(chatMessage.class);
-                    chatM.add(chatTExt);
-                }
-
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            };
-            mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
-        }
-
-        return chatM;
-    }
 
 }
 

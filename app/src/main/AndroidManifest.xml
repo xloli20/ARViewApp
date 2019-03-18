@@ -26,7 +26,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/app_icone"
         android:label="ARView"
-        android:roundIcon="@drawable/icone"
+        android:roundIcon="@drawable/icone_circle"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".chat.InChatActivity"></activity>
