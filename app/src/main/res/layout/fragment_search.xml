@@ -9,15 +9,9 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".search.SearchFragment"
-        android:background="#fff"
-        android:orientation="vertical"
-        android:padding="10dp">
 
     <LinearLayout
+        android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -44,34 +38,59 @@
 
         </RelativeLayout>
 
-
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:id="@+id/recyclerView">
+        android:layout_height="match_parent"
+        android:layout_below="@id/search_bar">
 
-    </androidx.recyclerview.widget.RecyclerView>
-
-        <ImageView
-            android:layout_width="200dp"
-            android:layout_height="50dp"
-            android:src="@drawable/arview"
-            android:scaleType="fitXY"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="0dp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/postRecyclerView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:nestedScrollingEnabled="false"
-            android:layout_marginTop="0dp">
+            android:orientation="vertical">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textUsers"
+                android:text="Users"
+                android:textSize="20dp"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/backgrondDark"
+                android:background="@drawable/grey_border_bottom"
+                android:paddingBottom="5dp"/>
 
-</LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/recyclerView">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textPosts"
+                android:text="Posts"
+                android:textSize="20dp"
+                android:textColor="@color/backgrondDark"
+                android:background="@drawable/grey_border_bottom"
+                android:paddingBottom="5dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/postRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginTop="0dp">
+
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+
+    </ScrollView>
 
     <FrameLayout
         android:id="@+id/fragment_container"

@@ -161,9 +161,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 postLocation.setLongitude(location.longitude);
                 
                 float Distance = mLastLocation.distanceTo(postLocation)/1000;  //km
-                String distance = String.valueOf(Distance).substring(0,6);
+                int dotIndex =  String.valueOf(Distance).indexOf(".");
+                String distance = String.valueOf(Distance).substring(0, dotIndex + 3);
 
-                nearPost.setDestinace(distance + " .km");
+                nearPost.setDestinace(distance + " km");
 
                 DatabaseReference Postsinfo = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(key);
 

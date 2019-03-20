@@ -12,20 +12,18 @@ import com.example.arview.R;
 import androidx.recyclerview.widget.RecyclerView;
 
 class FollowViewHolders extends RecyclerView.ViewHolder{
-    TextView mEmail;
     Button mFollow;
     ImageView proImg;
-    public TextView name;
-    public android.widget.LinearLayout LinearLayout;
+    TextView name;
+    RelativeLayout relativeLayout;
 
 
     FollowViewHolders(View itemView){
         super(itemView);
-        mEmail = itemView.findViewById(R.id.email);
         mFollow = itemView.findViewById(R.id.follow);
         proImg = itemView.findViewById(R.id.profile_photo);
-        LinearLayout = itemView.findViewById(R.id.LinearLayout);
-
+        name = itemView.findViewById(R.id.userName);
+        relativeLayout = itemView.findViewById(R.id.userRelLayout);
 
 
     }

@@ -38,23 +38,24 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowViewHolders>{
     @NonNull
     @Override
     public FollowViewHolders onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recylerview_followers_item, null);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_search_user_list, null);
         return new FollowViewHolders(layoutView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final FollowViewHolders holder, final int position) {
-        holder.mEmail.setText(usersList.get(position).getEmail());
-        Uri uri = Uri.parse(usersList.get(holder.getLayoutPosition()).getProfilePhoto());
-        /*Glide.with(context)
-                .load(uri)
-                .into(holder.proImg);*/
-        holder.proImg.setImageURI(uri);
+        holder.name.setText(usersList.get(position).getUsername());
+        Uri uri = Uri.parse(usersList.get(position).getProfilePhoto());
 
-        holder.LinearLayout.setOnClickListener(new View.OnClickListener() {
+        Glide.with(context)
+                .load(uri)
+                .into(holder.proImg);
+
+
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ProfileFragment fragment = ProfileFragment.newInstance(usersList.get(holder.getLayoutPosition()).getUid());
+                ProfileFragment fragment = ProfileFragment.newInstance(usersList.get(position).getUid());
                 FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.addToBackStack(null);

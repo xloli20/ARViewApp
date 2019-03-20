@@ -121,14 +121,17 @@ public class SearchFragment extends Fragment {
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
-                String email = "";
+                String username = "";
                 String uid = dataSnapshot.getRef().getKey();
-                String photo = dataSnapshot.getRef().getKey();
+                String photo = "" ;
                 if(dataSnapshot.child("userName").getValue() != null){
-                    email = Objects.requireNonNull(dataSnapshot.child("userName").getValue()).toString();
+                    username = Objects.requireNonNull(dataSnapshot.child("userName").getValue()).toString();
                 }
-                if(!email.equals(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail())){
-                    following obj = new following(email, uid, photo);
+                if(dataSnapshot.child("profilePhoto").getValue() != null){
+                    photo = Objects.requireNonNull(dataSnapshot.child("profilePhoto").getValue()).toString();
+                }
+                if(!username.equals(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail())){
+                    following obj = new following(username, uid, photo);
                     results.add(obj);
                     mAdapter.notifyDataSetChanged();
                 }
