@@ -16,6 +16,13 @@
         android:layout_height="match_parent"
         tools:context=".location.MapsActivity" />
 
+    <ImageView
+        android:id="@+id/refresh"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="5dp"
+        android:src="@drawable/ic_refresh"
+        />
 
     <ImageView
         android:id="@+id/upArrow"

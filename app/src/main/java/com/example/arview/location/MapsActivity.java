@@ -95,8 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     //wedgets
-    private ImageView upArrow;
-    private ImageView downArrow;
+    private ImageView upArrow, downArrow, refresh;
     private RecyclerView recyclerView;
     private RecyclerViewAdapter adapter;
 
@@ -157,6 +156,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 nearPost.setPostId(key);
 
+                Location postLocation = new Location(LocationManager.GPS_PROVIDER);
+                postLocation.setLatitude(location.latitude);
+                postLocation.setLongitude(location.longitude);
+                
+                float Distance = mLastLocation.distanceTo(postLocation)/1000;  //km
+                String distance = String.valueOf(Distance).substring(0,6);
+
+                nearPost.setDestinace(distance + " .km");
+
                 DatabaseReference Postsinfo = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(key);
 
                 Postsinfo.addValueEventListener(new ValueEventListener() {
@@ -212,7 +220,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 }
 
-                                nearPost.setDestinace("1km");
+
 
                                 nearPostsList.add(nearPost);
                                 adapter.notifyDataSetChanged();
@@ -322,8 +330,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     pickupLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
 
-                    nearPostsList.clear();
-                    getPostsAround();
+
+                    refresh.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            nearPostsList.clear();
+                            getPostsAround();
+                        }
+                    });
+
 
                 }
             }
@@ -381,6 +396,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         upArrow = findViewById(R.id.upArrow);
         downArrow =findViewById(R.id.downArrow);
         recyclerView = findViewById(R.id.recyclerView);
+        refresh = findViewById(R.id.refresh);
 
         initiRecyclerView();
 
