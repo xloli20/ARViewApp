@@ -14,17 +14,23 @@ import com.example.arview.databaseClasses.post;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.databaseClasses.userChat;
 import com.example.arview.databaseClasses.users;
+import com.example.arview.setting.SettingActivity;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
+import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -413,7 +419,6 @@ public class FirebaseMethods {
 
     }
 
-
     public void addPost(String postName, String postDesc, Location postLocation, String postEndDate, String postEndTime, boolean visibilty, boolean personal ){
 
         String postID = String.valueOf(myRef.push().getKey());
@@ -498,6 +503,66 @@ public class FirebaseMethods {
         /*
     test
      */
+
+    public void setPhoneNumber(String PhoneNumber){
+
+        myRef.child("users")
+                .child(userID)
+                .child("phoneNumber").setValue(PhoneNumber);
+
+    }
+
+    public void updateEmail(String Email){
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        user.updateEmail(Email);
+
+        myRef.child("users")
+                .child(userID)
+                .child("email").setValue(Email);
+
+    }
+
+    public void updatePassword(String oldPass,final String newPass){
+        final FirebaseUser user = mAuth.getCurrentUser();
+
+
+        // Get auth credentials from the user for re-authentication. The example below shows
+        // email and password credentials but there are multiple possible providers,
+        // such as GoogleAuthProvider or FacebookAuthProvider.
+        AuthCredential credential = EmailAuthProvider
+                .getCredential(user.getEmail(), oldPass);
+
+        // Prompt the user to re-provide their sign-in credentials
+        user.reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            user.updatePassword(newPass).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "Password updated");
+                                        Toast.makeText(mContext, "Password Updated .", Toast.LENGTH_SHORT).show();
+
+                                    } else {
+                                        Log.d(TAG, "Error password not updated");
+                                        Toast.makeText(mContext, "Error password not updated .", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }
+                            });
+                        } else {
+                            Log.d(TAG, "Error auth failed");
+                            Toast.makeText(mContext, "Error auth failed .", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                });
+
+    }
+
 
 
     /*

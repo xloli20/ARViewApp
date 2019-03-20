@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.arview.R;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.profile.ProfileEditFragment;
+import com.example.arview.utils.FirebaseMethods;
 import com.example.arview.utils.SectionsStatePagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,7 +31,9 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 
 public class SettingActivity extends AppCompatActivity implements ProfileEditFragment.OnFragmentInteractionListener,
-                                                                SignOutFragment.OnFragmentInteractionListener{
+                                                                SignOutFragment.OnFragmentInteractionListener,
+                                                                PersonalPostFragment.OnFragmentInteractionListener ,
+                                                                FollowingFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "AccountSettingsActivity";
 
@@ -48,6 +51,7 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseMethods firebaseMethods;
 
 
     @Override
@@ -55,6 +59,7 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
+        firebaseMethods = new FirebaseMethods(this);
 
         setupFirebaseAuth();
         setupSettingsList();
@@ -79,7 +84,7 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
 
 
     private void setupSettingsList(){
-        ListView listView = (ListView) findViewById(R.id.lvAccountSettings);
+        ListView listView = findViewById(R.id.lvAccountSettings);
 
         ArrayList<String> options = new ArrayList<>();
         options.add("Edit Profile"); // 0
@@ -87,7 +92,7 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
         options.add("Email"); // 2
         options.add("Password"); // 3
         options.add("My following"); // 4
-        options.add("Mu Personal Posts"); // 5
+        options.add("My Personal Posts"); // 5
         options.add("Notification"); // 6
         options.add("Share Location"); // 7
         options.add("Support"); // 8
@@ -131,10 +136,20 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
                 PasswordDialog();
                 break;
             case 4:
-
+                FollowingFragment fragment1 = FollowingFragment.newInstance();
+                FragmentManager fragmentManager1 = getSupportFragmentManager();
+                FragmentTransaction transaction1 = fragmentManager1.beginTransaction();
+                transaction1.addToBackStack(null);
+                transaction1.replace(R.id.fragment_container0, fragment1);
+                transaction1.commit();
                 break;
             case 5:
-
+                PersonalPostFragment fragment2 = PersonalPostFragment.newInstance();
+                FragmentManager fragmentManager2 = getSupportFragmentManager();
+                FragmentTransaction transaction2 = fragmentManager2.beginTransaction();
+                transaction2.addToBackStack(null);
+                transaction2.replace(R.id.fragment_container0, fragment2);
+                transaction2.commit();
                 break;
             case 6:
                 NotificationDialog();
@@ -161,9 +176,6 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
 
         }
 
-
-
-
     }
 
     private void PhoneNumberDialog(){
@@ -176,9 +188,8 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
         PNSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                firebaseMethods.setPhoneNumber(PN.getText().toString());
                 Toast.makeText(SettingActivity.this, "save.", Toast.LENGTH_SHORT).show();
-
 
             }
         });
@@ -199,8 +210,7 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
         emailSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Toast.makeText(SettingActivity.this, "save.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SettingActivity.this, "until now you can't change email.", Toast.LENGTH_SHORT).show();
 
 
             }
@@ -224,7 +234,12 @@ public class SettingActivity extends AppCompatActivity implements ProfileEditFra
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(SettingActivity.this, "save.", Toast.LENGTH_SHORT).show();
+                if (newPass.getText().toString().equals(conPass.getText().toString())){
+                    firebaseMethods.updatePassword(oldPass.getText().toString(), newPass.getText().toString());
+                }else{
+
+                    Toast.makeText(SettingActivity.this, "not Match.", Toast.LENGTH_SHORT).show();
+                }
 
 
             }
