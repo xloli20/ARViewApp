@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -16,10 +17,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.chat.InChatActivity;
+import com.example.arview.databaseClasses.following;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.databaseClasses.userChat;
 import com.example.arview.databaseClasses.userChatProfile;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.profile.ProfileFragment;
+import com.example.arview.search.UserInformation;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,17 +34,25 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.nostra13.universalimageloader.utils.L;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-public class FollowingFragment extends Fragment{
+
+
+public class FollowingFragment extends Fragment implements ProfileFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "ChatsFragment";
 
@@ -49,8 +61,8 @@ public class FollowingFragment extends Fragment{
     private ImageView backArrow;
 
 
-
-    private ArrayList<userChatProfile> chatUserprofileList = new ArrayList<>() ;
+    private RecyclerViewAdapter1 adapter;
+    private ArrayList<following> followingList = new ArrayList<>() ;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -82,9 +94,15 @@ public class FollowingFragment extends Fragment{
 
 
         setupFirebaseAuth();
-        chatUserList(view);
         backarrow(view);
 
+        recyclerView = view.findViewById(R.id.followingRecyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new RecyclerViewAdapter1(getContext(),followingList );
+        recyclerView.setAdapter(adapter);
+
+        initRecyclerView();
 
 
         return view;
@@ -95,13 +113,6 @@ public class FollowingFragment extends Fragment{
      /*
     -------------------------------wedget on click-----------------------------------------
      */
-
-     private void chatUserList(View view){
-         recyclerView = view.findViewById(R.id.chatMessageRecyclerView);
-
-         initRecyclerView();
-     }
-
 
     private void backarrow(View view){
         backArrow = view.findViewById(R.id.backArrow);
@@ -124,51 +135,31 @@ public class FollowingFragment extends Fragment{
 
 
     private void initRecyclerView(){
-        Log.d(TAG, "initRecyclerView: init recyclerview");
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-        final RecyclerViewAdapter1 adapter = new RecyclerViewAdapter1(getContext(),chatUserprofileList );
-        recyclerView.setAdapter(adapter);
-
-
-        DatabaseReference R = firebaseDatabase.getReference().child("userChat").child(mAuth.getUid());
-
+        DatabaseReference R = firebaseDatabase.getReference().child("profile").child(mAuth.getUid()).child("following");
 
         R.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                userChat users = dataSnapshot.getValue(userChat.class);
 
-                Log.d(TAG, "getAllchatsUser: chatUserList.1" + users.toString());
+                final String uid = dataSnapshot.getRef().getKey();
 
-                final userChatProfile UCP = new userChatProfile();
-                UCP.setUserChat(users);
-
-                DatabaseReference R2 = firebaseDatabase.getReference().child("profile").child(users.getOtherUserId());
+                DatabaseReference R2 = firebaseDatabase.getReference().child("profile").child(uid);
 
                 R2.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        GenericTypeIndicator<profile> genericTypeIndicator = new GenericTypeIndicator<profile>() {
-                        };
+                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
 
-                        profile p = dataSnapshot.getValue(genericTypeIndicator);
+                        following f = new following();
 
-                        Log.d(TAG, "getAllchatsUser: chatUserList.2" );
+                        f.setUid(uid);
+                        f.setUsername(map.get("userName").toString());
+                        f.setProfilePhoto(map.get("profilePhoto").toString());
+                        f.setName(map.get("name").toString());
 
-                        UCP.setProfile(p);
-
-                        chatUserprofileList.add(UCP);
-
-                        Log.d(TAG, "getAllchatsUser: chatUserList.3" + UCP.toString());
-
-                        Log.d(TAG, "getAllchatsUser: chatUserList.4" + chatUserprofileList.toString());
-
-
-                        int last = chatUserprofileList.size()-1;
-                        Log.d(TAG, "getAllchatsUser: chatUserList.size" + last);
+                        followingList.add(f);
 
                         adapter.notifyDataSetChanged();
                     }
@@ -184,6 +175,12 @@ public class FollowingFragment extends Fragment{
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    String uid = dataSnapshot.getRef().getKey();
+                    if (uid != null){
+                        //followingList.remove(followingList.size()-1);
+                    }
+                }
             }
 
             @Override
@@ -196,55 +193,73 @@ public class FollowingFragment extends Fragment{
         });
     }
 
+
+
     public class RecyclerViewAdapter1 extends RecyclerView.Adapter<RecyclerViewAdapter1.ViewHolder> {
 
         private static final String TAG = "RecyclerViewAdapter";
 
         //vars
-        private ArrayList<userChatProfile> UserprofileList ;
+        private ArrayList<following> List ;
         private Context mContext;
 
-        public RecyclerViewAdapter1(Context context, ArrayList<userChatProfile> List) {
-            UserprofileList = List;
+        public RecyclerViewAdapter1(Context context, ArrayList<following> list) {
+            List = list;
             mContext = context;
 
-            Log.d(TAG, "RecyclerViewAdapter1: UserprofileList.*" + UserprofileList.toString());
         }
 
         @NonNull
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_chats_list, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_following_list, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
-            Log.d(TAG, "RecyclerViewAdapter1: UserprofileList.1" + UserprofileList.toString());
 
-            profile p = UserprofileList.get(position).getProfile();
 
-            Log.d(TAG, "RecyclerViewAdapter1: profile.2" + p.toString());
-
-            Uri uri = Uri.parse(p.getProfilePhoto());
+            Uri uri = Uri.parse(List.get(position).getProfilePhoto());
 
             Glide.with(mContext)
                     .load(uri)
                     .into(holder.proImg);
 
-            holder.name.setText(p.getName());
-            holder.Uname.setText(p.getUserName());
+            holder.userName.setText(List.get(position).getUsername());
+            holder.name.setText(List.get(position).getName());
 
+            holder.mFollow.setText("unfollow");
+
+
+            holder.mFollow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+
+                    FirebaseDatabase.getInstance().getReference().child("profile").child(userId).child("following").child(List.get(holder.getLayoutPosition()).getUid()).removeValue();
+                    FirebaseDatabase.getInstance().getReference().child("profile").child(List.get(holder.getLayoutPosition()).getUid()).child("followers").child(userId).removeValue();
+
+                    followingList.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, followingList.size());
+                    //holder.itemView.setVisibility(View.GONE);
+
+                }
+            });
 
 
             holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), InChatActivity.class);
-                    intent.putExtra("ChatID",UserprofileList.get(position).getUserChat().getChatId());
-                    intent.putExtra("OtherUserId",UserprofileList.get(position).getUserChat().getOtherUserId());
-                    startActivity(intent);
+                    ProfileFragment fragment = ProfileFragment.newInstance(List.get(position).getUid());
+                    FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
+                    FragmentTransaction transaction = fragmentManager.beginTransaction();
+                    transaction.addToBackStack(null);
+                    transaction.remove(fragment);
+                    transaction.replace(R.id.Porfragment_container, fragment);
+                    transaction.commit();
                 }
             });
 
@@ -252,25 +267,24 @@ public class FollowingFragment extends Fragment{
 
         @Override
         public int getItemCount() {
-            return UserprofileList.size();
+            return List.size();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder{
 
-            public ImageView proImg, chatMenu;
-            public TextView Uname;
-            public TextView name;
-            public TextView lastmessage;
-            public RelativeLayout relativeLayout;
+            Button mFollow;
+            ImageView proImg;
+            TextView name;
+            TextView userName;
+            RelativeLayout relativeLayout;
 
             public ViewHolder(View itemView) {
                 super(itemView);
+                mFollow = itemView.findViewById(R.id.follow);
                 proImg = itemView.findViewById(R.id.profile_photo);
-                chatMenu = itemView.findViewById(R.id.chatsMenu);
+                userName = itemView.findViewById(R.id.userName);
                 name = itemView.findViewById(R.id.Name);
-                Uname = itemView.findViewById(R.id.userName);
-                lastmessage = itemView.findViewById(R.id.textView);
-                relativeLayout =  itemView.findViewById(R.id.chatsrellayout);
+                relativeLayout = itemView.findViewById(R.id.followingrellayout);
 
 
             }
@@ -331,7 +345,7 @@ public class FollowingFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
-        chatUserprofileList = new ArrayList<>();
+        followingList.clear();
     }
 
 
@@ -339,6 +353,10 @@ public class FollowingFragment extends Fragment{
     ------------------------------------ Firebase ---------------------------------------------
      */
 
+    public void onFragmentInteraction(Uri uri){
+    }
+    public void OnFragmentInteractionListener(Uri uri){
+    }
 
     /*************************************************************************/
     public void onButtonPressed(Uri uri) {

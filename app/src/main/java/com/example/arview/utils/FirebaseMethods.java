@@ -404,7 +404,6 @@ public class FirebaseMethods {
     }
 
 
-
     /*
     test
      */
@@ -523,6 +522,13 @@ public class FirebaseMethods {
 
     }
 
+
+
+    /*
+
+    PERFECT
+
+     */
     public void updatePassword(String oldPass,final String newPass){
         final FirebaseUser user = mAuth.getCurrentUser();
 
@@ -562,14 +568,6 @@ public class FirebaseMethods {
                 });
 
     }
-
-
-
-    /*
-
-    PERFECT
-
-     */
 
     public void deleteProfilePhoto(){
 

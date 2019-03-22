@@ -128,7 +128,7 @@ public class PersonalPostFragment extends Fragment {
 
 
     private void backarrow(View view){
-        backArrow = (ImageView) view.findViewById(R.id.backArrow);
+        backArrow = view.findViewById(R.id.backArrow);
 
         //setup the backarrow
         backArrow.setOnClickListener(new View.OnClickListener() {

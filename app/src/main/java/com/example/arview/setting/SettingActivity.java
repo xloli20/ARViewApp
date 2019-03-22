@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.example.arview.R;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.profile.ProfileEditFragment;
+import com.example.arview.profile.ProfileFragment;
 import com.example.arview.utils.FirebaseMethods;
 import com.example.arview.utils.SectionsStatePagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,7 +34,8 @@ import java.util.ArrayList;
 public class SettingActivity extends AppCompatActivity implements ProfileEditFragment.OnFragmentInteractionListener,
                                                                 SignOutFragment.OnFragmentInteractionListener,
                                                                 PersonalPostFragment.OnFragmentInteractionListener ,
-                                                                FollowingFragment.OnFragmentInteractionListener{
+                                                                FollowingFragment.OnFragmentInteractionListener,
+                                                                ProfileFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "AccountSettingsActivity";
 

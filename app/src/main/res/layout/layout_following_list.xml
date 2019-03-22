@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:padding="5dp"
+    >
+
+<RelativeLayout
+    android:id="@+id/followingrellayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_photo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:civ_border_color="#000"
+        app:civ_border_width="2dp"
+        />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="80dp"
+        android:id="@+id/gg"
+        >
+
+        <TextView
+            android:id="@+id/Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textSize="17dp"
+            android:textColor="#000"/>
+
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:text="userName"
+            />
+
+    </LinearLayout>
+
+
+
+    <Button
+        android:id="@+id/follow"
+        style="@style/FirebaseUI.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="following"
+        android:textSize="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="5dp"
+        android:layout_centerVertical="true"/>
+
+
+</RelativeLayout>
+
+
+</RelativeLayout>

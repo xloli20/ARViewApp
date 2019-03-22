@@ -2,6 +2,7 @@ package com.example.arview.databaseClasses;
 
 public class following {
     private String username;
+    private String name;
     private String uid;
     private String profilePhoto;
 
@@ -37,5 +38,23 @@ public class following {
 
     public void setProfilePhoto(String profilePhoto) {
         this.profilePhoto = profilePhoto;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "following{" +
+                "username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", uid='" + uid + '\'' +
+                ", profilePhoto='" + profilePhoto + '\'' +
+                '}';
     }
 }
