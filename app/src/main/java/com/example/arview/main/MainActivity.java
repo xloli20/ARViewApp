@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.arview.R;
+import com.example.arview.chat.AddChatFragment;
 import com.example.arview.chat.ChatsFragment;
 import com.example.arview.friend.FriendsFragment;
 import com.example.arview.login.SiginActivity;
@@ -24,7 +25,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
                                                                 ChatsFragment.OnFragmentInteractionListener,
                                                                 ProfileFragment.OnFragmentInteractionListener,
                                                                 UpdatedsFragment.OnFragmentInteractionListener,
-                                                                FriendsFragment.OnFragmentInteractionListener {
+                                                                FriendsFragment.OnFragmentInteractionListener,
+                                                                 AddChatFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "MainActivity";
 

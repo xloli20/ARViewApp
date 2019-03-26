@@ -7,12 +7,15 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +31,7 @@ import com.example.arview.databaseClasses.profile;
 import com.example.arview.databaseClasses.userChat;
 import com.example.arview.databaseClasses.userChatProfile;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.profile.ProfileFragment;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,25 +40,23 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
-public class ChatsFragment extends Fragment{
+public class ChatsFragment extends Fragment implements AddChatFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "ChatsFragment";
 
     //wedgets
     private EditText chatsSearch;
-    private ImageView addChat;
+    private ImageView addChat, search;
     private RecyclerView recyclerView ;
+    private RecyclerViewAdapter1 adapter;
 
-
-
-    private ArrayList<userChatProfile> chatUserprofileList = new ArrayList<>() ;
+    public ArrayList<userChatProfile> chatUserprofileList = new ArrayList<>() ;
+    public static ArrayList<String> chatUserList = new ArrayList<>() ;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -82,7 +84,7 @@ public class ChatsFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        View view = inflater.inflate(R.layout.fragment_chats, container, false);
 
 
         setupFirebaseAuth();
@@ -101,26 +103,58 @@ public class ChatsFragment extends Fragment{
      */
 
      private void chatUserList(View view){
-         chatsSearch = (EditText) view.findViewById(R.id.chatsSearch);
-         addChat = (ImageView) view.findViewById(R.id.add_chat);
+         chatsSearch = view.findViewById(R.id.chatsSearch);
+         search = view.findViewById(R.id.search);
+         addChat = view.findViewById(R.id.add_chat);
          recyclerView = view.findViewById(R.id.chatMessageRecyclerView);
 
          addChat();
          initRecyclerView();
+         chatSearch();
      }
 
      private void addChat(){
          addChat.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 //TODO: open search fragment
-                 //            get new user id then open inchatfragment
-                 firebaseMethods.addChat("LFvmo0NrcATUG4Y0O1IXNJrdw4a2");
-                 firebaseMethods.addChat("muxiRaCd6jchpaajZSaoa2TkyKw2");
-                 firebaseMethods.addChat("nuwoKZUa6Qfk7Vy0gdTnuhG55YK2");
+                 openAddChatFragment();
 
              }
          });
+     }
+
+     private void chatSearch(){
+
+         chatsSearch.addTextChangedListener(new TextWatcher() {
+         @Override
+         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+         }
+
+         @Override
+         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+             if (charSequence.toString().trim().length() > 0) {
+
+                 for (int j =0 ; j < chatUserprofileList.size() ; j++){
+
+                     if (! chatUserprofileList.get(j).getProfile().getUserName().startsWith(chatsSearch.getText().toString())){
+                         chatUserprofileList.remove(j);
+                         adapter.notifyItemRemoved(j);
+                         adapter.notifyItemRangeChanged(j, chatUserprofileList.size());
+                     }
+                 }
+
+             } else {
+                 chatUserprofileList.clear();
+                 initRecyclerView();
+
+             }
+         }
+
+         @Override
+         public void afterTextChanged(Editable editable) {
+         }
+     });
+
      }
 
 
@@ -130,7 +164,7 @@ public class ChatsFragment extends Fragment{
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        final RecyclerViewAdapter1 adapter = new RecyclerViewAdapter1(getContext(),chatUserprofileList );
+        adapter = new RecyclerViewAdapter1(getContext(),chatUserprofileList );
         recyclerView.setAdapter(adapter);
 
 
@@ -142,7 +176,7 @@ public class ChatsFragment extends Fragment{
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 userChat users = dataSnapshot.getValue(userChat.class);
 
-                Log.d(TAG, "getAllchatsUser: chatUserList.1" + users.toString());
+                chatUserList.add(users.getOtherUserId());
 
                 final userChatProfile UCP = new userChatProfile();
                 UCP.setUserChat(users);
@@ -153,25 +187,9 @@ public class ChatsFragment extends Fragment{
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        GenericTypeIndicator<profile> genericTypeIndicator = new GenericTypeIndicator<profile>() {
-                        };
-
-                        profile p = dataSnapshot.getValue(genericTypeIndicator);
-
-                        Log.d(TAG, "getAllchatsUser: chatUserList.2" );
-
+                        profile p = dataSnapshot.getValue(profile.class);
                         UCP.setProfile(p);
-
                         chatUserprofileList.add(UCP);
-
-                        Log.d(TAG, "getAllchatsUser: chatUserList.3" + UCP.toString());
-
-                        Log.d(TAG, "getAllchatsUser: chatUserList.4" + chatUserprofileList.toString());
-
-
-                        int last = chatUserprofileList.size()-1;
-                        Log.d(TAG, "getAllchatsUser: chatUserList.size" + last);
-
                         adapter.notifyDataSetChanged();
                     }
 
@@ -340,6 +358,23 @@ public class ChatsFragment extends Fragment{
     /*
     ------------------------------------ Firebase ---------------------------------------------
      */
+
+    public void onFragmentInteraction(Uri uri){
+    }
+    public void OnFragmentInteractionListener(Uri uri){
+    }
+
+    public void openAddChatFragment() {
+        AddChatFragment fragment = AddChatFragment.newInstance();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+        transaction.addToBackStack(null);
+        transaction.remove(fragment);
+        transaction.replace(R.id.searchfragment_container, fragment);
+        transaction.commit();
+    }
+
 
 
     /*************************************************************************/

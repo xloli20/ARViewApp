@@ -116,9 +116,15 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
 
         backArrow();
         otherUser();
-        Message();
-        imagePicker();
-        initRecyclerView();
+
+        if (chatID != null){
+            Message();
+            initRecyclerView();
+            imagePicker();
+        }
+        else if (chatID == null){
+            startChating();
+        }
     }
 
     private void backArrow(){
@@ -160,6 +166,54 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
 
     }
 
+    private void startChating(){
+        messageEditText.setHint("Say Hi !");
+
+        messageEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (charSequence.toString().trim().length() > 0) {
+                    FirstSend();
+                    SEND.setTextColor(getResources().getColor(R.color.skyblue));
+                } else {
+                    SEND.setTextColor(getResources().getColor(R.color.grey));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+
+        messageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
+    }
+
+    private void FirstSend(){
+        SEND.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                chatID = firebaseMethods.addChat(otherUserID);
+
+                chatMessage chatText = new chatMessage(messageEditText.getText().toString(), mAuth.getUid(), null);
+                firebaseMethods.sendMessage(chatID, chatText);
+
+                Message();
+                initRecyclerView();
+                imagePicker();
+
+                messageEditText.setHint("Message...");
+                // Clear input box
+                messageEditText.setText("");
+            }
+        });
+
+    }
+
     // Enable Send  when there's text to send
     private void Message(){
 
@@ -184,7 +238,6 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
         });
 
         messageEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
-
 
     }
 

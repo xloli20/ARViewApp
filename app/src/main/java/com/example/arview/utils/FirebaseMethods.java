@@ -720,12 +720,12 @@ public class FirebaseMethods {
     }
 
 
-    public void addChat(final String OthetUserID){
+    public String addChat(final String OthertUserID){
 
         String chatID = String.valueOf(myRef.push().getKey());
 
 
-        final userChat chatUser = new userChat(chatID, OthetUserID );
+        final userChat chatUser = new userChat(chatID, OthertUserID );
         final userChat chatUser1 = new userChat(chatID, userID );
 
         final DatabaseReference chat =myRef.child("userChat").child(userID);
@@ -733,13 +733,13 @@ public class FirebaseMethods {
         chat.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                if (!snapshot.hasChild(OthetUserID)) {
+                if (!snapshot.hasChild(OthertUserID)) {
 
-                    chat.child(OthetUserID)
+                    chat.child(OthertUserID)
                             .setValue(chatUser);
 
                     myRef.child("userChat")
-                            .child(OthetUserID)
+                            .child(OthertUserID)
                             .child(userID)
                             .setValue(chatUser1);
 
@@ -751,6 +751,8 @@ public class FirebaseMethods {
 
             }
         });
+
+        return chatID;
 
     }
 

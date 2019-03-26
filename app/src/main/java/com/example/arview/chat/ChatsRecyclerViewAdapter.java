@@ -44,8 +44,6 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        Log.d(TAG, "onBindViewHolder: called.");
-
 
         if (chatMessage.get(position).getSender().equals(userID)){
             holder.left.setVisibility(View.GONE);

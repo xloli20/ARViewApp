@@ -1,22 +1,23 @@
 package com.example.arview.databaseClasses;
 
-public class following {
+public class addChat {
     private String username;
     private String name;
     private String uid;
     private String profilePhoto;
+    private String ChatId;
 
 
-    public following(){
+    public addChat(){
     }
 
-    public following(String email, String uid, String profilePhoto) {
+    public addChat(String email, String uid, String profilePhoto) {
         this.username = email;
         this.uid = uid;
         this.profilePhoto = profilePhoto;
     }
 
-    public following(String username, String name, String uid, String profilePhoto) {
+    public addChat(String username, String name, String uid, String profilePhoto) {
         this.username = username;
         this.name = name;
         this.uid = uid;
@@ -55,6 +56,13 @@ public class following {
         this.name = name;
     }
 
+    public String getChatId() {
+        return ChatId;
+    }
+
+    public void setChatId(String chatId) {
+        ChatId = chatId;
+    }
 
     @Override
     public String toString() {
