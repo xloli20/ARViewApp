@@ -15,129 +15,162 @@
         <include layout="@layout/snippet_topbar_post_details"/>
     </RelativeLayout>
 
-
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_photo"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_below="@id/Topbar"
-        app:civ_border_color="#000000"
-        app:civ_border_width="2dp"
-        />
-
-
-    <TextView
-        android:id="@+id/UserName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Topbar"
-
-        android:layout_marginStart="95dp"
-        android:layout_marginTop="20dp"
-        android:text="UserName" />
-
-    <TextView
-        android:id="@+id/PostName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="95dp"
-        android:layout_marginTop="5dp"
-        android:layout_below="@id/UserName"
-        android:text="Post name" />
-
-    <TextView
-        android:id="@+id/postDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/profile_photo"
-        android:layout_marginTop="5dp"
-        android:text="postDescription" />
-
-    <ImageView
-        android:id="@+id/heart"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_below="@id/postDescription"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
-        android:src="@mipmap/ic_empty_like"
-        />
-
-    <TextView
-        android:id="@+id/likeNum"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:layout_below="@id/postDescription"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="10dp"
-        android:text="##" />
-
-    <ImageView
-        android:id="@+id/location"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_below="@id/postDescription"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="5dp"
-        android:src="@mipmap/ic_place" />
-
-    <!--ImageView
-        android:id="@+id/request"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_below="@id/postDescription"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="100dp"
-        android:layout_marginTop="5dp"
-        android:src="@android:drawable/toast_frame"
-        tools:src="@drawable/fui_idp_button_background_email" /-->
-
-    <ImageView
-        android:id="@+id/clockCalnder"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_below="@id/postDescription"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="60dp"
-        android:layout_marginTop="5dp"
-        android:src="@mipmap/ic_endafter" />
-
-    <TextView
-        android:id="@+id/limit"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:layout_below="@id/postDescription"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:text="#####" />
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/heart"
-        android:layout_marginTop="7dp"
-        android:background="?android:attr/listDivider" />
-
-    <TextView
-        android:id="@+id/comment"
-        android:layout_width="wrap_content"
-        android:layout_height="20dp"
-        android:layout_below="@id/divider"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="10dp"
-        android:text="##comment" />
-
-    <ListView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/comment"
-        android:layout_marginTop="5dp"
-        android:id="@+id/commentList">
+        android:layout_below="@id/Topbar"
+        android:layout_marginTop="0dp">
 
-    </ListView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_photo"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    app:civ_border_color="#000000"
+                    app:civ_border_width="2dp" />
+
+
+                <TextView
+                    android:id="@+id/UserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="95dp"
+                    android:layout_marginTop="20dp"
+                    android:text="UserName" />
+
+                <TextView
+                    android:id="@+id/PostName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/UserName"
+                    android:layout_marginStart="95dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Post name"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/visiblty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/UserName"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toRightOf="@id/PostName"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:text="visibilty" />
+
+                <TextView
+                    android:id="@+id/postDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/profile_photo"
+                    android:layout_marginTop="5dp"
+                    android:text="postDescription" />
+
+                <ImageView
+                    android:id="@+id/heart"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_below="@id/postDescription"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@mipmap/ic_empty_like" />
+
+                <TextView
+                    android:id="@+id/likeNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_below="@id/postDescription"
+                    android:layout_marginStart="35dp"
+                    android:layout_marginTop="10dp"
+                    android:text="##" />
+
+                <ImageView
+                    android:id="@+id/location"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_below="@id/postDescription"
+                    android:layout_marginStart="70dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@mipmap/ic_place" />
+
+                <!--ImageView
+                    android:id="@+id/request"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_below="@id/postDescription"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="100dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@android:drawable/toast_frame"
+                    tools:src="@drawable/fui_idp_button_background_email" /-->
+
+                <ImageView
+                    android:id="@+id/clockCalnder"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_below="@id/postDescription"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_toLeftOf="@id/limit"
+                    android:src="@mipmap/ic_endafter" />
+
+                <TextView
+                    android:id="@+id/limit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_below="@id/postDescription"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="#####" />
+
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@id/heart"
+                    android:layout_marginTop="7dp"
+                    android:background="?android:attr/listDivider" />
+
+                <TextView
+                    android:id="@+id/comment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_below="@id/divider"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="5dp"
+                    android:text="##comment" />
+
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/commentRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:padding="10dp">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
 
 
 

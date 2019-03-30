@@ -6,6 +6,7 @@ public class chatMessage {
     private String sender;
     private String photoURL ;
     //date and time
+    private String postID;
 
     public chatMessage() {
     }
@@ -15,6 +16,11 @@ public class chatMessage {
         this.sender = sender;
         this.photoURL = photoURL;
     }
+
+    public chatMessage( String sender, String post) {
+        this.sender = sender;
+        this.postID = post;
+}
 
     @Override
     public String toString() {
@@ -47,5 +53,13 @@ public class chatMessage {
 
     public void setPhotoURL(String photoURL) {
         this.photoURL = photoURL;
+    }
+
+    public String getPostID() {
+        return postID;
+    }
+
+    public void setPostID(String postID) {
+        this.postID = postID;
     }
 }

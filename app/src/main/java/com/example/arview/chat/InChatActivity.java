@@ -16,10 +16,14 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.arview.R;
@@ -40,7 +44,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class InChatActivity extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener {
+public class InChatActivity extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, PopupMenu.OnMenuItemClickListener
+{
 
     private static final String TAG = "InChatActivity";
     private Context context;
@@ -61,7 +66,7 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
 
 
     //wedgets
-    private ImageView backArrow, imagePicker, profPhoto;
+    private ImageView backArrow, showPopup, profPhoto;
     private EditText messageEditText;
     private TextView SEND, userName;
     private RecyclerView recyclerView ;
@@ -107,7 +112,7 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
 
     private void setupWedgets(){
         backArrow = findViewById(R.id.backArrow);
-        imagePicker = findViewById(R.id.imagePicker);
+        showPopup = findViewById(R.id.showPopup);
         messageEditText = findViewById(R.id.messageEditText);
         profPhoto = findViewById(R.id.profile_photo);
         userName = findViewById(R.id.username);
@@ -120,10 +125,11 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
         if (chatID != null){
             Message();
             initRecyclerView();
-            imagePicker();
+            showPopup.setEnabled(true);
         }
-        else if (chatID == null){
+        else if (chatID == null || chatID == ""){
             startChating();
+            showPopup.setEnabled(false);
         }
     }
 
@@ -152,19 +158,37 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
 
     }
 
-    //imagePicker
-    private void imagePicker(){
-        imagePicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    public void showPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.setOnMenuItemClickListener(this);
+        popup.inflate(R.menu.in_chat_add_popup_menu);
+        popup.show();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.Image:
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
                 startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
-            }
-        });
+                return true;
+
+            case R.id.Location:
+                Toast.makeText(this, "2!", Toast.LENGTH_LONG).show();
+
+                return true;
+            case R.id.Post:
+                Toast.makeText(this, "3!", Toast.LENGTH_LONG).show();
+
+                return true;
+            default:
+                return false;
+        }
 
     }
+
 
     private void startChating(){
         messageEditText.setHint("Say Hi !");
@@ -179,8 +203,11 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
                 if (charSequence.toString().trim().length() > 0) {
                     FirstSend();
                     SEND.setTextColor(getResources().getColor(R.color.skyblue));
+                    SEND.setBackground(getResources().getDrawable(R.drawable.sun_rounded));
                 } else {
                     SEND.setTextColor(getResources().getColor(R.color.grey));
+                    SEND.setBackground(getResources().getDrawable(R.drawable.white_rounded));
+
                 }
             }
 
@@ -204,7 +231,7 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
 
                 Message();
                 initRecyclerView();
-                imagePicker();
+                showPopup.setEnabled(true);
 
                 messageEditText.setHint("Message...");
                 // Clear input box
@@ -227,8 +254,11 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
                 if (charSequence.toString().trim().length() > 0) {
                     SEND();
                     SEND.setTextColor(getResources().getColor(R.color.skyblue));
+                    SEND.setBackground(getResources().getDrawable(R.drawable.sun_rounded));
                 } else {
                     SEND.setTextColor(getResources().getColor(R.color.grey));
+                    SEND.setBackground(getResources().getDrawable(R.drawable.white_rounded));
+
                 }
             }
 
@@ -249,7 +279,6 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
 
                 chatMessage chatText = new chatMessage(messageEditText.getText().toString(), mAuth.getUid(), null);
                 firebaseMethods.sendMessage(chatID, chatText);
-
                 // Clear input box
                 messageEditText.setText("");
             }
@@ -269,34 +298,25 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 chatMessage CM =  dataSnapshot.getValue(chatMessage.class);
-
                 chatMessageList.add(CM);
-
-                Log.d(TAG, "initRecyclerView: chatMessageList" + chatMessageList);
-
-                //adapter.notifyItemInserted(chatMessageList.size()-1);
                 adapter.notifyDataSetChanged();
 
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
 
@@ -410,10 +430,6 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
         transaction.replace(R.id.fragment_container, fragment);
         transaction.commit();
     }
-
-
-
-
 
 
 

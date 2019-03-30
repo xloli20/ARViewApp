@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.post;
 import com.example.arview.login.SiginActivity;
-import com.example.arview.profile.PostRecyclerViewAdapter;
+import com.example.arview.post.PostRecyclerViewAdapter;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -105,19 +105,6 @@ public class PersonalPostFragment extends Fragment {
      */
 
     private void postList() {
-
-        post p = new post("","","name","desc",new Date(),0,0,"","",true,false);
-
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);

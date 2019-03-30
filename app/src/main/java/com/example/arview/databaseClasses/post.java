@@ -13,10 +13,9 @@ public class post {
     private String postName;
     private String postDesc;
     private Location postLocation;
-    private Date postCreatedDate;
-    private int likesCount;
-    private int commentsCount;
-    private String postEndDate;
+    private String postCreatedDate;
+    private String likes;
+    private String comments;
     private String postEndTime;
     private boolean visibilty;
     private boolean personal;
@@ -26,32 +25,42 @@ public class post {
     }
 
 
-    public post(String postId, String ownerId, String postName, String postDesc, Location postLocation, Date postCreatedDate, int likesCount, int commentsCount,
-                String postEndDate, String postEndTime, boolean visibilty, boolean personal) {
+    public post(String postId, String ownerId, String postName, String postDesc, Location postLocation, String postCreatedDate, String likesCount, String commentsCount,
+                String postEndTime, boolean visibilty, boolean personal) {
         this.postId = postId;
         this.ownerId = ownerId;
         this.postName = postName;
         this.postDesc = postDesc;
         this.postLocation = postLocation;
         this.postCreatedDate = postCreatedDate;
-        this.likesCount = likesCount;
-        this.commentsCount = commentsCount;
-        this.postEndDate = postEndDate;
+        this.likes = likesCount;
+        this.comments = commentsCount;
         this.postEndTime = postEndTime;
         this.visibilty = visibilty;
         this.personal = personal;
     }
 
-    public post(String postId, String ownerId, String postName, String postDesc, Date postCreatedDate, int likesCount, int commentsCount,
-                String postEndDate, String postEndTime, boolean visibilty, boolean personal) {
+    public post(String postId, String ownerId, String postName, String postDesc, String postCreatedDate, String likesCount, String commentsCount,
+                String postEndTime, boolean visibilty, boolean personal) {
         this.postId = postId;
         this.ownerId = ownerId;
         this.postName = postName;
         this.postDesc = postDesc;
         this.postCreatedDate = postCreatedDate;
-        this.likesCount = likesCount;
-        this.commentsCount = commentsCount;
-        this.postEndDate = postEndDate;
+        this.likes = likesCount;
+        this.comments = commentsCount;
+        this.postEndTime = postEndTime;
+        this.visibilty = visibilty;
+        this.personal = personal;
+    }
+
+    public post(String postId, String ownerId, String postName, String postDesc, String postCreatedDate,
+                String postEndTime, boolean visibilty, boolean personal) {
+        this.postId = postId;
+        this.ownerId = ownerId;
+        this.postName = postName;
+        this.postDesc = postDesc;
+        this.postCreatedDate = postCreatedDate;
         this.postEndTime = postEndTime;
         this.visibilty = visibilty;
         this.personal = personal;
@@ -97,36 +106,28 @@ public class post {
         this.postLocation = postLocation;
     }
 
-    public Date getPostCreatedDate() {
+    public String getPostCreatedDate() {
         return postCreatedDate;
     }
 
-    public void setPostCreatedDate(Date postCreatedDate) {
+    public void setPostCreatedDate(String postCreatedDate) {
         this.postCreatedDate = postCreatedDate;
     }
 
-    public int getLikesCount() {
-        return likesCount;
+    public String getLikes() {
+        return likes;
     }
 
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
+    public void setLikes(String likes) {
+        this.likes = likes;
     }
 
-    public int getCommentsCount() {
-        return commentsCount;
+    public String getComments() {
+        return comments;
     }
 
-    public void setCommentsCount(int commentsCount) {
-        this.commentsCount = commentsCount;
-    }
-
-    public String getPostEndDate() {
-        return postEndDate;
-    }
-
-    public void setPostEndDate(String postEndDate) {
-        this.postEndDate = postEndDate;
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 
     public String getPostEndTime() {

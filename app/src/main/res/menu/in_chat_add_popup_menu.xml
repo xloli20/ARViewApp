@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/Image"
+        android:title="share image"
+    />
+
+    <item
+        android:id="@+id/Location"
+        android:title="share Location"/>
+
+    <item
+        android:id="@+id/Post"
+        android:title="share Post"/>
+</menu>

@@ -18,13 +18,13 @@ public class profile {
     private String profileDescription;
     private HashMap<String, Boolean> followers;
     private HashMap<String, Boolean> following;
-    private int post;
+    private HashMap<String, String> post;
 
 
     public profile(){
     }
 
-    public profile(String userName, String name, String userLocation, String profilePhoto, String profileDescription, HashMap<String, Boolean> followers, HashMap<String, Boolean> following, int post) {
+    public profile(String userName, String name, String userLocation, String profilePhoto, String profileDescription, HashMap<String, Boolean> followers, HashMap<String, Boolean> following, HashMap<String, String> post) {
         this.userName = userName;
         this.name = name;
         this.userLocation = userLocation;
@@ -105,11 +105,11 @@ public class profile {
         this.following = following;
     }
 
-    public int getPost() {
+    public HashMap<String, String> getPost() {
         return post;
     }
 
-    public void setPost(int post) {
+    public void setPost(HashMap<String, String> post) {
         this.post = post;
     }
 

@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -29,10 +30,12 @@ import com.example.arview.databaseClasses.post;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.post.PostDetailsFragment;
+import com.example.arview.post.PostRecyclerViewAdapter;
 import com.example.arview.setting.SettingActivity;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -191,15 +194,125 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
 
     private void postlist(){
 
-        post p = new post("","","name","desc",new Date(),0,0,"","",true,false);
-
-        Plist.add(p);
-        Plist.add(p);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         adapter = new PostRecyclerViewAdapter(getContext(), Plist , "" );
         recyclerView.setAdapter(adapter);
+
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("profile").child(userID).child("post");
+        ref.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                final String postID = dataSnapshot.getKey();
+                String v = dataSnapshot.getValue(String.class);
+
+                Log.e(TAG, "postList: postID." +  postID +" " + v );
+
+                if(v.startsWith("true")){
+                    //post is personal
+                    DatabaseReference Prpost = firebaseDatabase.getReference().child("profile").child("personalPosts").child(postID);
+
+                    Prpost.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            setPost(dataSnapshot);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                } else {
+
+                    if (v.endsWith("true")) {
+                        //post is public
+                        DatabaseReference Pupost = firebaseDatabase.getReference().child("posts").child("public").child(postID);
+
+                        Pupost.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                setPost(dataSnapshot);
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            }
+                        });
+                    }
+                    if (v.endsWith("false")) {
+                        //post is private
+                        DatabaseReference f = firebaseDatabase.getReference().child("profile").child(mAuth.getUid()).child("following").child(userID);
+
+                        f.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()){
+                                    boolean Accepted = dataSnapshot.getValue(boolean.class);
+
+                                    if (Accepted){
+
+                                        DatabaseReference Pvpost = firebaseDatabase.getReference().child("posts").child("private").child(postID);
+                                        Pvpost.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                setPost(dataSnapshot);
+                                            }
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            }
+                                        });
+                                    }
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+                }
+            }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+
+    }
+
+
+
+    private void setPost(DataSnapshot dataSnapshot){
+
+        final post post = new post();
+
+        post.setPostId(dataSnapshot.getKey());
+        post.setOwnerId(dataSnapshot.child("ownerId").getValue(String.class));
+        post.setPostName(dataSnapshot.child("postName").getValue(String.class));
+        post.setPostDesc(dataSnapshot.child("postDesc").getValue(String.class));
+        post.setPostCreatedDate(dataSnapshot.child("postCreatedDate").getValue(String.class));
+        post.setLikes(String.valueOf(dataSnapshot.child("likes").getChildrenCount()));
+        post.setComments(String.valueOf(dataSnapshot.child("comments").getChildrenCount()));
+        post.setPostEndTime(dataSnapshot.child("postEndTime").getValue(String.class));
+        post.setVisibilty(dataSnapshot.child("visibilty").getValue(Boolean.class));
+        post.setPersonal(dataSnapshot.child("personal").getValue(Boolean.class));
+
+        Plist.add(post);
+        adapter.notifyDataSetChanged();
 
     }
 
@@ -230,7 +343,11 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
             NFollowers.setText(String.valueOf(p.getFollowers().size()));
         else
             NFollowers.setText("0");
-        NPost.setText(String.valueOf(p.getPost()));
+
+        if (p.getPost() != null)
+            NPost.setText(String.valueOf(p.getPost().size()));
+        else
+            NPost.setText("0");
 
     }
 
@@ -291,6 +408,19 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+
+        Plist.clear();
+        adapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        Plist.clear();
+        adapter.notifyDataSetChanged();
+
     }
       /*
     ------------------------------------ Firebase ---------------------------------------------
@@ -300,19 +430,6 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
     }
     public void OnFragmentInteractionListener(Uri uri){
     }
-
-
-    public void openPostDetailsFragment() {
-        PostDetailsFragment fragment = PostDetailsFragment.newInstance();
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
-        transaction.addToBackStack(null);
-        transaction.remove(fragment);
-        transaction.replace(R.id.fragment_container, fragment);
-        transaction.commit();
-    }
-
 
     /*****************************************************************************************/
     public void onButtonPressed(Uri uri) {

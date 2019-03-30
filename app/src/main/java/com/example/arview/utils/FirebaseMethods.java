@@ -14,6 +14,7 @@ import com.example.arview.databaseClasses.post;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.databaseClasses.userChat;
 import com.example.arview.databaseClasses.users;
+import com.example.arview.post.PostRecyclerViewAdapter;
 import com.example.arview.setting.SettingActivity;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -50,7 +51,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -208,7 +211,7 @@ public class FirebaseMethods {
                 .setValue(users);
 
 
-        profile profile = new profile(username, name, "", defaultProfilePhoto, "", null, null, 0);
+        profile profile = new profile(username, name, "", defaultProfilePhoto, "", null, null, null);
 
         myRef.child("profile")
                 .child(userID)
@@ -241,20 +244,9 @@ public class FirebaseMethods {
 
             if(ds.getKey().equals("profile")) {
 
-                try {
-                    GenericTypeIndicator<profile> genericTypeIndicator = new GenericTypeIndicator<profile>() {
-                    };
-
-                uri =Uri.parse (( Objects.requireNonNull(ds.child(userID)
-                        .getValue(genericTypeIndicator))
-                        .getProfilePhoto()));
-
-                } catch (NullPointerException e) {
-                    Log.e(TAG, "getprofile: NullPointerException: " + e.getMessage());
-                }
+                uri = Uri.parse(dataSnapshot.child("profilePhoto").getValue(String.class));
 
             }
-
         }
         return uri;
     }
@@ -418,16 +410,21 @@ public class FirebaseMethods {
 
     }
 
-    public void addPost(String postName, String postDesc, Location postLocation, String postEndDate, String postEndTime, boolean visibilty, boolean personal ){
+
+    /************************************* post ************************************/
+    public void addPost(String postName, String postDesc, Location postLocation, String postEndTime, boolean visibilty, boolean personal ){
 
         String postID = String.valueOf(myRef.push().getKey());
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date postCreatedDate = new Date();
-        //String postCreatedDate = dateFormat.format(createdAt);
 
-        post post = new post(postID, userID, postName, postDesc, postCreatedDate, 0,0, postEndDate, postEndTime, visibilty, personal );
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.CANADA);
+        sdf.setTimeZone(TimeZone.getTimeZone("Canada/Pacific"));
+        String date = sdf.format(new Date());
 
+
+        post post = new post(postID, userID, postName, postDesc, date, postEndTime, visibilty, personal );
+
+        myRef.child("profile").child(userID).child("post").child(postID).setValue(personal + "" +visibilty);
 
 
         if (personal){
@@ -494,9 +491,149 @@ public class FirebaseMethods {
         }
 
 
-        //TODO: update post counter in profile
+    }
+
+    public void deletePost(String postID, String UserID, boolean v, boolean p ){
+
+        myRef.child("profile")
+                .child(UserID)
+                .child("post")
+                .child(postID)
+                .removeValue();
+
+        if (p){
+            myRef.child("profile")
+                    .child(UserID)
+                    .child("personalPosts")
+                    .child(postID)
+                    .removeValue();
+
+            myRef.child("profile")
+                    .child(UserID)
+                    .child("personalPostsLocations")
+                    .child(postID)
+                    .removeValue();
+
+        }else {
+            if (v){
+
+                myRef.child("posts")
+                        .child("public")
+                        .child(postID)
+                        .removeValue();
+
+                myRef.child("postsLocations")
+                        .child("public")
+                        .child(postID)
+                        .removeValue();
+
+            }else {
+                myRef.child("posts")
+                        .child("private")
+                        .child(postID)
+                        .removeValue();
+
+                myRef.child("postsLocations")
+                        .child("private")
+                        .child(postID)
+                        .removeValue();
+
+            }
+        }
+    }
+
+    public boolean liked = false;
+    public Boolean isLiked(final post p, final PostRecyclerViewAdapter.ViewHolder holder){
+
+        myRef = FirebaseDatabase.getInstance().getReference();
+
+        if (p.isPersonal()){
+            myRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.child("profile").child(p.getOwnerId()).child("personalPosts").child(p.getPostId()).child("likes").child(userID).exists()){
+                        Log.e(TAG, "isLike: isPersonal  dataSnapshot.exists "+ dataSnapshot);
+                        holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                        liked = true;
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+
+        }else {
+            if (p.isVisibilty()){
+                myRef.addValueEventListener(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.child("posts").child("public").child(p.getPostId()).child("likes").child(userID).exists()){
+                            holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                            liked = true;
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+
+            }else {
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.child("posts").child("private").child(p.getPostId()).child("likes").child(userID).exists()){
+                            holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                            liked = true;
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        }
+
+        return liked;
+    }
+
+    public void addLike(post p, String userID){
+
+        if (p.isPersonal()){
+            myRef.child("profile").child(p.getOwnerId()).child("personalPosts").child(p.getPostId()).child("likes").child(userID).setValue("true");
+
+        }else {
+            if (p.isVisibilty()){
+                myRef.child("posts").child("public").child(p.getPostId()).child("likes").child(userID).setValue("true");
+
+            }else {
+                myRef.child("posts").child("private").child(p.getPostId()).child("likes").child(userID).setValue("true");
+
+            }
+        }
 
     }
+
+    public void unLike(post p, String userID){
+
+        if (p.isPersonal()){
+            myRef.child("profile").child(p.getOwnerId()).child("personalPosts").child(p.getPostId()).child("likes").child(userID).removeValue();
+
+        }else {
+            if (p.isVisibilty()){
+                myRef.child("posts").child("public").child(p.getPostId()).child("likes").child(userID).removeValue();
+
+            }else {
+                myRef.child("posts").child("private").child(p.getPostId()).child("likes").child(userID).removeValue();
+
+            }
+        }
+
+    }
+
+    /************************************* post ************************************/
 
 
         /*

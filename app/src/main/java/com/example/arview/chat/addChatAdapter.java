@@ -71,6 +71,7 @@ public class addChatAdapter extends RecyclerView.Adapter<addChatAdapter.ViewHold
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, InChatActivity.class);
+                intent.putExtra("ChatID","");
                 intent.putExtra("OtherUserId",List.get(position).getUid());
                 mContext.startActivity(intent);
 

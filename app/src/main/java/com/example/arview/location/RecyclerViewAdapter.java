@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,8 +44,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
-        Log.d(TAG, "onBindViewHolder: called.");
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
 
         Uri uri = Uri.parse(nearPostList.get(position).getProfilePhoto());
         Glide.with(mContext)
@@ -60,7 +60,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, nearPostList.get(position).getOwnerId(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, nearPostList.get(position).getOwnerId(), Toast.LENGTH_SHORT).show();
                 // to user profile
             }
         });
@@ -68,9 +68,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, nearPostList.get(position).getPostId(), Toast.LENGTH_SHORT).show();
-                ((MapsActivity)mContext).moveCam(nearPostList.get(position).getLocation());
+                //Toast.makeText(mContext, nearPostList.get(position).getPostId(), Toast.LENGTH_SHORT).show();
                 // to post details
+            }
+        });
+
+        holder.direction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MapsActivity)mContext).moveCam(nearPostList.get(position).getLocation());
+            }
+        });
+
+        holder.heart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                holder.Nlike.setText("1");
+
             }
         });
     }
@@ -83,6 +98,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         CircleImageView profileImage;
+        ImageView direction, heart;
         TextView postName, userName, distance, Nlike;
         RelativeLayout relativeLayout;
 
@@ -94,6 +110,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             distance = itemView.findViewById(R.id.far);
             Nlike = itemView.findViewById(R.id.likeNum);
             relativeLayout = itemView.findViewById(R.id.NRelativeLayout);
+            direction = itemView.findViewById(R.id.direction);
+            heart = itemView.findViewById(R.id.heart);
 
         }
     }

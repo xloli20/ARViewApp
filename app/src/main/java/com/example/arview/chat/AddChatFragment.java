@@ -14,16 +14,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.addChat;
 import com.example.arview.databaseClasses.following;
-import com.example.arview.databaseClasses.post;
 import com.example.arview.databaseClasses.userChat;
 import com.example.arview.login.SiginActivity;
-import com.example.arview.profile.PostRecyclerViewAdapter;
-import com.example.arview.profile.ProfileActivity;
-import com.example.arview.search.FollowAdapter;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,7 +31,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 

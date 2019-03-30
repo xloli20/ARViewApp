@@ -1,8 +1,7 @@
-package com.example.arview.profile;
+package com.example.arview.friend;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,14 +11,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.arview.R;
-import com.example.arview.databaseClasses.chatMessage;
 import com.example.arview.databaseClasses.post;
-import com.example.arview.friend.FriendsFragment;
 import com.example.arview.location.MapsActivity;
 import com.example.arview.post.PostDetailsFragment;
-import com.example.arview.setting.SettingActivity;
 
 import java.util.ArrayList;
 
@@ -29,7 +24,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerViewAdapter.ViewHolder> {
+public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<FriendsPostRecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "PostRecyclerViewAdapter";
 
@@ -38,7 +33,7 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
     private String userID;
     private Context mContext;
 
-    public PostRecyclerViewAdapter(Context context, ArrayList<post> posts, String uID) {
+    public FriendsPostRecyclerViewAdapter(Context context, ArrayList<post> posts, String uID) {
         PostList = posts;
         userID = uID;
         mContext = context;
@@ -46,12 +41,12 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_post_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_friends_post_list, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called.");
 
 
@@ -59,17 +54,12 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
 
         holder.PostName.setText(PostList.get(position).getPostName());
         holder.desc.setText(PostList.get(position).getPostDesc());
-        holder.Nlike.setText(String.valueOf(PostList.get(position).getLikesCount()));
-        holder.Ncomment.setText(String.valueOf(PostList.get(position).getCommentsCount()));
+        holder.Nlike.setText(String.valueOf(PostList.get(position).getLikes()));
+        holder.Ncomment.setText(String.valueOf(PostList.get(position).getComments()));
 
-        if (PostList.get(position).getPostEndDate()== null && PostList.get(position).getPostEndTime() == null
-                || PostList.get(position).getPostEndDate()== "" && PostList.get(position).getPostEndTime() == "" ){
+        if (PostList.get(position).getPostEndTime() == null || PostList.get(position).getPostEndTime() == "" ){
             holder.limit.setVisibility(View.INVISIBLE);
-            holder.limitTime.setText(PostList.get(position).getPostCreatedDate().toString());
-        }
-        else if (PostList.get(position).getPostEndDate()!=null) {
-            holder.limit.setVisibility(View.VISIBLE);
-            holder.limitTime.setText(PostList.get(position).getPostEndDate());
+            holder.limitTime.setText(PostList.get(position).getPostCreatedDate());
         }
         else if (PostList.get(position).getPostEndTime()!=null) {
             holder.limit.setVisibility(View.VISIBLE);
@@ -90,7 +80,8 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(mContext, "like ", Toast.LENGTH_LONG).show();
+                holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                holder.Nlike.setText("1");
 
             }
         });
@@ -98,7 +89,7 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PostDetailsFragment fragment = PostDetailsFragment.newInstance();
+                PostDetailsFragment fragment = PostDetailsFragment.newInstance(PostList.get(position).getOwnerId(), PostList.get(position).getPostId());
                 FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);

@@ -6,10 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,8 +18,7 @@ import android.view.ViewGroup;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.post;
 import com.example.arview.login.SiginActivity;
-import com.example.arview.post.PostDetailsFragment;
-import com.example.arview.profile.PostRecyclerViewAdapter;
+import com.example.arview.post.PostRecyclerViewAdapter;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -54,7 +50,7 @@ public class FriendsFragment extends Fragment {
     //wedgets
     private RecyclerView recyclerView;
 
-    private PostRecyclerViewAdapter adapter;
+    private FriendsPostRecyclerViewAdapter adapter;
    //var
     private ArrayList<post> Plist = new ArrayList<>() ;
 
@@ -107,26 +103,13 @@ public class FriendsFragment extends Fragment {
 
     private void postList() {
 
-        post p = new post("","","name","desc",new Date(),0,0,"","",true,false);
-
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new PostRecyclerViewAdapter(getContext(), Plist , "" );
+        adapter = new FriendsPostRecyclerViewAdapter(getContext(), Plist , "" );
         recyclerView.setAdapter(adapter);
 
     }
-
 
 
      /*

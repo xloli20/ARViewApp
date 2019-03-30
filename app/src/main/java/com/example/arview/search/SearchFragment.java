@@ -21,7 +21,7 @@ import com.bumptech.glide.Glide;
 import com.example.arview.databaseClasses.following;
 import com.example.arview.databaseClasses.post;
 import com.example.arview.login.SiginActivity;
-import com.example.arview.profile.PostRecyclerViewAdapter;
+import com.example.arview.post.PostRecyclerViewAdapter;
 import com.example.arview.profile.ProfileActivity;
 import com.example.arview.R;
 import com.example.arview.utils.FirebaseMethods;
@@ -32,14 +32,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 
@@ -172,8 +169,32 @@ public class SearchFragment extends Fragment {
           profilePhoto();
 
       }
+    private void setProfilePhoto(){
+
+        DatabaseReference owner = firebaseDatabase.getReference().child("profile").child(mAuth.getUid());
+
+        owner.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Uri uri = Uri.parse(dataSnapshot.child("profilePhoto").getValue(String.class));
+                if (uri != null){
+                    Glide.with(profile.getContext())
+                            .load(uri)
+                            .into(profile);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 
       private void profilePhoto(){
+          setProfilePhoto();
 
           profile.setOnClickListener(new View.OnClickListener() {
               @Override
@@ -195,19 +216,6 @@ public class SearchFragment extends Fragment {
       }
 
     private void postList() {
-
-        post p = new post("", "", "name", "desc", new Date(), 0, 0, "", "", true, false);
-
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
-        Plist.add(p);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -243,13 +251,6 @@ public class SearchFragment extends Fragment {
     ------------------------------------ Firebase ---------------------------------------------
      */
 
-     private void setProfilePhoto(Uri uri){
-         if (uri != null){
-             Glide.with(profile.getContext())
-                     .load(uri)
-                     .into(profile);
-         }
-     }
 
     private void setupFirebaseAuth(){
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
@@ -277,20 +278,6 @@ public class SearchFragment extends Fragment {
                 // ...
             }
         };
-
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //retrieve profile from the database
-
-                setProfilePhoto(firebaseMethods.getProfilePhoto(dataSnapshot));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
     }
 

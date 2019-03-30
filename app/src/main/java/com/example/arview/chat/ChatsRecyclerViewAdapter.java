@@ -44,6 +44,8 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
+        Log.d(TAG, "onBindViewHolder: called.");
+
 
         if (chatMessage.get(position).getSender().equals(userID)){
             holder.left.setVisibility(View.GONE);
@@ -51,13 +53,21 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
             if (chatMessage.get(position).getPhotoURL() != null) {
                 holder.messageTextViewR.setVisibility(View.GONE);
                 holder.photoImageViewR.setVisibility(View.VISIBLE);
+                holder.postR.setVisibility(View.GONE);
                 Glide.with(mContext)
                         .load(chatMessage.get(position).getPhotoURL())
                         .into(holder.photoImageViewR);
-            } else {
+            }
+            else if (chatMessage.get(position).getText() != null){
                 holder.messageTextViewR.setVisibility(View.VISIBLE);
                 holder.photoImageViewR.setVisibility(View.GONE);
+                holder.postR.setVisibility(View.GONE);
                 holder.messageTextViewR.setText(chatMessage.get(position).getText());
+            }
+            else if (chatMessage.get(position).getPostID() != null){
+                holder.messageTextViewR.setVisibility(View.GONE);
+                holder.photoImageViewR.setVisibility(View.GONE);
+                holder.postR.setVisibility(View.VISIBLE);
             }
 
         }else {
@@ -70,13 +80,23 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
             if (chatMessage.get(position).getPhotoURL() != null) {
                 holder.messageTextView.setVisibility(View.GONE);
                 holder.photoImageView.setVisibility(View.VISIBLE);
+                holder.postL.setVisibility(View.GONE);
+
                 Glide.with(mContext)
                         .load(chatMessage.get(position).getPhotoURL())
                         .into(holder.photoImageView);
-            } else {
+            }
+            else if (chatMessage.get(position).getText() != null){
                 holder.messageTextView.setVisibility(View.VISIBLE);
                 holder.photoImageView.setVisibility(View.GONE);
+                holder.postL.setVisibility(View.GONE);
                 holder.messageTextView.setText(chatMessage.get(position).getText());
+            }
+            else if (chatMessage.get(position).getPostID() != null){
+                holder.messageTextViewR.setVisibility(View.GONE);
+                holder.photoImageViewR.setVisibility(View.GONE);
+                holder.postR.setVisibility(View.VISIBLE);
+
             }
         }
 
@@ -89,8 +109,8 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        RelativeLayout right;
-        RelativeLayout left;
+        RelativeLayout right, left, postL, postR;
+
 
         ImageView userPhoto;
         ImageView photoImageView;
@@ -101,15 +121,17 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
 
         public ViewHolder(View itemView) {
             super(itemView);
-            right = (RelativeLayout) itemView.findViewById(R.id.right);
-            left = (RelativeLayout) itemView.findViewById(R.id.left);
+            right =itemView.findViewById(R.id.right);
+            left = itemView.findViewById(R.id.left);
+            postL =itemView.findViewById(R.id.messagePost);
+            postR = itemView.findViewById(R.id.messagePostR);
 
-            userPhoto = (ImageView) itemView.findViewById(R.id.profile_photoL);
-            photoImageView = (ImageView) itemView.findViewById(R.id.messagePhoto);
-            messageTextView = (TextView) itemView.findViewById(R.id.messsageText);
+            userPhoto = itemView.findViewById(R.id.profile_photoL);
+            photoImageView =itemView.findViewById(R.id.messagePhoto);
+            messageTextView =itemView.findViewById(R.id.messsageText);
 
-            photoImageViewR = (ImageView) itemView.findViewById(R.id.messagePhotoR);
-            messageTextViewR = (TextView) itemView.findViewById(R.id.messsageTextR);
+            photoImageViewR = itemView.findViewById(R.id.messagePhotoR);
+            messageTextViewR = itemView.findViewById(R.id.messsageTextR);
         }
     }
 
