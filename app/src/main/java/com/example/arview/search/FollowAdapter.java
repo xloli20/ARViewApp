@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.following;
 import com.example.arview.databaseClasses.profile;
+import com.example.arview.databaseClasses.users;
 import com.example.arview.profile.ProfileFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -22,6 +23,7 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,10 +77,14 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowViewHolders>{
             @Override
             public void onClick(View view) {
                 String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+
                 if(holder.mFollow.getText().equals("follow")){
                     holder.mFollow.setText("following");
                     FirebaseDatabase.getInstance().getReference().child("profile").child(userId).child("following").child(usersList.get(holder.getLayoutPosition()).getUid()).setValue(true);
                     FirebaseDatabase.getInstance().getReference().child("profile").child(usersList.get(holder.getLayoutPosition()).getUid()).child("followers").child(userId).setValue(true);
+
+                    NotificationUtils.notifyUserGetsFollower(context,userId);
+
 
                 }else{
                     holder.mFollow.setText("follow");

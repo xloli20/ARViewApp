@@ -43,6 +43,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class ChatsFragment extends Fragment implements AddChatFragment.OnFragmentInteractionListener{
@@ -71,8 +72,7 @@ public class ChatsFragment extends Fragment implements AddChatFragment.OnFragmen
     }
 
     public static ChatsFragment newInstance() {
-        ChatsFragment fragment = new ChatsFragment();
-        return fragment;
+        return new ChatsFragment();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ChatsFragment extends Fragment implements AddChatFragment.OnFragmen
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
 
@@ -168,7 +168,7 @@ public class ChatsFragment extends Fragment implements AddChatFragment.OnFragmen
         recyclerView.setAdapter(adapter);
 
 
-        DatabaseReference R = firebaseDatabase.getReference().child("userChat").child(mAuth.getUid());
+        DatabaseReference R = firebaseDatabase.getReference().child("userChat").child(Objects.requireNonNull(mAuth.getUid()));
 
 
         R.addChildEventListener(new ChildEventListener() {
@@ -176,7 +176,7 @@ public class ChatsFragment extends Fragment implements AddChatFragment.OnFragmen
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 userChat users = dataSnapshot.getValue(userChat.class);
 
-                chatUserList.add(users.getOtherUserId());
+                chatUserList.add(Objects.requireNonNull(users).getOtherUserId());
 
                 final userChatProfile UCP = new userChatProfile();
                 UCP.setUserChat(users);
@@ -316,7 +316,7 @@ public class ChatsFragment extends Fragment implements AddChatFragment.OnFragmen
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged( FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
@@ -366,7 +366,7 @@ public class ChatsFragment extends Fragment implements AddChatFragment.OnFragmen
 
     public void openAddChatFragment() {
         AddChatFragment fragment = AddChatFragment.newInstance();
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
         transaction.addToBackStack(null);

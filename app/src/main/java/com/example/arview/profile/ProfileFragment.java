@@ -230,8 +230,10 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
             NFollowers.setText(String.valueOf(p.getFollowers().size()));
         else
             NFollowers.setText("0");
-        NPost.setText(String.valueOf(p.getPost()));
-
+        if (p.getPost() != null)
+            NPost.setText(String.valueOf(p.getPost().size()));
+        else
+            NPost.setText("0");
     }
 
     private void setupFirebaseAuth(){

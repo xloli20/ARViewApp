@@ -208,7 +208,7 @@ public class FirebaseMethods {
                 .setValue(users);
 
 
-        profile profile = new profile(username, name, "", defaultProfilePhoto, "", null, null, 0);
+        profile profile = new profile(username, name, "", defaultProfilePhoto, "", null, null, null);
 
         myRef.child("profile")
                 .child(userID)

@@ -180,7 +180,10 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
               NFollowers.setText(String.valueOf(p.getFollowers().size()));
           else
               NFollowers.setText("0");
-          NPost.setText(String.valueOf(p.getPost()));
+          if (p.getPost() != null)
+              NPost.setText(String.valueOf(p.getPost().size()));
+          else
+              NPost.setText("0");
 
       }
 
