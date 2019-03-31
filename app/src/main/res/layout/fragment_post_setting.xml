@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".post.PostSettingFragment"
+    android:background="@drawable/backgroundlight">
+
+
+    <RelativeLayout
+        android:id="@+id/Topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include layout="@layout/snippet_topbar_post_details"/>
+    </RelativeLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/Topbar"
+        >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        >
+
+        <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Post Name"
+        android:textSize="18dp"
+        android:textColor="@color/backgrondDark"
+        />
+
+        <EditText
+            android:id="@+id/PostNameS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_below="@id/text"/>
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/PostNameS"
+            android:text="Post Description "
+            android:textSize="18dp"
+            android:textColor="@color/backgrondDark"
+            />
+
+
+        <EditText
+            android:id="@+id/PostDesS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:layout_below="@id/text1"/>
+
+        <TextView
+            android:id="@+id/text2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/PostDesS"
+            android:text="Who Can See "
+            android:textSize="18dp"
+            android:textColor="@color/backgrondDark"
+            />
+
+        <RadioGroup
+            android:id="@+id/radioGroupVis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text2"
+            android:layout_marginStart="10dp"
+            android:checkedButton="@id/Pubilc">
+
+            <RadioButton
+                android:id="@+id/Pubilc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pubilc"
+                />
+
+            <RadioButton
+                android:id="@+id/Private"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Private (my follower) "
+                />
+
+            <RadioButton
+                android:id="@+id/Personal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Personal (Only me) "
+                />
+
+        </RadioGroup>
+
+        <RelativeLayout
+            android:id="@+id/timeroff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/radioGroupVis"
+            android:layout_marginTop="10dp"
+            android:padding="5dp"
+            >
+
+            <ImageView
+                android:id="@+id/timeroffIV"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_timer_off"
+                />
+
+            <TextView
+                android:id="@+id/timeroffTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="no limit "
+                android:textSize="18dp"
+                android:textColor="@color/backgrondDark"
+                android:layout_toRightOf="@id/timeroffIV"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="5dp"/>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/timer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/timeroff"
+            android:padding="5dp"
+
+            >
+
+            <ImageView
+                android:id="@+id/timerIV"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_timer"
+                />
+
+            <TextView
+                android:id="@+id/timerTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End on : "
+                android:textSize="18dp"
+                android:textColor="@color/backgrondDark"
+                android:layout_toRightOf="@id/timerIV"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="5dp"/>
+
+            <TextView
+                android:id="@+id/timeTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:textColor="@color/backgrondDark"
+                android:layout_toRightOf="@id/timerTV"
+                android:layout_marginLeft="10dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="5dp"/>
+
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btn_publish"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@id/timer"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/sun_rounded"
+            android:text="PUBLISH"
+            android:textStyle="bold" />
+
+
+
+    </RelativeLayout>
+
+</ScrollView>
+
+
+
+</RelativeLayout>

@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.arview.databaseClasses.post;
 import com.example.arview.databaseClasses.profile;
+import com.example.arview.databaseClasses.users;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.post.PostDetailsFragment;
 import com.example.arview.R;
@@ -36,6 +37,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
@@ -44,8 +46,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 public class ProfileActivity extends AppCompatActivity implements PostDetailsFragment.OnFragmentInteractionListener,
@@ -108,7 +113,6 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
 
          recyclerView = findViewById(R.id.postRecyclerView);
 
-
          mProgressBar.setVisibility(View.GONE);
 
          backArrow();
@@ -122,7 +126,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();;
+                finish();
             }
         });
     }
@@ -148,10 +152,9 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
         });
     }
 
-
     private void postList() {
 
-         UserID = mAuth.getUid();
+        UserID = mAuth.getUid();
         Log.e(TAG, "postList: UserID in." +  UserID );
 
 
@@ -166,7 +169,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
         ref.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                String postID = dataSnapshot.getKey();
+                final String postID = dataSnapshot.getKey();
                 String v = dataSnapshot.getValue(String.class);
 
                 Log.e(TAG, "postList: postID." +  postID +" " + v );
@@ -199,6 +202,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
                             public void onCancelled(@NonNull DatabaseError databaseError) {
                             }
                         });
+
                     }
                     if (v.endsWith("false")) {
                         //post is private
@@ -251,13 +255,24 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
         post.setVisibilty(dataSnapshot.child("visibilty").getValue(Boolean.class));
         post.setPersonal(dataSnapshot.child("personal").getValue(Boolean.class));
 
+
         Plist.add(post);
-        adapter.notifyDataSetChanged();
+        adapter.notifyItemInserted(Plist.size());
 
-    }
+        for (int i =0 ; i < Plist.size() ; i ++){
+            if ( Plist.get(i).getPostId().equals(post.getPostId())){
 
-    public void AdapterNotify(){
-        adapter.notifyDataSetChanged();
+                if ( Plist.get(i).getLikes() != post.getLikes()){
+                    Plist.set(i , post);
+                    Plist.remove(Plist.size()-1);
+                    adapter.notifyItemRangeChanged(i,Plist.size()-1);
+                }
+
+            }
+
+
+        }
+
     }
 
     /*
@@ -354,20 +369,9 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
             mAuth.removeAuthStateListener(mAuthListener);
         }
 
-        Plist.clear();
-        postList();
-        adapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
 
-        Plist.clear();
-        postList();
-        adapter.notifyDataSetChanged();
-
-    }
 
     /*
     ------------------------------------ Firebase ---------------------------------------------

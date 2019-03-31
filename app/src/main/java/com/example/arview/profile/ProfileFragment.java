@@ -135,6 +135,12 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
 
         recyclerView = view.findViewById(R.id.postRecyclerView);
 
+        mAuth = FirebaseAuth.getInstance();
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new PostRecyclerViewAdapter(getContext(), Plist , mAuth.getUid() );
+        recyclerView.setAdapter(adapter);
 
         mProgressBar.setVisibility(View.GONE);
 
@@ -192,15 +198,11 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
     } 
 
 
-    private void postlist(){
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new PostRecyclerViewAdapter(getContext(), Plist , "" );
-        recyclerView.setAdapter(adapter);
+    private void postlist() {
 
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("profile").child(userID).child("post");
+
         ref.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -211,7 +213,7 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
 
                 if(v.startsWith("true")){
                     //post is personal
-                    DatabaseReference Prpost = firebaseDatabase.getReference().child("profile").child("personalPosts").child(postID);
+                    DatabaseReference Prpost = FirebaseDatabase.getInstance().getReference().child("profile").child("personalPosts").child(postID);
 
                     Prpost.addValueEventListener(new ValueEventListener() {
                         @Override
@@ -226,7 +228,7 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
 
                     if (v.endsWith("true")) {
                         //post is public
-                        DatabaseReference Pupost = firebaseDatabase.getReference().child("posts").child("public").child(postID);
+                        DatabaseReference Pupost = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(postID);
 
                         Pupost.addValueEventListener(new ValueEventListener() {
                             @Override
@@ -237,10 +239,11 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
                             public void onCancelled(@NonNull DatabaseError databaseError) {
                             }
                         });
+
                     }
                     if (v.endsWith("false")) {
                         //post is private
-                        DatabaseReference f = firebaseDatabase.getReference().child("profile").child(mAuth.getUid()).child("following").child(userID);
+                        DatabaseReference f = FirebaseDatabase.getInstance().getReference().child("profile").child(mAuth.getUid()).child("following").child(userID);
 
                         f.addValueEventListener(new ValueEventListener() {
                             @Override
@@ -250,7 +253,7 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
 
                                     if (Accepted){
 
-                                        DatabaseReference Pvpost = firebaseDatabase.getReference().child("posts").child("private").child(postID);
+                                        DatabaseReference Pvpost = FirebaseDatabase.getInstance().getReference().child("posts").child("private").child(postID);
                                         Pvpost.addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -270,7 +273,6 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
 
                             }
                         });
-
                     }
                 }
             }
@@ -311,8 +313,20 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
         post.setVisibilty(dataSnapshot.child("visibilty").getValue(Boolean.class));
         post.setPersonal(dataSnapshot.child("personal").getValue(Boolean.class));
 
+
         Plist.add(post);
-        adapter.notifyDataSetChanged();
+        adapter.notifyItemInserted(Plist.size());
+
+        for (int i =0 ; i < Plist.size() ; i ++){
+            if ( Plist.get(i).getPostId().equals(post.getPostId())){
+
+                if ( Plist.get(i).getLikes() != post.getLikes()){
+                    Plist.set(i , post);
+                    Plist.remove(Plist.size()-1);
+                    adapter.notifyItemRangeChanged(i,Plist.size()-1);
+                }
+            }
+        }
 
     }
 

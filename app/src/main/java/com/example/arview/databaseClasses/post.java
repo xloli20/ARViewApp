@@ -66,6 +66,16 @@ public class post {
         this.personal = personal;
     }
 
+    public post(String postId, String ownerId, String postName, String postDesc, String postCreatedDate,
+                String postEndTime) {
+        this.postId = postId;
+        this.ownerId = ownerId;
+        this.postName = postName;
+        this.postDesc = postDesc;
+        this.postCreatedDate = postCreatedDate;
+        this.postEndTime = postEndTime;
+    }
+
     public String getPostId() {
         return postId;
     }
@@ -152,5 +162,22 @@ public class post {
 
     public void setPersonal(boolean personal) {
         this.personal = personal;
+    }
+
+    @Override
+    public String toString() {
+        return "post{" +
+                "postId='" + postId + '\'' +
+                ", ownerId='" + ownerId + '\'' +
+                ", postName='" + postName + '\'' +
+                ", postDesc='" + postDesc + '\'' +
+                ", postLocation=" + postLocation +
+                ", postCreatedDate='" + postCreatedDate + '\'' +
+                ", likes='" + likes + '\'' +
+                ", comments='" + comments + '\'' +
+                ", postEndTime='" + postEndTime + '\'' +
+                ", visibilty=" + visibilty +
+                ", personal=" + personal +
+                '}';
     }
 }

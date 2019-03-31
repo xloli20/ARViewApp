@@ -15,6 +15,7 @@ import com.example.arview.R;
 import com.example.arview.databaseClasses.post;
 import com.example.arview.location.MapsActivity;
 import com.example.arview.profile.ProfileActivity;
+import com.example.arview.utils.CalTimeDiff;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -77,17 +78,15 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
             relativeLayout = itemView.findViewById(R.id.post_layout);
 
             location =  itemView.findViewById(R.id.location);
-            limit = itemView.findViewById(R.id.imageButton1);
-            like =  itemView.findViewById(R.id.imageButton2);
-            comment = itemView.findViewById(R.id.imageButton3);
+            limit = itemView.findViewById(R.id.image1);
+            like =  itemView.findViewById(R.id.image2);
+            comment = itemView.findViewById(R.id.image3);
 
             PostName =  itemView.findViewById(R.id.textView);
             desc =  itemView.findViewById(R.id.textView1);
             Nlike = itemView.findViewById(R.id.textView2);
             Ncomment =itemView.findViewById(R.id.textView3);
             limitTime = itemView.findViewById(R.id.textView4);
-
-            PostName.setText("post name");
 
         }
     }
@@ -101,7 +100,7 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         // check liked from firebase
 
         holder.PostName.setText(PostList.get(position).getPostName());
-        holder.desc.setText(PostList.get(position).getPostDesc());
+        holder.desc.setText(shrinkDesc(PostList.get(position).getPostDesc()));
         holder.Nlike.setText(String.valueOf(PostList.get(position).getLikes()));
         holder.Ncomment.setText(String.valueOf(PostList.get(position).getComments()));
 
@@ -129,21 +128,21 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         });
 
         holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_empty_heart));
+
         liked = firebaseMethods.isLiked(PostList.get(position), holder);
+        time(PostList.get(position), holder, position);
 
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (liked){
                     firebaseMethods.unLike(PostList.get(position), userID);
-                    notifyItemChanged(position);
-                    notifyItemRangeChanged(position, Integer.valueOf(PostList.get(position).getLikes()));
+                    //notifyItemChanged(position);
                     holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_empty_heart));
                     liked= false;
                 }else {
                     firebaseMethods.addLike(PostList.get(position), userID);
-                    notifyItemChanged(position);
-                    notifyItemRangeChanged(position, Integer.valueOf(PostList.get(position).getLikes()));
+                    //notifyItemChanged(position);
                     holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
                     liked = true;
 
@@ -161,12 +160,88 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
                 //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
                 transaction.addToBackStack(null);
                 transaction.remove(fragment);
-                transaction.replace(R.id.fragment_container, fragment);
+                transaction.replace(R.id.fragment_container2, fragment);
                 transaction.commit();
             }
         });
 
     }
+
+    private String shrinkDesc(String des){
+        String SDes = des ;
+        if (des != null){
+            if (des.length() > 95){
+                SDes = des.substring(0, 95);
+                SDes = SDes + "...";
+            }
+        }
+        return SDes;
+    }
+
+
+    private void time( post p, ViewHolder holder , int i ){
+
+        if (p.getPostEndTime() == null ){
+            // set date created
+            holder.limit.setVisibility(View.INVISIBLE);
+            String timeDiff = CalTimeDiff.getTimestampDifference(p.getPostCreatedDate());
+            if(!timeDiff.equals("0")){
+                holder.limitTime.setText(timeDiff + " DAYS AGO");
+            }else
+                holder.limitTime.setText("Today");
+
+        }else if (p.getPostEndTime() != null ){
+            //set date End
+            holder.limit.setVisibility(View.VISIBLE);
+            String timeDiff = CalTimeDiff.getTimestampDifference(p.getPostEndTime());
+
+
+            if ( timeDiff.indexOf("-") == -1){
+                Log.e(TAG, "getTimestampDifference: ----: " + timeDiff );
+                firebaseMethods.deletePost(p.getPostId(),p.getOwnerId(), p.isVisibilty(), p.isPersonal());
+                PostList.remove(i);
+                notifyItemRemoved(i);
+                notifyItemRangeChanged(i, PostList.size()-1);
+            }
+
+            if(! timeDiff.equals("0") ){
+                String d = timeDiff.substring(timeDiff.indexOf("-") + 1);
+                holder.limitTime.setText(d + " DAYS LEFT");
+            }else {
+                String HtimeDiff = CalTimeDiff.getTimestampDifferenceH(p.getPostEndTime());
+                if(! HtimeDiff.equals("0")){
+                    String d = timeDiff.substring(timeDiff.indexOf("-") + 1);
+                    holder.limitTime.setText(d + "h LEFT");
+
+                }else{
+                    String MtimeDiff = CalTimeDiff.getTimestampDifferenceM(p.getPostEndTime());
+                    if(! MtimeDiff.equals("0") ){
+                        String d = timeDiff.substring(timeDiff.indexOf("-") + 1);
+                        holder.limitTime.setText(d + "m LEFT");
+                    }else{
+                        String StimeDiff = CalTimeDiff.getTimestampDifferenceS(p.getPostEndTime());
+                        if(! StimeDiff.equals("0") ){
+                            String d = timeDiff.substring(timeDiff.indexOf("-") + 1);
+                            holder.limitTime.setText(d + "s LEFT");
+                        }else {
+                            Log.e(TAG, "getTimestampDifference: ----: " +  StimeDiff );
+                            firebaseMethods.deletePost(p.getPostId(),p.getOwnerId(), p.isVisibilty(), p.isPersonal());
+                            PostList.remove(i);
+                            notifyItemRemoved(i);
+                            notifyItemRangeChanged(i, PostList.size()-1);
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+    }
+
+
+
+
 
 
 }

@@ -41,6 +41,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static com.example.arview.utils.CalTimeDiff.getTimestampDifference;
+import static com.example.arview.utils.CalTimeDiff.getTimestampDifferenceH;
+import static com.example.arview.utils.CalTimeDiff.getTimestampDifferenceM;
+import static com.example.arview.utils.CalTimeDiff.getTimestampDifferenceS;
+
 
 public class PostDetailsFragment extends Fragment {
     private static final String TAG = "PostDetailsFragment";
@@ -216,7 +221,7 @@ public class PostDetailsFragment extends Fragment {
 
 
         like(dataSnapshot);
-        time(dataSnapshot, post);
+        time(post);
     }
 
     private void like(final DataSnapshot dataSnapshot){
@@ -236,7 +241,7 @@ public class PostDetailsFragment extends Fragment {
         });
     }
 
-    private void time(final DataSnapshot dataSnapshot, post p){
+    private void time( post p){
 
         if (p.getPostEndTime() == null ){
             // set date created
@@ -303,84 +308,9 @@ public class PostDetailsFragment extends Fragment {
 
     }
 
+    private void CommentList(){
 
-    private String getTimestampDifference(String Date){
 
-        String difference = "";
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.CANADA);
-        sdf.setTimeZone(TimeZone.getTimeZone("Canada/Pacific"));//google 'android list of timezones'
-        Date today = c.getTime();
-        sdf.format(today);
-        Date timestamp;
-        final String photoTimestamp = Date;
-        try{
-            timestamp = sdf.parse(photoTimestamp);
-            difference = String.valueOf(Math.round(((today.getTime() - timestamp.getTime()) / 1000 / 60 / 60 / 24 )));
-        }catch (ParseException e){
-            Log.e(TAG, "getTimestampDifference: ParseException: " + e.getMessage() );
-            difference = "0";
-        }
-        return difference;
-    }
-
-    private String getTimestampDifferenceH(String Date){
-
-        String difference = "";
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.CANADA);
-        sdf.setTimeZone(TimeZone.getTimeZone("Canada/Pacific"));//google 'android list of timezones'
-        Date today = c.getTime();
-        sdf.format(today);
-        Date timestamp;
-        final String photoTimestamp = Date;
-        try{
-            timestamp = sdf.parse(photoTimestamp);
-            difference = String.valueOf(Math.round(((today.getTime() - timestamp.getTime()) / 1000 / 60 / 60 )));
-        }catch (ParseException e){
-            Log.e(TAG, "getTimestampDifferenceH: ParseException: " + e.getMessage() );
-            difference = "0";
-        }
-        return difference;
-    }
-
-    private String getTimestampDifferenceM(String Date){
-
-        String difference = "";
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.CANADA);
-        sdf.setTimeZone(TimeZone.getTimeZone("Canada/Pacific"));//google 'android list of timezones'
-        Date today = c.getTime();
-        sdf.format(today);
-        Date timestamp;
-        final String photoTimestamp = Date;
-        try{
-            timestamp = sdf.parse(photoTimestamp);
-            difference = String.valueOf(Math.round(((today.getTime() - timestamp.getTime()) / 1000 / 60  )));
-        }catch (ParseException e){
-            Log.e(TAG, "getTimestampDifferenceM: ParseException: " + e.getMessage() );
-            difference = "0";
-        }
-        return difference;
-    }
-    private String getTimestampDifferenceS(String Date){
-
-        String difference = "";
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.CANADA);
-        sdf.setTimeZone(TimeZone.getTimeZone("Canada/Pacific"));//google 'android list of timezones'
-        Date today = c.getTime();
-        sdf.format(today);
-        Date timestamp;
-        final String photoTimestamp = Date;
-        try{
-            timestamp = sdf.parse(photoTimestamp);
-            difference = String.valueOf(Math.round(((today.getTime() - timestamp.getTime()) / 1000  )));
-        }catch (ParseException e){
-            Log.e(TAG, "getTimestampDifferenceM: ParseException: " + e.getMessage() );
-            difference = "0";
-        }
-        return difference;
     }
 
 

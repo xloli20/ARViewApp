@@ -10,6 +10,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,13 +26,15 @@ import com.example.arview.R;
 import com.example.arview.DrawActivity;
 import com.example.arview.location.MapsActivity;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.post.PostSettingFragment;
+import com.example.arview.profile.ProfileEditFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.io.IOException;
 
 
-public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
+public class CameraFragment extends Fragment implements SurfaceHolder.Callback ,  PostSettingFragment.OnFragmentInteractionListener {
 
     Camera camera;
 
@@ -82,8 +86,17 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
         draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), DrawActivity.class);
-                startActivity(intent);
+                //Intent intent = new Intent(getActivity(), DrawActivity.class);
+                //startActivity(intent);
+
+                PostSettingFragment fragment = PostSettingFragment.newInstance();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+                transaction.addToBackStack(null);
+                transaction.remove(fragment);
+                transaction.replace(R.id.fragment_container, fragment);
+                transaction.commit();
             }
         });
 
@@ -205,6 +218,11 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback {
     }
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 
     /**

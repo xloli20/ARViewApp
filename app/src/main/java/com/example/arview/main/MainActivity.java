@@ -14,6 +14,7 @@ import com.example.arview.chat.AddChatFragment;
 import com.example.arview.chat.ChatsFragment;
 import com.example.arview.friend.FriendsFragment;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.post.PostSettingFragment;
 import com.example.arview.profile.ProfileFragment;
 import com.example.arview.search.SearchFragment;
 import com.example.arview.utils.SectionsPagerAdapter;
@@ -26,7 +27,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
                                                                 ProfileFragment.OnFragmentInteractionListener,
                                                                 UpdatedsFragment.OnFragmentInteractionListener,
                                                                 FriendsFragment.OnFragmentInteractionListener,
-                                                                 AddChatFragment.OnFragmentInteractionListener {
+                                                                AddChatFragment.OnFragmentInteractionListener,
+                                                                PostSettingFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "MainActivity";
 

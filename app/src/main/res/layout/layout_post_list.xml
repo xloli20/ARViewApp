@@ -44,6 +44,7 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:text="TextView" />
 
             <TextView
@@ -66,7 +67,7 @@
         android:layout_marginBottom="5dp">
 
         <ImageView
-            android:id="@+id/imageButton2"
+            android:id="@+id/image2"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center_vertical"
@@ -80,7 +81,7 @@
             android:text="T" />
 
         <ImageView
-            android:id="@+id/imageButton3"
+            android:id="@+id/image3"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_gravity="center_vertical"
@@ -100,7 +101,7 @@
             >
 
             <ImageView
-                android:id="@+id/imageButton1"
+                android:id="@+id/image1"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_alignParentEnd="true"

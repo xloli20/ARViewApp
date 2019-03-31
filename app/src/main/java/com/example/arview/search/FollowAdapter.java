@@ -62,7 +62,7 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowViewHolders>{
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.addToBackStack(null);
                 transaction.remove(fragment);
-                transaction.replace(R.id.fragment_container, fragment);
+                transaction.replace(R.id.fragment_container0, fragment);
                 transaction.commit();
             }
         });

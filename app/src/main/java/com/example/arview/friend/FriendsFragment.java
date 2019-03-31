@@ -103,7 +103,6 @@ public class FriendsFragment extends Fragment {
 
     private void postList() {
 
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         adapter = new FriendsPostRecyclerViewAdapter(getContext(), Plist , "" );
