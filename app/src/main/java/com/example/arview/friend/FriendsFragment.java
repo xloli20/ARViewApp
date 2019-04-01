@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,27 +20,24 @@ import android.view.ViewGroup;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.post;
 import com.example.arview.login.SiginActivity;
-import com.example.arview.post.PostRecyclerViewAdapter;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 
 public class FriendsFragment extends Fragment {
 
     private static final String TAG = "FriendsFragment";
     Context context;
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -53,20 +52,18 @@ public class FriendsFragment extends Fragment {
     private FriendsPostRecyclerViewAdapter adapter;
    //var
     private ArrayList<post> Plist = new ArrayList<>() ;
+    private ArrayList<String> Flist = new ArrayList<>() ;
 
 
     private OnFragmentInteractionListener mListener;
 
     public FriendsFragment() {
-        // Required empty public constructor
     }
 
     @SuppressLint("ValidFragment")
     public FriendsFragment(Context context) {
         this.context = context;
-
     }
-
 
     public static FriendsFragment newInstance() {
         FriendsFragment fragment = new FriendsFragment();
@@ -78,10 +75,7 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
@@ -105,11 +99,95 @@ public class FriendsFragment extends Fragment {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new FriendsPostRecyclerViewAdapter(getContext(), Plist , "" );
+        adapter = new FriendsPostRecyclerViewAdapter(getContext(), Plist , mAuth.getUid() );
         recyclerView.setAdapter(adapter);
+
+        DatabaseReference Pupost = FirebaseDatabase.getInstance().getReference().child("posts").child("public");
+        DatabaseReference Pvpost = FirebaseDatabase.getInstance().getReference().child("posts").child("private");
+
+        Flist.addAll(FollowingIDs.listFollowing);
+
+        Pupost.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                setPost(dataSnapshot);
+
+                Query query = dataSnapshot.getRef().orderByChild("ownerId").equalTo("muxiRaCd6jchpaajZSaoa2TkyKw2");
+                query.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.e(TAG, "datasnapshot " + dataSnapshot.getRef().toString());
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                if (dataSnapshot.exists()){
+                    String PostID = dataSnapshot.getKey();
+
+                    if (PostID != null){
+
+                        for (int i =0 ; i < Plist.size() ; i ++){
+                            if ( Plist.get(i).getPostId().equals(PostID)){
+                                Plist.set(i , setPost(dataSnapshot));
+                                Plist.remove(Plist.size()-1);
+                                adapter.notifyItemRangeChanged(i,Plist.size()-1);
+
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
+    private post setPost(DataSnapshot dataSnapshot){
+
+        final post post = new post();
+
+        post.setPostId(dataSnapshot.getKey());
+        post.setOwnerId(dataSnapshot.child("ownerId").getValue(String.class));
+        post.setPostName(dataSnapshot.child("postName").getValue(String.class));
+        post.setPostDesc(dataSnapshot.child("postDesc").getValue(String.class));
+        post.setPostCreatedDate(dataSnapshot.child("postCreatedDate").getValue(String.class));
+        post.setLikes(String.valueOf(dataSnapshot.child("likes").getChildrenCount()));
+        post.setComments(String.valueOf(dataSnapshot.child("comments").getChildrenCount()));
+        post.setPostEndTime(dataSnapshot.child("postEndTime").getValue(String.class));
+        post.setVisibilty(dataSnapshot.child("visibilty").getValue(Boolean.class));
+        post.setPersonal(dataSnapshot.child("personal").getValue(Boolean.class));
+
+
+        Plist.add(post);
+        adapter.notifyItemInserted(Plist.size());
+
+        return post;
+    }
 
      /*
     -------------------------------wedget on click-----------------------------------------

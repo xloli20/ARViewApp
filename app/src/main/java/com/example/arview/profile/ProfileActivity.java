@@ -54,7 +54,8 @@ import java.util.Objects;
 import java.util.TimeZone;
 
 public class ProfileActivity extends AppCompatActivity implements PostDetailsFragment.OnFragmentInteractionListener,
-                                                                    ProfileEditFragment.OnFragmentInteractionListener {
+                                                                    ProfileEditFragment.OnFragmentInteractionListener,
+                                                                    ProfileFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "ProfileActivity";
 
@@ -176,7 +177,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
 
                 if(v.startsWith("true")){
                     //post is personal
-                    DatabaseReference Prpost = firebaseDatabase.getReference().child("profile").child("personalPosts").child(postID);
+                    DatabaseReference Prpost = firebaseDatabase.getReference().child("profile").child(UserID).child("personalPosts").child(postID);
 
                     Prpost.addValueEventListener(new ValueEventListener() {
                         @Override

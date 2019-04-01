@@ -213,17 +213,7 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
 
                 if(v.startsWith("true")){
                     //post is personal
-                    DatabaseReference Prpost = FirebaseDatabase.getInstance().getReference().child("profile").child("personalPosts").child(postID);
 
-                    Prpost.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            setPost(dataSnapshot);
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                        }
-                    });
                 } else {
 
                     if (v.endsWith("true")) {

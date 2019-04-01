@@ -6,25 +6,18 @@
     tools:context=".friend.FriendsFragment"
     >
 
-  <ImageView
-      android:layout_width="match_parent"
-      android:layout_height="60dp"
-      android:src="@drawable/arview"
-      android:scaleType="fitXY"
-      android:layout_marginTop="10dp"/>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/postRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:nestedScrollingEnabled="false"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="10dp"
         >
 
     </androidx.recyclerview.widget.RecyclerView>
 
   <FrameLayout
-      android:id="@+id/fragment_container"
+      android:id="@+id/Ffragment_container"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_weight="1" />

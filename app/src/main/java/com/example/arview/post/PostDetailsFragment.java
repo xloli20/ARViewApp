@@ -6,7 +6,13 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.util.Log;
@@ -21,21 +27,25 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.arview.R;
+import com.example.arview.databaseClasses.comment;
 import com.example.arview.databaseClasses.post;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -52,10 +62,12 @@ public class PostDetailsFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM3 = "param3";
 
 
     private String UserID;
     private String PostID;
+    private String PostPath;
 
 
     private OnFragmentInteractionListener mListener;
@@ -65,6 +77,9 @@ public class PostDetailsFragment extends Fragment {
     private ImageView backArrow, heart, location, clock ;
     private TextView userName, postName,vibilty, postDescription, likeCount, commentCount, limit;
     private CircleImageView profilePhoto;
+
+    private RecyclerView recyclerView;
+    private SimpleCommentsRecyclerViewAdapter adapter;
 
 
     //firebase
@@ -76,16 +91,18 @@ public class PostDetailsFragment extends Fragment {
 
     //var
     private boolean liked = false;
+    private ArrayList<comment> Clist = new ArrayList<>() ;
 
 
     public PostDetailsFragment() {
     }
 
-    public static PostDetailsFragment newInstance(String UserID, String PostID) {
+    public static PostDetailsFragment newInstance(String UserID, String PostID, String PostPath) {
             PostDetailsFragment fragment = new PostDetailsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, UserID);
         args.putString(ARG_PARAM2, PostID);
+        args.putString(ARG_PARAM3, PostPath);
         fragment.setArguments(args);
         return fragment;
     }
@@ -96,10 +113,10 @@ public class PostDetailsFragment extends Fragment {
         if (getArguments() != null) {
             UserID = getArguments().getString(ARG_PARAM1);
             PostID = getArguments().getString(ARG_PARAM2);
+            PostPath = getArguments().getString(ARG_PARAM3);
         }
 
-        Log.e(TAG, "onCreate: getArguments UserID." +  UserID +" PostID " + PostID);
-
+        Log.e(TAG, "onCreate: getArguments UserID." +  UserID +" PostID " + PostID + " PostPath" + PostPath);
 
 
     }
@@ -117,67 +134,51 @@ public class PostDetailsFragment extends Fragment {
 
     public void getPostDetails(){
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("profile").child(UserID).child("post").child(PostID);
-
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String v = dataSnapshot.getValue(String.class);
-
-                if(v.startsWith("true")){
-                    //post is personal
-                    DatabaseReference Prpost = firebaseDatabase.getReference().child("profile").child("personalPosts").child(PostID);
-                    Prpost.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            setPost(dataSnapshot, "PERSONAL");
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                        }
-                    });
-                } else {
-
-                    if (v.endsWith("true")) {
-                        //post is public
-
-                        DatabaseReference Pupost = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(PostID);
-
-                        Pupost.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                setPost(dataSnapshot, "PUBLIC");
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                            }
-                        });
-                    }
-                    if (v.endsWith("false")) {
-                        //post is private
-                        DatabaseReference Pvpost = firebaseDatabase.getReference().child("posts").child("private").child(PostID);
-                        Pvpost.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                setPost(dataSnapshot, "PRIVATE");
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                            }
-                        });
-
-                    }
-
+        if(PostPath.startsWith("true")){
+            //post is personal
+            DatabaseReference Prpost = firebaseDatabase.getReference().child("profile").child(UserID).child("personalPosts").child(PostID);
+            Prpost.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    setPost(dataSnapshot, "PERSONAL");
                 }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        } else {
 
+            if (PostPath.endsWith("true")) {
+                //post is public
+
+                DatabaseReference Pupost = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(PostID);
+
+                Pupost.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        setPost(dataSnapshot, "PUBLIC");
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+            }
+            if (PostPath.endsWith("false")) {
+                //post is private
+                DatabaseReference Pvpost = firebaseDatabase.getReference().child("posts").child("private").child(PostID);
+                Pvpost.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        setPost(dataSnapshot, "PRIVATE");
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
 
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        }
 
     }
 
@@ -200,7 +201,7 @@ public class PostDetailsFragment extends Fragment {
         postDescription.setText(post.getPostDesc());
         vibilty.setText(visibelty);
         likeCount.setText(post.getLikes());
-        commentCount.setText(post.getComments());
+        commentCount.setText(post.getComments() + " Comments");
         limit.setText(post.getPostEndTime());
 
         if (dataSnapshot.child("likes").hasChild(mAuth.getUid())){
@@ -217,7 +218,6 @@ public class PostDetailsFragment extends Fragment {
         if (visibelty.equals("PRIVATE")){
             vibilty.setBackground(getResources().getDrawable(R.drawable.yellow_rounded_border));
         }
-
 
 
         like(dataSnapshot);
@@ -310,8 +310,114 @@ public class PostDetailsFragment extends Fragment {
 
     private void CommentList(){
 
+        String ID = FirebaseAuth.getInstance().getUid();
+        Log.e(TAG, "postList: UserID in." +  ID );
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new SimpleCommentsRecyclerViewAdapter(getContext(), Clist , ID );
+        recyclerView.setAdapter(adapter);
+
+
+        if(PostPath.startsWith("true")) {
+            //post is personal
+            DatabaseReference Prpost = FirebaseDatabase.getInstance().getReference().child("profile").child(UserID).child("personalPosts").child(PostID).child("comments");
+            Query query = Prpost.limitToLast(5);
+            query.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    setComment(dataSnapshot);
+                }
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                }
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                }
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+
+        }else{
+
+            if (PostPath.endsWith("true")) {
+                //post is public
+                DatabaseReference Pupost = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(PostID).child("comments");
+                Query query = Pupost.limitToLast(5);
+                query.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        setComment(dataSnapshot);
+                    }
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    }
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+
+            }
+            if (PostPath.endsWith("false")) {
+                //post is private
+                DatabaseReference Pvpost = FirebaseDatabase.getInstance().getReference().child("posts").child("private").child(PostID).child("comments");
+                Query query = Pvpost.limitToLast(5);
+                query.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        setComment(dataSnapshot);
+                    }
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    }
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+            }
+
+        }
+
 
     }
+
+    private comment setComment(DataSnapshot dataSnapshot){
+
+        final comment comment = new comment();
+
+        comment.setCommentID(dataSnapshot.getKey());
+        comment.setUserID(dataSnapshot.child("userID").getValue(String.class));
+        comment.setUserName(dataSnapshot.child("userName").getValue(String.class));
+        comment.setComment(dataSnapshot.child("comment").getValue(String.class));
+        comment.setCommentDate(dataSnapshot.child("commentDate").getValue(String.class));
+        comment.setLikes(String.valueOf(dataSnapshot.child("likes").getChildrenCount()));
+
+        comment.setPostID(PostID);
+        comment.setPostPath(PostPath);
+
+        Clist.add(comment);
+        adapter.notifyItemInserted(Clist.size());
+
+        return comment;
+
+    }
+
 
 
 
@@ -333,11 +439,29 @@ public class PostDetailsFragment extends Fragment {
         likeCount =  view.findViewById(R.id.likeNum);
         commentCount =  view.findViewById(R.id.comment);
         limit =  view.findViewById(R.id.limit);
+        recyclerView  =  view.findViewById(R.id.commentRecyclerView);
 
         backArrow();
         setUpOwner();
         getPostDetails();
+        openComment();
+        CommentList();
+    }
 
+    private void openComment(){
+        commentCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PostCommentsFragment fragment = PostCommentsFragment.newInstance(PostPath , PostID);
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+                transaction.addToBackStack(null);
+                transaction.remove(fragment);
+                transaction.replace(R.id.fragment_container3, fragment);
+                transaction.commit();
+            }
+        });
     }
 
 
@@ -383,40 +507,6 @@ public class PostDetailsFragment extends Fragment {
       /*
     -------------------------------wedget on click-----------------------------------------
     */
-      class CustomAdapter extends BaseAdapter {
-
-          private ImageView proImg;
-          private TextView Uname;
-          private TextView comment;
-          private TextView commentDate;
-
-          @Override
-          public int getCount() {
-              return 10;
-          }
-
-          @Override
-          public Object getItem(int i) {
-              return null;
-          }
-
-          @Override
-          public long getItemId(int i) {
-              return 0;
-          }
-
-          @Override
-          public View getView(int i, View view, ViewGroup viewGroup) {
-              view = getLayoutInflater().inflate(R.layout.layout_comment_list, null);
-
-              proImg = (ImageView) view.findViewById(R.id.profile_photo);
-              Uname = (TextView) view.findViewById(R.id.textView);
-              comment = (TextView) view.findViewById(R.id.textView1);
-              commentDate = (TextView) view.findViewById(R.id.textView2);
-
-              return view;
-          }
-      }
 
       /*
     ------------------------------------ Firebase ---------------------------------------------
@@ -448,6 +538,8 @@ public class PostDetailsFragment extends Fragment {
                 // ...
             }
         };
+
+
 
     }
 

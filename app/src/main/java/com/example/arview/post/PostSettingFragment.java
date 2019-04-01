@@ -152,12 +152,15 @@ public class PostSettingFragment extends Fragment {
                     if (! PD.equals("")) {
 
                         if (! PostEndTime.equals("")) {
-                            if (PostEndTime.equals("null"))
-                                firebaseMethods.addPost(PN, PD, null, null, Pvisibelty, Ppersonal);
-                            else
-                                firebaseMethods.addPost(PN, PD, null, PostEndTime, Pvisibelty, Ppersonal);
 
-                            Toast.makeText(getActivity(), "publish", Toast.LENGTH_LONG).show();
+                            if (PostEndTime.equals("off")) {
+                                firebaseMethods.addPost(PN, PD, null, null, Pvisibelty, Ppersonal);
+                                Toast.makeText(getActivity(), "Your post saved as personal post", Toast.LENGTH_LONG).show();
+                            }
+                            else{
+                                firebaseMethods.addPost(PN, PD, null, PostEndTime, Pvisibelty, Ppersonal);
+                                Toast.makeText(getActivity(), "publish", Toast.LENGTH_LONG).show();
+                            }
 
                         }else Toast.makeText(getActivity(), "should set all post Setting Make Sure date not empty", Toast.LENGTH_LONG).show();
                     }else Toast.makeText(getActivity(), "should set all post Setting Make Sure Post description not empty", Toast.LENGTH_LONG).show();
@@ -176,18 +179,14 @@ public class PostSettingFragment extends Fragment {
                 if (checkedId == R.id.Personal ){
                     Ppersonal = true;
                     Pvisibelty = false;
-                    Toast.makeText(getActivity(), Ppersonal +" "+ Pvisibelty, Toast.LENGTH_LONG).show();
                 }
                 else if (checkedId == R.id.Private ){
                     Pvisibelty = false;
                     Ppersonal = false;
-                    Toast.makeText(getActivity(), Ppersonal +" "+ Pvisibelty, Toast.LENGTH_LONG).show();
                 }
                 else if (checkedId == R.id.Pubilc ){
                     Pvisibelty = true;
                     Ppersonal = false;
-                    Toast.makeText(getActivity(), Ppersonal +" "+ Pvisibelty, Toast.LENGTH_LONG).show();
-
                 }
             }
         });
@@ -206,7 +205,7 @@ public class PostSettingFragment extends Fragment {
                 timeroff.setBackground(getResources().getDrawable(R.drawable.grey_sqr));
                 timer.setBackground(getResources().getDrawable(R.drawable.clear_sqr));
                 EndTime.setText("");
-                PostEndTime = "null";
+                PostEndTime = "off";
             }
         });
 

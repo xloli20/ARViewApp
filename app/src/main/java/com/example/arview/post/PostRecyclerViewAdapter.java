@@ -44,6 +44,9 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
     private Context mContext;
     private boolean liked = false;
 
+    private FirebaseMethods firebaseMethods;
+
+
     public PostRecyclerViewAdapter(Context context, ArrayList<post> posts, String uID) {
         PostList = posts;
         userID = uID;
@@ -64,7 +67,6 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         return PostList.size();
     }
 
-    private FirebaseMethods firebaseMethods;
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
@@ -97,7 +99,6 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         Log.d(TAG, "onBindViewHolder: called.");
 
 
-        // check liked from firebase
 
         holder.PostName.setText(PostList.get(position).getPostName());
         holder.desc.setText(shrinkDesc(PostList.get(position).getPostDesc()));
@@ -130,6 +131,8 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_empty_heart));
 
         liked = firebaseMethods.isLiked(PostList.get(position), holder);
+
+
         time(PostList.get(position), holder, position);
 
         holder.like.setOnClickListener(new View.OnClickListener() {
@@ -137,12 +140,10 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
             public void onClick(View v) {
                 if (liked){
                     firebaseMethods.unLike(PostList.get(position), userID);
-                    //notifyItemChanged(position);
                     holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_empty_heart));
                     liked= false;
                 }else {
                     firebaseMethods.addLike(PostList.get(position), userID);
-                    //notifyItemChanged(position);
                     holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
                     liked = true;
 
@@ -151,10 +152,25 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
         });
 
 
+        holder.comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PostCommentsFragment fragment = PostCommentsFragment.newInstance(String.valueOf(PostList.get(position).isPersonal())+ String.valueOf(PostList.get(position).isVisibilty()), PostList.get(position).getPostId());
+                Log.e(TAG, String.valueOf(PostList.get(position).isPersonal())+ String.valueOf(PostList.get(position).isVisibilty()));
+                FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+                transaction.addToBackStack(null);
+                transaction.remove(fragment);
+                transaction.replace(R.id.fragment_container2, fragment);
+                transaction.commit();
+            }
+        });
+
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PostDetailsFragment fragment = PostDetailsFragment.newInstance(PostList.get(position).getOwnerId(), PostList.get(position).getPostId());
+                PostDetailsFragment fragment = PostDetailsFragment.newInstance(PostList.get(position).getOwnerId(), PostList.get(position).getPostId(),String.valueOf(PostList.get(position).isPersonal())+ String.valueOf(PostList.get(position).isVisibilty()));
                 FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);

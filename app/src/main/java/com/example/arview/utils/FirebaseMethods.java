@@ -8,12 +8,15 @@ import android.widget.Toast;
 
 import com.example.arview.R;
 import com.example.arview.databaseClasses.chatMessage;
+import com.example.arview.databaseClasses.comment;
 import com.example.arview.databaseClasses.followers;
 import com.example.arview.databaseClasses.following;
 import com.example.arview.databaseClasses.post;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.databaseClasses.userChat;
 import com.example.arview.databaseClasses.users;
+import com.example.arview.friend.FriendsPostRecyclerViewAdapter;
+import com.example.arview.post.CommentsRecyclerViewAdapter;
 import com.example.arview.post.PostRecyclerViewAdapter;
 import com.example.arview.setting.SettingActivity;
 import com.firebase.geofire.GeoFire;
@@ -439,6 +442,8 @@ public class FirebaseMethods {
             DatabaseReference GRef = mFirebaseDatabase.getInstance().getReference().child("profile").child(userID).child("personalPostsLocations");
 
             GeoFire geoFire = new GeoFire(GRef);
+
+            /*
             geoFire.setLocation(postID, new GeoLocation(postLocation.getLatitude(), postLocation.getLongitude()),new
                     GeoFire.CompletionListener(){
                         @Override
@@ -446,7 +451,7 @@ public class FirebaseMethods {
                             Log.e(TAG, "GeoFire Complete");
                         }
                     });
-
+            */
 
         }else {
 
@@ -552,7 +557,6 @@ public class FirebaseMethods {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.child("profile").child(p.getOwnerId()).child("personalPosts").child(p.getPostId()).child("likes").child(userID).exists()){
-                        Log.e(TAG, "isLike: isPersonal  dataSnapshot.exists "+ dataSnapshot);
                         holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
                         liked = true;
                     }
@@ -585,6 +589,62 @@ public class FirebaseMethods {
                         if (dataSnapshot.child("posts").child("private").child(p.getPostId()).child("likes").child(userID).exists()){
                             holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
                             liked = true;
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        }
+
+        return liked;
+    }
+
+    public boolean Fliked = false;
+    public Boolean isFLiked(final post p, final FriendsPostRecyclerViewAdapter.ViewHolder holder){
+
+        myRef = FirebaseDatabase.getInstance().getReference();
+
+        if (p.isPersonal()){
+            myRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.child("profile").child(p.getOwnerId()).child("personalPosts").child(p.getPostId()).child("likes").child(userID).exists()){
+                        holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                        Fliked = true;
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+
+        }else {
+            if (p.isVisibilty()){
+                myRef.addValueEventListener(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.child("posts").child("public").child(p.getPostId()).child("likes").child(userID).exists()){
+                            holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                            Fliked = true;
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+
+            }else {
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.child("posts").child("private").child(p.getPostId()).child("likes").child(userID).exists()){
+                            holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                            Fliked = true;
                         }
                     }
                     @Override
@@ -635,7 +695,125 @@ public class FirebaseMethods {
 
     /************************************* post ************************************/
 
+    /************************************* Comment ************************************/
+    public void addComment(String PostID, String PostPath, comment comment){
 
+        String CommentId = String.valueOf(myRef.push().getKey());
+
+        if(PostPath.startsWith("true")){
+            //post is personal
+            myRef.child("profile").child("personalPosts").child(PostID).child("comments").child(CommentId).setValue(comment);
+
+        } else {
+
+            if (PostPath.endsWith("true")) {
+                //post is public
+                myRef.child("posts").child("public").child(PostID).child("comments").child(CommentId).setValue(comment);
+
+            }
+            if (PostPath.endsWith("false")) {
+                //post is private
+                myRef.child("posts").child("private").child(PostID).child("comments").child(CommentId).setValue(comment);
+
+            }
+        }
+    }
+
+    public boolean Cliked = false;
+    public Boolean isCLiked(final String CommentID, final String PostID, String PostPath, final CommentsRecyclerViewAdapter.ViewHolder holder){
+
+        if(PostPath.startsWith("true")){
+            //post is personal
+            myRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if ( dataSnapshot.child("profile").child("personalPosts").child(PostID).child("comments").child(CommentID).child("likes").child(userID).exists()){
+                        holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                        Cliked = true;
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        } else {
+
+            if (PostPath.endsWith("true")) {
+                //post is public
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if ( dataSnapshot.child("posts").child("public").child(PostID).child("comments").child(CommentID).child("likes").child(userID).exists()){
+                            holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                            Cliked = true;
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+            if (PostPath.endsWith("false")) {
+                //post is private
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if ( dataSnapshot.child("posts").child("private").child(PostID).child("comments").child(CommentID).child("likes").child(userID).exists()){
+                            holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                            Cliked = true;
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+
+        return Cliked;
+    }
+
+    public void addCLike(String CommentID, String PostID, String PostPath, String userID){
+
+        if(PostPath.startsWith("true")){
+            //post is personal
+            myRef.child("profile").child("personalPosts").child(PostID).child("comments").child(CommentID).child("likes").child(userID).setValue("true");
+        } else {
+            if (PostPath.endsWith("true")) {
+                //post is public
+                myRef.child("posts").child("public").child(PostID).child("comments").child(CommentID).child("likes").child(userID).setValue("true");
+            }
+            if (PostPath.endsWith("false")) {
+                //post is private
+                myRef.child("posts").child("private").child(PostID).child("comments").child(CommentID).child("likes").child(userID).setValue("true");
+            }
+        }
+
+    }
+
+    public void unCLike(String CommentID, String PostID, String PostPath, String userID){
+
+        if(PostPath.startsWith("true")){
+            //post is personal
+            myRef.child("profile").child("personalPosts").child(PostID).child("comments").child(CommentID).child("likes").child(userID).removeValue();
+        } else {
+            if (PostPath.endsWith("true")) {
+                //post is public
+                myRef.child("posts").child("public").child(PostID).child("comments").child(CommentID).child("likes").child(userID).removeValue();
+            }
+            if (PostPath.endsWith("false")) {
+                //post is private
+                myRef.child("posts").child("private").child(PostID).child("comments").child(CommentID).child("likes").child(userID).removeValue();
+            }
+        }
+    }
+
+
+    /************************************* Comment ************************************/
         /*
     test
      */
