@@ -136,7 +136,7 @@ public class PostDetailsFragment extends Fragment {
 
         if(PostPath.startsWith("true")){
             //post is personal
-            DatabaseReference Prpost = firebaseDatabase.getReference().child("profile").child(UserID).child("personalPosts").child(PostID);
+            DatabaseReference Prpost = FirebaseDatabase.getInstance().getReference().child("profile").child(UserID).child("personalPosts").child(PostID);
             Prpost.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
