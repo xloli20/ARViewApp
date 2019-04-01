@@ -177,17 +177,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
 
                 if(v.startsWith("true")){
                     //post is personal
-                    DatabaseReference Prpost = firebaseDatabase.getReference().child("profile").child(UserID).child("personalPosts").child(postID);
 
-                    Prpost.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            setPost(dataSnapshot);
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                        }
-                    });
                 } else {
 
                     if (v.endsWith("true")) {

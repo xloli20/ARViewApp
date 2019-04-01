@@ -462,6 +462,7 @@ public class FirebaseMethods {
                         .child(postID)
                         .setValue(post);
 
+                /*
                 //use GeoFirebase
                 DatabaseReference GRef = mFirebaseDatabase.getInstance().getReference().child("postsLocations").child("public");
 
@@ -473,7 +474,7 @@ public class FirebaseMethods {
                                 Log.e(TAG, "GeoFire Complete");
                             }
                         });
-
+*/
             }else {
 
                 myRef.child("posts")
@@ -484,6 +485,7 @@ public class FirebaseMethods {
                 //use GeoFirebase
                 DatabaseReference GRef = mFirebaseDatabase.getInstance().getReference().child("postsLocations").child("private");
 
+                /*
                 GeoFire geoFire = new GeoFire(GRef);
                 geoFire.setLocation(postID, new GeoLocation(postLocation.getLatitude(), postLocation.getLongitude()),new
                         GeoFire.CompletionListener(){
@@ -492,6 +494,8 @@ public class FirebaseMethods {
                                 Log.e(TAG, "GeoFire Complete");
                             }
                         });
+
+                        */
             }
         }
 

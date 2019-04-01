@@ -31,7 +31,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.Objects;
 
 
 public class FriendsFragment extends Fragment {
@@ -86,7 +91,10 @@ public class FriendsFragment extends Fragment {
         setupFirebaseAuth();
 
         recyclerView = view.findViewById(R.id.postRecyclerView);
-        postList();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        getUserFollowingPosts();
 
         return view;
     }
@@ -95,75 +103,113 @@ public class FriendsFragment extends Fragment {
     -------------------------------wedget on click-----------------------------------------
      */
 
-    private void postList() {
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new FriendsPostRecyclerViewAdapter(getContext(), Plist , mAuth.getUid() );
-        recyclerView.setAdapter(adapter);
+         int count = 0;
+    public void getUserFollowingPosts() {
+        DatabaseReference userFollowingDB = FirebaseDatabase.getInstance().getReference().child("profile").child(mAuth.getUid()).child("following");
 
-        DatabaseReference Pupost = FirebaseDatabase.getInstance().getReference().child("posts").child("public");
-        DatabaseReference Pvpost = FirebaseDatabase.getInstance().getReference().child("posts").child("private");
-
-        Flist.addAll(FollowingIDs.listFollowing);
-
-        Pupost.addChildEventListener(new ChildEventListener() {
+        userFollowingDB.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
 
-                setPost(dataSnapshot);
+                String uid = dataSnapshot.getRef().getKey();
+                if (uid != null && !Flist.contains(uid)){
+                    Flist.add(uid);
 
-                Query query = dataSnapshot.getRef().orderByChild("ownerId").equalTo("muxiRaCd6jchpaajZSaoa2TkyKw2");
-                query.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.e(TAG, "datasnapshot " + dataSnapshot.getRef().toString());
+                    count++;
+                    DatabaseReference ref = firebaseDatabase.getReference().child("profile").child(uid).child("post");
 
-                    }
+                    ref.addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            final String postID = dataSnapshot.getKey();
+                            String v = dataSnapshot.getValue(String.class);
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e(TAG, "postID " + postID);
 
-                    }
-                });
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            if(v.startsWith("true")){
+                                //post is personal
 
-                if (dataSnapshot.exists()){
-                    String PostID = dataSnapshot.getKey();
+                            } else {
 
-                    if (PostID != null){
+                                if (v.endsWith("true")) {
+                                    //post is public
+                                    DatabaseReference Pupost = firebaseDatabase.getReference().child("posts").child("public").child(postID);
 
-                        for (int i =0 ; i < Plist.size() ; i ++){
-                            if ( Plist.get(i).getPostId().equals(PostID)){
-                                Plist.set(i , setPost(dataSnapshot));
-                                Plist.remove(Plist.size()-1);
-                                adapter.notifyItemRangeChanged(i,Plist.size()-1);
+                                    Pupost.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            setPost(dataSnapshot);
+                                        }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        }
+                                    });
 
+                                }
+                                if (v.endsWith("false")) {
+                                    //post is private
+                                    DatabaseReference Pvpost = firebaseDatabase.getReference().child("posts").child("private").child(postID);
+                                    Pvpost.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            setPost(dataSnapshot);
+                                        }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        }
+                                    });
+                                }
                             }
 
                         }
+
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    if(count >= Flist.size() - 1){
+                        Log.e(TAG, "count" + count);
+                        //display the photos
+                        displayPosts();
                     }
                 }
-            }
 
+
+            }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String s) {
+            }
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
             }
-
             @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String s) {
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
+
+        Log.e(TAG, "getUserFollowing " + Flist);
 
     }
 
@@ -182,11 +228,29 @@ public class FriendsFragment extends Fragment {
         post.setVisibilty(dataSnapshot.child("visibilty").getValue(Boolean.class));
         post.setPersonal(dataSnapshot.child("personal").getValue(Boolean.class));
 
+        Log.e(TAG, "post " + post.toString());
 
         Plist.add(post);
         adapter.notifyItemInserted(Plist.size());
 
         return post;
+    }
+
+
+    private void displayPosts(){
+
+        if(Plist != null){
+
+            Collections.sort(Plist, new Comparator<post>() {
+                public int compare(post o1, post o2) {
+                    return o2.getPostCreatedDate().compareTo(o1.getPostCreatedDate());
+                }
+            });
+
+            adapter = new FriendsPostRecyclerViewAdapter(getContext(), Plist , mAuth.getUid() );
+            recyclerView.setAdapter(adapter);
+
+        }
     }
 
      /*
