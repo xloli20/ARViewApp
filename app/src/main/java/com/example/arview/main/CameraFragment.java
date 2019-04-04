@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -19,15 +20,20 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.arview.DrawARActivity;
 import com.example.arview.R;
 import com.example.arview.DrawActivity;
 import com.example.arview.location.MapsActivity;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.post.PostSettingFragment;
 import com.example.arview.profile.ProfileEditFragment;
+import com.example.arview.setting.SettingActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -86,9 +92,37 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback ,
         draw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(getActivity(), DrawActivity.class);
-                //startActivity(intent);
 
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
+                View mView = getLayoutInflater().inflate(R.layout.dialog_drawing2dor3d, null);
+
+                TextView drawing3d = (TextView) mView.findViewById(R.id.draw3d);
+                TextView drawing2d = (TextView) mView.findViewById(R.id.draw2d);
+
+
+                drawing3d.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(), DrawARActivity.class);
+                        startActivity(intent);
+
+                    }
+                });
+                drawing2d.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(), DrawActivity.class);
+                        startActivity(intent);
+
+                    }
+                });
+
+                mBuilder.setView(mView);
+                AlertDialog dialog = mBuilder.create();
+                dialog.show();
+
+
+                /*
                 PostSettingFragment fragment = PostSettingFragment.newInstance();
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -96,7 +130,7 @@ public class CameraFragment extends Fragment implements SurfaceHolder.Callback ,
                 transaction.addToBackStack(null);
                 transaction.remove(fragment);
                 transaction.replace(R.id.fragment_container, fragment);
-                transaction.commit();
+                transaction.commit();*/
             }
         });
 

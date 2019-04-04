@@ -13,5 +13,7 @@
     <color name="grey">#bfbfbf</color>
     <color name="link_blue">#4d94ff</color>
 
+    <color name="active">@android:color/holo_blue_dark</color>
+    <color name="gray">@android:color/darker_gray</color>
 
 </resources>
