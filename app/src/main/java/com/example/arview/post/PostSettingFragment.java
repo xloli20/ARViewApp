@@ -9,7 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
+import android.app.Fragment;
 
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -27,8 +27,10 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.arview.DrawActivity;
 import com.example.arview.R;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.main.MainActivity;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -159,7 +161,9 @@ public class PostSettingFragment extends Fragment {
                             }
                             else{
                                 firebaseMethods.addPost(PN, PD, null, PostEndTime, Pvisibelty, Ppersonal);
-                                Toast.makeText(getActivity(), "publish", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "published", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                startActivity(intent);
                             }
 
                         }else Toast.makeText(getActivity(), "should set all post Setting Make Sure date not empty", Toast.LENGTH_LONG).show();
@@ -311,7 +315,7 @@ public class PostSettingFragment extends Fragment {
         });
     }
     private void closefragment() {
-        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+        getActivity().getFragmentManager().beginTransaction().remove(this).commit();
     }
 
 
@@ -384,10 +388,10 @@ public class PostSettingFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
-        } else {
+        } /*else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
-        }
+        }*/
     }
 
     @Override

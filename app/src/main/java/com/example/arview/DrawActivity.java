@@ -1,25 +1,28 @@
 package com.example.arview;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
-import android.net.Uri;
+import android.app.FragmentTransaction;
+import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 
-import com.google.android.gms.auth.api.signin.internal.Storage;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.arview.post.PostSettingFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class DrawActivity extends Activity {
+
+public class DrawActivity extends AppCompatActivity {
 
     drawing canvas;
     private StorageReference storageReference;
+
+    private ImageView send;
+
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,17 @@ public class DrawActivity extends Activity {
 
             }
         });*/
+
+        send = (ImageView) findViewById(R.id.send);
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PostSettingFragment fragment = new PostSettingFragment();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, fragment);
+                transaction.commit();
+            }
+        });
 
     }
 }
