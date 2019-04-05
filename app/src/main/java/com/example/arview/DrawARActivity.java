@@ -1,6 +1,21 @@
+/*
+ * Copyright 2017 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.example.arview;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,7 +23,6 @@ import android.content.SharedPreferences;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.os.Build;
 import android.os.Bundle;
 
 import android.util.DisplayMetrics;
@@ -16,13 +30,18 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.example.arview.AppSettings;
+import com.example.arview.BiquadFilter;
+import com.example.arview.DisplayRotationHelper;
+import com.example.arview.PermissionHelper;
+import com.example.arview.R;
+import com.example.arview.rendering.LineUtils;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Camera;
@@ -30,6 +49,7 @@ import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
+import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.UnavailableApkTooOldException;
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
@@ -47,9 +67,14 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector3f;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GestureDetectorCompat;
+
+
+/**
+ * This is a complex example that shows how to create an augmented reality (AR) application using
+ * the ARCore API.
+ */
 
 public class DrawARActivity extends AppCompatActivity implements GLSurfaceView.Renderer, GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener{
@@ -111,7 +136,6 @@ public class DrawARActivity extends AppCompatActivity implements GLSurfaceView.R
     /**
      * Setup the app when main activity is created
      */
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -255,7 +279,6 @@ public class DrawARActivity extends AppCompatActivity implements GLSurfaceView.R
     /**
      * onResume part of the Android Activity Lifecycle
      */
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onResume() {
         super.onResume();
@@ -308,7 +331,11 @@ public class DrawARActivity extends AppCompatActivity implements GLSurfaceView.R
             mSession.configure(config);
         }
         // Note that order matters - see the note in onPause(), the reverse applies here.
-        mSession.resume();
+        try {
+            mSession.resume();
+        } catch (CameraNotAvailableException e) {
+            e.printStackTrace();
+        }
         mSurfaceView.onResume();
         mDisplayRotationHelper.onResume();
         mPaused = false;
@@ -317,7 +344,6 @@ public class DrawARActivity extends AppCompatActivity implements GLSurfaceView.R
     /**
      * onPause part of the Android Activity Lifecycle
      */
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onPause() {
         super.onPause();
