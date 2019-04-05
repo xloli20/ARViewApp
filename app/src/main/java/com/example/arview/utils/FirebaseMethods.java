@@ -11,11 +11,13 @@ import com.example.arview.databaseClasses.chatMessage;
 import com.example.arview.databaseClasses.comment;
 import com.example.arview.databaseClasses.followers;
 import com.example.arview.databaseClasses.following;
+import com.example.arview.databaseClasses.nearPost;
 import com.example.arview.databaseClasses.post;
 import com.example.arview.databaseClasses.profile;
 import com.example.arview.databaseClasses.userChat;
 import com.example.arview.databaseClasses.users;
 import com.example.arview.friend.FriendsPostRecyclerViewAdapter;
+import com.example.arview.location.RecyclerViewAdapter;
 import com.example.arview.post.CommentsRecyclerViewAdapter;
 import com.example.arview.post.PostRecyclerViewAdapter;
 import com.example.arview.setting.SettingActivity;
@@ -660,7 +662,63 @@ public class FirebaseMethods {
             }
         }
 
-        return liked;
+        return Fliked;
+    }
+
+    public boolean Nliked = false;
+    public Boolean isNLiked(final nearPost p, final RecyclerViewAdapter.ViewHolder holder){
+
+        myRef = FirebaseDatabase.getInstance().getReference();
+
+        if (p.getPost().isPersonal()){
+            myRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.child("profile").child(p.getPost().getOwnerId()).child("personalPosts").child(p.getPost().getPostId()).child("likes").child(userID).exists()){
+                        holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                        Nliked = true;
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+
+        }else {
+            if (p.getPost().isVisibilty()){
+                myRef.addValueEventListener(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.child("posts").child("public").child(p.getPost().getPostId()).child("likes").child(userID).exists()){
+                            holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                            Nliked = true;
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
+
+            }else {
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.child("posts").child("private").child(p.getPost().getPostId()).child("likes").child(userID).exists()){
+                            holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                            Nliked = true;
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        }
+
+        return Nliked;
     }
 
     public void addLike(post p, String userID){

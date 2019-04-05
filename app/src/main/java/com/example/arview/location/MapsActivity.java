@@ -39,6 +39,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.nearPost;
 import com.example.arview.databaseClasses.post;
+import com.example.arview.friend.FriendsPostRecyclerViewAdapter;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.main.MainActivity;
 import com.example.arview.utils.FirebaseMethods;
@@ -76,6 +77,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +141,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         DatabaseReference PostsLocation = FirebaseDatabase.getInstance().getReference().child("postsLocations").child("public");
 
         GeoFire geoFire = new GeoFire(PostsLocation);
-        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mLastLocation.getLongitude(), mLastLocation.getLatitude()), 100000);
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(mLastLocation.getLongitude(), mLastLocation.getLatitude()), 10000);
 
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override
@@ -154,7 +157,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 final nearPost nearPost = new nearPost();
 
-                nearPost.setPostId(key);
+                nearPost.setPost(new post());
+                nearPost.getPost().setPostId(key);
 
                 Location postLocation = new Location(LocationManager.GPS_PROVIDER);
                 postLocation.setLatitude(location.latitude);
@@ -172,14 +176,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                        nearPost.getPost().setOwnerId(dataSnapshot.child("ownerId").getValue(String.class));
+                        nearPost.getPost().setPostName(dataSnapshot.child("postName").getValue(String.class));
+                        nearPost.getPost().setLikes(String.valueOf(dataSnapshot.child("likes").getChildrenCount()));
+                        nearPost.getPost().setVisibilty(dataSnapshot.child("visibilty").getValue(Boolean.class));
+                        nearPost.getPost().setPersonal(dataSnapshot.child("personal").getValue(Boolean.class));
 
-                        nearPost.setOwnerId(map.get("ownerId").toString());
-                        nearPost.setPostName(map.get("postName").toString());
-                        nearPost.setLikeCount(map.get("likesCount").toString());
-
-
-                        DatabaseReference OwnerREf = FirebaseDatabase.getInstance().getReference().child("profile").child(nearPost.getOwnerId());
+                        DatabaseReference OwnerREf = FirebaseDatabase.getInstance().getReference().child("profile").child(nearPost.getPost().getOwnerId());
                         OwnerREf.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -207,10 +210,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     Bitmap icone = Bitmap.createScaledBitmap(resource, 70, 70, false);
 
                                                     Marker mPostMarker = mMap.addMarker(new MarkerOptions().position(PostLocation)
-                                                            .title(nearPost.getPostName())
+                                                            .title(nearPost.getPost().getPostName())
                                                             .icon(BitmapDescriptorFactory.fromBitmap(icone)));
 
-                                                    mPostMarker.setTag(nearPost.getPostName());
+                                                    mPostMarker.setTag(nearPost.getPost().getPostName());
 
                                                     markers.add(mPostMarker);
 
@@ -221,10 +224,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 }
 
-
-
                                 nearPostsList.add(nearPost);
+
+                                Collections.sort(nearPostsList, new Comparator<nearPost>() {
+                                    public int compare(nearPost o1, nearPost o2) {
+                                        return o1.getDestinace().compareTo(o2.getDestinace());
+                                    }
+                                });
+
                                 adapter.notifyDataSetChanged();
+
+                                for (int i =0 ; i < nearPostsList.size() ; i ++){
+                                    if ( nearPostsList.get(i).getPost().getPostId().equals(nearPost.getPost().getPostId())){
+
+                                        if ( nearPostsList.get(i).getPost().getLikes() != nearPost.getPost().getLikes()){
+                                            Log.e(TAG, "diff ");
+                                            nearPostsList.set(i , nearPost);
+                                            nearPostsList.remove(i+1);
+                                            adapter.notifyItemRangeChanged(i,nearPostsList.size()-1);
+                                        }
+
+                                    }
+
+
+                                }
+
 
                             }
 
@@ -430,7 +454,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new RecyclerViewAdapter(this, nearPostsList);
+        adapter = new RecyclerViewAdapter(this, nearPostsList, mAuth.getUid());
         recyclerView.setAdapter(adapter);
 
     }

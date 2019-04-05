@@ -4,10 +4,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class nearPost {
 
-    private String postId;
-    private String postName;
-    private String likeCount;
-    private String ownerId;
+    private post post;
     private String ownerName;
     private String profilePhoto;
     private String destinace;
@@ -16,46 +13,20 @@ public class nearPost {
     public nearPost() {
     }
 
-    public nearPost(String postId, String postName, String likeCount, String ownerId, String ownerName, String profilePhoto, String destinace) {
-        this.postId = postId;
-        this.postName = postName;
-        this.likeCount = likeCount;
-        this.ownerId = ownerId;
+    public nearPost(com.example.arview.databaseClasses.post post, String ownerName, String profilePhoto, String destinace, LatLng location) {
+        this.post = post;
         this.ownerName = ownerName;
         this.profilePhoto = profilePhoto;
         this.destinace = destinace;
+        this.location = location;
     }
 
-    public String getPostId() {
-        return postId;
+    public com.example.arview.databaseClasses.post getPost() {
+        return post;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
-    }
-
-    public String getPostName() {
-        return postName;
-    }
-
-    public void setPostName(String postName) {
-        this.postName = postName;
-    }
-
-    public String getLikeCount() {
-        return likeCount;
-    }
-
-    public void setLikeCount(String likeCount) {
-        this.likeCount = likeCount;
-    }
-
-    public String getOwnerId() {
-        return ownerId;
-    }
-
-    public void setOwnerId(String ownerId) {
-        this.ownerId = ownerId;
+    public void setPost(com.example.arview.databaseClasses.post post) {
+        this.post = post;
     }
 
     public String getOwnerName() {
@@ -93,10 +64,7 @@ public class nearPost {
     @Override
     public String toString() {
         return "nearPost{" +
-                "postId='" + postId + '\'' +
-                ", postName='" + postName + '\'' +
-                ", likeCount='" + likeCount + '\'' +
-                ", ownerId='" + ownerId + '\'' +
+                "post=" + post +
                 ", ownerName='" + ownerName + '\'' +
                 ", profilePhoto='" + profilePhoto + '\'' +
                 ", destinace='" + destinace + '\'' +

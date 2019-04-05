@@ -93,6 +93,9 @@ public class FriendsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.postRecyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
+        adapter = new FriendsPostRecyclerViewAdapter(getContext(), Plist , mAuth.getUid() );
+        recyclerView.setAdapter(adapter);
+
 
         getUserFollowingPosts();
 
@@ -187,9 +190,7 @@ public class FriendsFragment extends Fragment {
                     });
 
                     if(count >= Flist.size() - 1){
-                        Log.e(TAG, "count" + count);
-                        //display the photos
-                        displayPosts();
+
                     }
                 }
 
@@ -231,27 +232,29 @@ public class FriendsFragment extends Fragment {
         Log.e(TAG, "post " + post.toString());
 
         Plist.add(post);
-        adapter.notifyItemInserted(Plist.size());
+
+        Collections.sort(Plist, new Comparator<post>() {
+            public int compare(post o1, post o2) {
+                return o2.getPostCreatedDate().compareTo(o1.getPostCreatedDate());
+            }
+        });
+
+        adapter.notifyDataSetChanged();
+
+        for (int i =0 ; i < Plist.size() ; i ++){
+            if ( Plist.get(i).getPostId().equals(post.getPostId())){
+
+                if ( Plist.get(i).getLikes() != post.getLikes()){
+                    Plist.set(i , post);
+                    Plist.remove(i+1);
+                    adapter.notifyItemRangeChanged(i,Plist.size()-1);
+                }
+            }
+        }
 
         return post;
     }
 
-
-    private void displayPosts(){
-
-        if(Plist != null){
-
-            Collections.sort(Plist, new Comparator<post>() {
-                public int compare(post o1, post o2) {
-                    return o2.getPostCreatedDate().compareTo(o1.getPostCreatedDate());
-                }
-            });
-
-            adapter = new FriendsPostRecyclerViewAdapter(getContext(), Plist , mAuth.getUid() );
-            recyclerView.setAdapter(adapter);
-
-        }
-    }
 
      /*
     -------------------------------wedget on click-----------------------------------------
@@ -306,6 +309,7 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        Plist.clear();
     }
 
 

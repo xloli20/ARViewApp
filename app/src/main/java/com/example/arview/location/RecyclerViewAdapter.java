@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.nearPost;
+import com.example.arview.utils.FirebaseMethods;
 
 import java.util.ArrayList;
 
@@ -31,8 +32,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     //vars
     private ArrayList<nearPost> nearPostList = new ArrayList<>();
     private Context mContext;
+    private boolean liked = false;
+    private String userID ;
+    private FirebaseMethods firebaseMethods;
 
-    public RecyclerViewAdapter(Context context, ArrayList<nearPost> posts) {
+
+
+    public RecyclerViewAdapter(Context context, ArrayList<nearPost> posts, String userId) {
+        userID = userId;
         nearPostList = posts;
         mContext = context;
     }
@@ -40,6 +47,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_near_post_list, parent, false);
+
+        firebaseMethods = new FirebaseMethods(mContext);
+
         return new ViewHolder(view);
     }
 
@@ -51,10 +61,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 .load(uri)
                 .into(holder.profileImage);
 
-        holder.postName.setText(nearPostList.get(position).getPostName());
+        holder.postName.setText(nearPostList.get(position).getPost().getPostName());
         holder.userName.setText(nearPostList.get(position).getOwnerName());
         holder.distance.setText(nearPostList.get(position).getDestinace());
-        holder.Nlike.setText(nearPostList.get(position).getLikeCount());
+        holder.Nlike.setText(nearPostList.get(position).getPost().getLikes());
 
 
         holder.profileImage.setOnClickListener(new View.OnClickListener() {
@@ -80,12 +90,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
         });
 
+
+        holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_empty_heart));
+
+        liked = firebaseMethods.isNLiked(nearPostList.get(position), holder);
+
+
         holder.heart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
-                holder.Nlike.setText("1");
+                if (liked){
+                    firebaseMethods.unLike(nearPostList.get(position).getPost(), userID);
+                    holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_empty_heart));
+                    liked= false;
+                }else {
+                    firebaseMethods.addLike(nearPostList.get(position).getPost(), userID);
+                    holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
+                    liked = true;
 
+                }
             }
         });
     }
@@ -98,7 +121,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         CircleImageView profileImage;
-        ImageView direction, heart;
+        ImageView direction;
+        public ImageView heart;
         TextView postName, userName, distance, Nlike;
         RelativeLayout relativeLayout;
 

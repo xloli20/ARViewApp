@@ -13,7 +13,6 @@ import android.widget.ImageView;
 
 import com.example.arview.R;
 import com.example.arview.databaseClasses.post;
-import com.example.arview.friend.FollowingIDs;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.post.PostRecyclerViewAdapter;
 import com.example.arview.utils.FirebaseMethods;
