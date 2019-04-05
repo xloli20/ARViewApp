@@ -2,6 +2,8 @@ package com.example.arview.databaseClasses;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import androidx.annotation.NonNull;
+
 public class nearPost {
 
     private post post;
@@ -61,6 +63,7 @@ public class nearPost {
         this.location = location;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "nearPost{" +

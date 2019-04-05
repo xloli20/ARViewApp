@@ -27,10 +27,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-/**
- * Created by User on 2/12/2018.
- */
-
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
@@ -39,10 +35,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<nearPost> nearPostList = new ArrayList<>();
     private Context mContext;
     private boolean liked = false;
-    private String userID ;
+    private String userID;
     private FirebaseMethods firebaseMethods;
-
-
 
     public RecyclerViewAdapter(Context context, ArrayList<nearPost> posts, String userId) {
         userID = userId;
@@ -76,28 +70,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.direction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((MapsActivity)mContext).moveCam(nearPostList.get(position).getLocation());
+                ((MapsActivity) mContext).moveCam(nearPostList.get(position).getLocation());
             }
         });
-
 
         holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_empty_heart));
 
         liked = firebaseMethods.isNLiked(nearPostList.get(position), holder);
 
-
         holder.heart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (liked){
+                if (liked) {
                     firebaseMethods.unLike(nearPostList.get(position).getPost(), userID);
                     holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_empty_heart));
-                    liked= false;
-                }else {
+                    liked = false;
+                } else {
                     firebaseMethods.addLike(nearPostList.get(position).getPost(), userID);
                     holder.heart.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
                     liked = true;
-
                 }
             }
         });
@@ -139,8 +130,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return nearPostList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-
+    public class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView profileImage;
         ImageView direction;
         public ImageView heart;
@@ -157,7 +147,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             relativeLayout = itemView.findViewById(R.id.NRelativeLayout);
             direction = itemView.findViewById(R.id.direction);
             heart = itemView.findViewById(R.id.heart);
-
         }
     }
 }

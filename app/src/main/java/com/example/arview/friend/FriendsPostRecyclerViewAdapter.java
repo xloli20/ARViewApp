@@ -38,7 +38,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-
 public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<FriendsPostRecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "PostRecyclerViewAdapter";
@@ -51,15 +50,15 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
     private boolean liked = false;
     private FirebaseMethods firebaseMethods;
 
-
-    public FriendsPostRecyclerViewAdapter(Context context, ArrayList<post> posts, String uID) {
+    FriendsPostRecyclerViewAdapter(Context context, ArrayList<post> posts, String uID) {
         PostList = posts;
         userID = uID;
         mContext = context;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_friends_post_list, parent, false);
 
         firebaseMethods = new FirebaseMethods(mContext);
@@ -72,39 +71,35 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
         return PostList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView location, limit, like, comment;
         public TextView userName, PostName, desc, Nlike, Ncomment, limitTime;
         public RelativeLayout relativeLayout;
-        private CircleImageView profilePhoto;
 
+        private CircleImageView profilePhoto;
 
         public ViewHolder(View itemView) {
             super(itemView);
-
             relativeLayout = itemView.findViewById(R.id.post_layout);
-
-            location =  itemView.findViewById(R.id.location);
+            location = itemView.findViewById(R.id.location);
             limit = itemView.findViewById(R.id.imageButton1);
-            like =  itemView.findViewById(R.id.imageButton2);
+            like = itemView.findViewById(R.id.imageButton2);
             comment = itemView.findViewById(R.id.imageButton3);
 
             userName =  itemView.findViewById(R.id.userName);
-            PostName =  itemView.findViewById(R.id.textView);
             desc =  itemView.findViewById(R.id.textView1);
+            PostName = itemView.findViewById(R.id.textView);
+            desc = itemView.findViewById(R.id.textView1);
             Nlike = itemView.findViewById(R.id.textView2);
-            Ncomment =itemView.findViewById(R.id.textView3);
+            Ncomment = itemView.findViewById(R.id.textView3);
             limitTime = itemView.findViewById(R.id.textView4);
             profilePhoto = itemView.findViewById(R.id.profile_photo);
-
-            PostName.setText("post name");
-
         }
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called.");
 
 
@@ -113,16 +108,13 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
         holder.Nlike.setText(String.valueOf(PostList.get(position).getLikes()));
         holder.Ncomment.setText(String.valueOf(PostList.get(position).getComments()));
 
-        if (PostList.get(position).getPostEndTime() == null || PostList.get(position).getPostEndTime() == "" ){
+        if (PostList.get(position).getPostEndTime() == null || PostList.get(position).getPostEndTime() == "") {
             holder.limit.setVisibility(View.INVISIBLE);
             holder.limitTime.setText(PostList.get(position).getPostCreatedDate());
-        }
-        else if (PostList.get(position).getPostEndTime()!=null) {
+        } else if (PostList.get(position).getPostEndTime() != null) {
             holder.limit.setVisibility(View.VISIBLE);
             holder.limitTime.setText(PostList.get(position).getPostEndTime());
         }
-
-
 
         holder.location.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,42 +122,34 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
                 Intent intent = new Intent(mContext, MapsActivity.class);
                 intent.putExtra("PostLocation", PostList.get(position).getPostLocation());
                 mContext.startActivity(intent);
-
                 //MoveCam
-
             }
         });
 
         holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_empty_heart));
-
         liked = firebaseMethods.isFLiked(PostList.get(position), holder);
-
         time(PostList.get(position), holder, position);
-
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (liked){
+                if (liked) {
                     firebaseMethods.unLike(PostList.get(position), userID);
                     holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_empty_heart));
-                    liked= false;
-                }else {
+                    liked = false;
+                } else {
                     firebaseMethods.addLike(PostList.get(position), userID);
                     holder.like.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_red_heart));
                     liked = true;
-
                 }
             }
         });
-
         getProfilePhoto(PostList.get(position).getOwnerId(), holder);
-
 
         holder.comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PostCommentsFragment fragment = PostCommentsFragment.newInstance(String.valueOf(PostList.get(position).isPersonal())+ String.valueOf(PostList.get(position).isVisibilty()), PostList.get(position).getPostId());
-                Log.e(TAG, String.valueOf(PostList.get(position).isPersonal())+ String.valueOf(PostList.get(position).isVisibilty()));
+                PostCommentsFragment fragment = PostCommentsFragment.newInstance(String.valueOf(PostList.get(position).isPersonal()) + String.valueOf(PostList.get(position).isVisibilty()), PostList.get(position).getPostId());
+                Log.e(TAG, String.valueOf(PostList.get(position).isPersonal()) + String.valueOf(PostList.get(position).isVisibilty()));
                 FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
@@ -179,7 +163,7 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PostDetailsFragment fragment = PostDetailsFragment.newInstance(PostList.get(position).getOwnerId(), PostList.get(position).getPostId(),String.valueOf(PostList.get(position).isPersonal())+ String.valueOf(PostList.get(position).isVisibilty()));
+                PostDetailsFragment fragment = PostDetailsFragment.newInstance(PostList.get(position).getOwnerId(), PostList.get(position).getPostId(), String.valueOf(PostList.get(position).isPersonal()) + String.valueOf(PostList.get(position).isVisibilty()));
                 FragmentManager fragmentManager = ((AppCompatActivity) mContext).getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
@@ -203,10 +187,9 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
                 transaction.commit();
             }
         });
-
     }
 
-    public void getProfilePhoto(String userID , final FriendsPostRecyclerViewAdapter.ViewHolder holder ){
+    public void getProfilePhoto(String userID, final FriendsPostRecyclerViewAdapter.ViewHolder holder) {
 
         DatabaseReference RR = FirebaseDatabase.getInstance().getReference().child("profile").child(userID);
         RR.addValueEventListener(new ValueEventListener() {
@@ -223,15 +206,14 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
 
-    private String shrinkDesc(String des){
-        String SDes = des ;
-        if (des != null){
-            if (des.length() > 160){
+    private String shrinkDesc(String des) {
+        String SDes = des;
+        if (des != null) {
+            if (des.length() > 160) {
                 SDes = des.substring(0, 160);
                 SDes = SDes + "...";
             }
@@ -239,70 +221,57 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
         return SDes;
     }
 
-
-    private void time(post p, FriendsPostRecyclerViewAdapter.ViewHolder holder , int i ){
-
-        if (p.getPostEndTime() == null ){
+    private void time(post p, FriendsPostRecyclerViewAdapter.ViewHolder holder, int i) {
+        if (p.getPostEndTime() == null) {
             // set date created
             holder.limit.setVisibility(View.INVISIBLE);
             String timeDiff = CalTimeDiff.getTimestampDifference(p.getPostCreatedDate());
-            if(!timeDiff.equals("0")){
+            if (!timeDiff.equals("0")) {
                 holder.limitTime.setText(timeDiff + " DAYS AGO");
-            }else
+            } else
                 holder.limitTime.setText("Today");
 
-        }else if (p.getPostEndTime() != null ){
+        } else if (p.getPostEndTime() != null) {
             //set date End
             holder.limit.setVisibility(View.VISIBLE);
             String timeDiff = CalTimeDiff.getTimestampDifference(p.getPostEndTime());
 
-
-            if ( timeDiff.indexOf("-") == -1){
-                Log.e(TAG, "getTimestampDifference: ----: " + timeDiff );
-                firebaseMethods.deletePost(p.getPostId(),p.getOwnerId(), p.isVisibilty(), p.isPersonal());
+            if (!timeDiff.contains("-")) {
+                Log.e(TAG, "getTimestampDifference: ----: " + timeDiff);
+                firebaseMethods.deletePost(p.getPostId(), p.getOwnerId(), p.isVisibilty(), p.isPersonal());
                 PostList.remove(i);
                 notifyItemRemoved(i);
-                notifyItemRangeChanged(i, PostList.size()-1);
+                notifyItemRangeChanged(i, PostList.size() - 1);
             }
 
-            if(! timeDiff.equals("0") ){
+            if (!timeDiff.equals("0")) {
                 String d = timeDiff.substring(timeDiff.indexOf("-") + 1);
                 holder.limitTime.setText(d + " DAYS LEFT");
-            }else {
+            } else {
                 String HtimeDiff = CalTimeDiff.getTimestampDifferenceH(p.getPostEndTime());
-                if(! HtimeDiff.equals("0")){
+                if (!HtimeDiff.equals("0")) {
                     String d = timeDiff.substring(timeDiff.indexOf("-") + 1);
                     holder.limitTime.setText(d + "h LEFT");
-
-                }else{
+                } else {
                     String MtimeDiff = CalTimeDiff.getTimestampDifferenceM(p.getPostEndTime());
-                    if(! MtimeDiff.equals("0") ){
+                    if (!MtimeDiff.equals("0")) {
                         String d = timeDiff.substring(timeDiff.indexOf("-") + 1);
                         holder.limitTime.setText(d + "m LEFT");
-                    }else{
+                    } else {
                         String StimeDiff = CalTimeDiff.getTimestampDifferenceS(p.getPostEndTime());
-                        if(! StimeDiff.equals("0") ){
+                        if (!StimeDiff.equals("0")) {
                             String d = timeDiff.substring(timeDiff.indexOf("-") + 1);
                             holder.limitTime.setText(d + "s LEFT");
-                        }else {
-                            Log.e(TAG, "getTimestampDifference: ----: " +  StimeDiff );
-                            firebaseMethods.deletePost(p.getPostId(),p.getOwnerId(), p.isVisibilty(), p.isPersonal());
+                        } else {
+                            Log.e(TAG, "getTimestampDifference: ----: " + StimeDiff);
+                            firebaseMethods.deletePost(p.getPostId(), p.getOwnerId(), p.isVisibilty(), p.isPersonal());
                             PostList.remove(i);
                             notifyItemRemoved(i);
-                            notifyItemRangeChanged(i, PostList.size()-1);
+                            notifyItemRangeChanged(i, PostList.size() - 1);
                         }
                     }
-
                 }
             }
-
         }
-
     }
-
-
-
-
-
-
 }

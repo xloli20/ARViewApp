@@ -1,6 +1,5 @@
 package com.example.arview.chat;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -32,13 +31,12 @@ public class addChatAdapter2 extends RecyclerView.Adapter<addChatAdapter2.ViewHo
     private static final String TAG = "addChatAdapter";
 
     //vars
-    private ArrayList<addChat> List ;
+    private ArrayList<addChat> List;
     private Context mContext;
 
-    public addChatAdapter2(Context context, ArrayList<addChat> list ) {
+    public addChatAdapter2(Context context, ArrayList<addChat> list) {
         List = list;
         mContext = context;
-
     }
 
     @NonNull
@@ -50,9 +48,7 @@ public class addChatAdapter2 extends RecyclerView.Adapter<addChatAdapter2.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final addChatAdapter2.ViewHolder holder, final int position) {
-
         Uri uri = Uri.parse(List.get(position).getProfilePhoto());
-
         Glide.with(mContext)
                 .load(uri)
                 .into(holder.proImg);
@@ -60,24 +56,21 @@ public class addChatAdapter2 extends RecyclerView.Adapter<addChatAdapter2.ViewHo
         holder.userName.setText(List.get(position).getUsername());
         holder.name.setText(List.get(position).getName());
 
-        if (List.get(position).getChatId()== null){
+        if (List.get(position).getChatId() == null) {
             holder.mMessage.setText("start chatting");
-        }
-        else if (List.get(position).getChatId()!= null) {
+        } else if (List.get(position).getChatId() != null) {
             holder.mMessage.setText("open chat");
         }
-
 
         holder.mMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    Intent intent = new Intent(mContext, InChatActivity.class);
-                    intent.putExtra("ChatID",List.get(position).getChatId());
-                    intent.putExtra("OtherUserId",List.get(position).getUid());
-                    mContext.startActivity(intent);
+                Intent intent = new Intent(mContext, InChatActivity.class);
+                intent.putExtra("ChatID", List.get(position).getChatId());
+                intent.putExtra("OtherUserId", List.get(position).getUid());
+                mContext.startActivity(intent);
             }
         });
-
 
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,7 +78,6 @@ public class addChatAdapter2 extends RecyclerView.Adapter<addChatAdapter2.ViewHo
 
             }
         });
-
     }
 
     @Override
@@ -93,8 +85,7 @@ public class addChatAdapter2 extends RecyclerView.Adapter<addChatAdapter2.ViewHo
         return List.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
-
+    public class ViewHolder extends RecyclerView.ViewHolder {
         Button mMessage;
         ImageView proImg;
         TextView name;
@@ -108,8 +99,6 @@ public class addChatAdapter2 extends RecyclerView.Adapter<addChatAdapter2.ViewHo
             userName = itemView.findViewById(R.id.userName);
             name = itemView.findViewById(R.id.Name);
             relativeLayout = itemView.findViewById(R.id.addChatRelLayout);
-
-
         }
     }
 }

@@ -41,10 +41,6 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
 
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,76 +67,60 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
     }
 
-    private void initWidgets(){
+    private void initWidgets() {
         Log.d(TAG, "initWidgets: Initializing Widgets.");
         mEmail = (EditText) findViewById(R.id.input_email);
         mUsername = (EditText) findViewById(R.id.input_username);
         btnRegister = (Button) findViewById(R.id.btn_register);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mPassword = (EditText) findViewById(R.id.input_password);
-        mConPassword  = (EditText) findViewById(R.id.input_confirmpassword);
+        mConPassword = (EditText) findViewById(R.id.input_confirmpassword);
         mContext = RegisterActivity.this;
         mProgressBar.setVisibility(View.GONE);
-
     }
 
-
-
-    private boolean checkInputs(String email, String username, String password, String mConPass){
+    private boolean checkInputs(String email, String username, String password, String mConPass) {
         Log.d(TAG, "checkInputs: checking inputs for null values.");
-        if(email.equals("") || username.equals("") || password.equals("") || mConPass.equals("")){
+        if (email.equals("") || username.equals("") || password.equals("") || mConPass.equals("")) {
             Toast.makeText(mContext, "All fields must be filled out.", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if(!password.equals(mConPass)){
+        if (!password.equals(mConPass)) {
             Toast.makeText(mContext, "Confirm Password don't equal", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
     }
-
-
-
-
     /*
     ------------------------------------ Firebase ---------------------------------------------
      */
 
     //TODO: send username all in lowercase
 
-
-    private void init(){
+    private void init() {
         email = mEmail.getText().toString();
         username = mUsername.getText().toString();
         password = mPassword.getText().toString();
         mConPass = mConPassword.getText().toString();
 
-        if(checkInputs(email, username, password , mConPass)){
+        if (checkInputs(email, username, password, mConPass)) {
             mProgressBar.setVisibility(View.VISIBLE);
-
-            firebaseMethods.registerNewEmail(email, password,username);
-
+            firebaseMethods.registerNewEmail(email, password, username);
         }
     }
 
-
-
-
-    private void setupFirebaseAuth(){
+    private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
 
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
 
-
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged( FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
                 final FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
@@ -152,17 +132,13 @@ public class RegisterActivity extends AppCompatActivity {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             firebaseMethods.checkIfUsernameExists(username);
                             mProgressBar.setVisibility(View.GONE);
-
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
                         }
                     });
-
                     finish();
-
 
                 } else {
                     // User is signed out
@@ -186,10 +162,7 @@ public class RegisterActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
     /*
     ------------------------------------ Firebase ---------------------------------------------
      */
-
-
 }

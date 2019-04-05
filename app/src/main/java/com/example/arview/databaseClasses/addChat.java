@@ -7,8 +7,7 @@ public class addChat {
     private String profilePhoto;
     private String ChatId;
 
-
-    public addChat(){
+    public addChat() {
     }
 
     public addChat(String email, String uid, String profilePhoto) {

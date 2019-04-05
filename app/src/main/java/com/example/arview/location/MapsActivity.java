@@ -92,14 +92,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final String TAG = "MapsActivity";
 
-
     private GoogleMap mMap;
     Location mLastLocation;
     LocationRequest mLocationRequest;
     private FusedLocationProviderClient mFusedLocationClient;
 
     private LatLng pickupLocation;
-
 
     //wedgets
     private ImageView upArrow, downArrow, refresh;
@@ -108,13 +106,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private ArrayList<nearPost> nearPostsList = new ArrayList<>();
 
-
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private FirebaseMethods firebaseMethods;
-
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -130,9 +126,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         setupFirebaseAuth();
         initWedjets();
-
-
-
     }
 
     // get intent location zoom to it
@@ -141,7 +134,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     // get close posts .....................
 
     List<Marker> markers = new ArrayList<Marker>();
-    private void getPostsAround(){
+
+    private void getPostsAround() {
         DatabaseReference PostsLocation = FirebaseDatabase.getInstance().getReference().child("postsLocations").child("public");
 
         GeoFire geoFire = new GeoFire(PostsLocation);
@@ -151,13 +145,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onKeyEntered(String key, final GeoLocation location) {
 
-                Log.e(TAG, "getPostsAround.onKeyEntered : key " + key );
+                Log.e(TAG, "getPostsAround.onKeyEntered : key " + key);
 
-                for(Marker markerIt : markers){
-                    if(markerIt.getTag().equals(key))
+                for (Marker markerIt : markers) {
+                    if (markerIt.getTag().equals(key))
                         return;
                 }
-
 
                 final nearPost nearPost = new nearPost();
 
@@ -167,9 +160,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Location postLocation = new Location(LocationManager.GPS_PROVIDER);
                 postLocation.setLatitude(location.latitude);
                 postLocation.setLongitude(location.longitude);
-                
-                float Distance = mLastLocation.distanceTo(postLocation)/1000;  //km
-                int dotIndex =  String.valueOf(Distance).indexOf(".");
+
+                float Distance = mLastLocation.distanceTo(postLocation) / 1000;  //km
+                int dotIndex = String.valueOf(Distance).indexOf(".");
                 String distance = String.valueOf(Distance).substring(0, dotIndex + 3);
 
                 nearPost.setDestinace(distance + " km");
@@ -190,18 +183,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         OwnerREf.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()){
+                                if (dataSnapshot.exists()) {
                                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                    if(map.get("name")!=null){
+                                    if (map.get("name") != null) {
                                         nearPost.setOwnerName(map.get("name").toString());
                                     }
-                                    if(map.get("profilePhoto")!=null){
+                                    if (map.get("profilePhoto") != null) {
                                         nearPost.setProfilePhoto(map.get("profilePhoto").toString());
                                     }
 
                                     final LatLng PostLocation = new LatLng(location.latitude, location.longitude);
                                     nearPost.setLocation(PostLocation);
-
 
                                     final Uri uri = Uri.parse(nearPost.getProfilePhoto());
 
@@ -220,12 +212,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                     mPostMarker.setTag(nearPost.getPost().getPostName());
 
                                                     markers.add(mPostMarker);
-
-
                                                 }
                                             });
-
-
                                 }
 
                                 nearPostsList.add(nearPost);
@@ -238,46 +226,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 adapter.notifyDataSetChanged();
 
-                                for (int i =0 ; i < nearPostsList.size() ; i ++){
-                                    if ( nearPostsList.get(i).getPost().getPostId().equals(nearPost.getPost().getPostId())){
+                                for (int i = 0; i < nearPostsList.size(); i++) {
+                                    if (nearPostsList.get(i).getPost().getPostId().equals(nearPost.getPost().getPostId())) {
 
-                                        if ( nearPostsList.get(i).getPost().getLikes() != nearPost.getPost().getLikes()){
+                                        if (nearPostsList.get(i).getPost().getLikes() != nearPost.getPost().getLikes()) {
                                             Log.e(TAG, "diff ");
-                                            nearPostsList.set(i , nearPost);
-                                            nearPostsList.remove(i+1);
-                                            adapter.notifyItemRangeChanged(i,nearPostsList.size()-1);
+                                            nearPostsList.set(i, nearPost);
+                                            nearPostsList.remove(i + 1);
+                                            adapter.notifyItemRangeChanged(i, nearPostsList.size() - 1);
                                         }
-
                                     }
-
-
                                 }
-
-
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
                             }
                         });
-
-
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                     }
                 });
-
-
             }
 
             @Override
             public void onKeyExited(String key) {
-                for(Marker markerIt : markers){
-                    if(markerIt.getTag().equals(key)){
+                for (Marker markerIt : markers) {
+                    if (markerIt.getTag().equals(key)) {
                         markerIt.remove();
                     }
                 }
@@ -285,8 +262,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onKeyMoved(String key, GeoLocation location) {
-                for(Marker markerIt : markers){
-                    if(markerIt.getTag().equals(key)){
+                for (Marker markerIt : markers) {
+                    if (markerIt.getTag().equals(key)) {
                         markerIt.setPosition(new LatLng(location.latitude, location.longitude));
                     }
                 }
@@ -298,12 +275,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onGeoQueryError(DatabaseError error) {
-
             }
         });
     }
 
-    public void moveCam(LatLng latLng){
+    public void moveCam(LatLng latLng) {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(9));
     }
@@ -318,47 +294,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-
-            }else{
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            } else {
                 checkLocationPermission();
             }
         }
-
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
         mMap.setMyLocationEnabled(true);
-
     }
 
-    LocationCallback mLocationCallback = new LocationCallback(){
+    LocationCallback mLocationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            for(Location location : locationResult.getLocations()){
-                if(getApplicationContext()!=null){
+            for (Location location : locationResult.getLocations()) {
+                if (getApplicationContext() != null) {
 
                     mLastLocation = location;
 
-
-                    LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
-
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
                     //use GeoFirebase
                     String userId = mAuth.getCurrentUser().getUid();
                     DatabaseReference GRef = mFirebaseDatabase.getInstance().getReference().child("UsersLocation");
 
                     GeoFire geoFire = new GeoFire(GRef);
-                    geoFire.setLocation(userId, new GeoLocation(location.getLatitude(), location.getLongitude()),new
-                            GeoFire.CompletionListener(){
+                    geoFire.setLocation(userId, new GeoLocation(location.getLatitude(), location.getLongitude()), new
+                            GeoFire.CompletionListener() {
                                 @Override
                                 public void onComplete(String key, DatabaseError error) {
                                     Log.e(TAG, "GeoFire Complete");
                                 }
                             });
 
-
                     pickupLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-
 
                     refresh.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -367,18 +336,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             getPostsAround();
                         }
                     });
-
-
                 }
             }
         }
     };
 
-
     //  Permission ........................
 
     private void checkLocationPermission() {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 new AlertDialog.Builder(this)
                         .setTitle("give permission")
@@ -391,8 +357,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         })
                         .create()
                         .show();
-            }
-            else{
+            } else {
                 ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
         }
@@ -401,13 +366,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch(requestCode){
-            case 1:{
-                if(grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        switch (requestCode) {
+            case 1: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         mMap.setMyLocationEnabled(true);
                     }
-                } else{
+                } else {
                     Toast.makeText(getApplicationContext(), "Please provide the permission", Toast.LENGTH_LONG).show();
                 }
                 break;
@@ -415,15 +380,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
-
-     /*
-    ------------------------------------ wedgets -------------------------------------------
-    */
-
-    private void initWedjets(){
+    /*
+   ------------------------------------ widgets -------------------------------------------
+   */
+    private void initWedjets() {
         upArrow = findViewById(R.id.upArrow);
-        downArrow =findViewById(R.id.downArrow);
+        downArrow = findViewById(R.id.downArrow);
         recyclerView = findViewById(R.id.recyclerView);
         refresh = findViewById(R.id.refresh);
 
@@ -450,40 +412,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 upArrow.setVisibility(View.VISIBLE);
             }
         });
-
-
     }
 
     public void initiRecyclerView() {
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new RecyclerViewAdapter(this, nearPostsList, mAuth.getUid());
         recyclerView.setAdapter(adapter);
-
     }
-
-
       /*
-    ------------------------------------ wedgets --------------------------------------------
+    ------------------------------------ widgets --------------------------------------------
     */
 
-
-       /*
-    ------------------------------------ Firebase ---------------------------------------------
-     */
-
-    private void setupFirebaseAuth(){
+    /*
+ ------------------------------------ Firebase ---------------------------------------------
+  */
+    private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
-
         mAuth = FirebaseAuth.getInstance();
         firebaseMethods = new FirebaseMethods(this);
-
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged( FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
@@ -510,31 +461,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
-
         // GeoFirebase
         String userId = mAuth.getCurrentUser().getUid();
         DatabaseReference GRef = mFirebaseDatabase.getInstance().getReference("UsersLocation");
 
         GeoFire geoFire = new GeoFire(GRef);
-        geoFire.removeLocation(userId ,new
-                GeoFire.CompletionListener(){
+        geoFire.removeLocation(userId, new
+                GeoFire.CompletionListener() {
                     @Override
                     public void onComplete(String key, DatabaseError error) {
                         Log.e(TAG, "GeoFire Complete");
                     }
                 });
-
-
     }
 
     /*
     ------------------------------------ Firebase -----------
     */
-
-    public void onFragmentInteraction(Uri uri){
+    public void onFragmentInteraction(Uri uri) {
         //you can leave it empty
     }
-    public void OnFragmentInteractionListener(Uri uri){
+
+    public void OnFragmentInteractionListener(Uri uri) {
         //you can leave it empty
     }
 }
