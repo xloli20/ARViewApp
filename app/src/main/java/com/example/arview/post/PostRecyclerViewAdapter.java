@@ -181,6 +181,8 @@ public class PostRecyclerViewAdapter extends RecyclerView.Adapter<PostRecyclerVi
             }
         });
 
+
+
     }
 
     private String shrinkDesc(String des){

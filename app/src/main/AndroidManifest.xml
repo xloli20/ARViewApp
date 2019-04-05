@@ -21,6 +21,9 @@
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <!-- This tag indicates that this application requires ARCore. This results in the application
+       only being visible in the Google Play Store on devices that support ARCore. -->
     <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
 
 
@@ -46,6 +49,12 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <!-- This tag indicates that this application requires ARCore. This results in the
+           application only being visible in the Google Play Store on devices that support
+           ARCore. -->
+        <meta-data android:name="com.google.ar.core" android:value="required" />
+
+
         <activity
             android:name=".location.MapsActivity"
             android:label="@string/title_activity_maps" />
@@ -68,7 +77,6 @@
         <activity android:name=".DrawARActivity">
         </activity>
 
-        <meta-data android:name="com.google.ar.core" android:value="required" />
     </application>
 
 </manifest>

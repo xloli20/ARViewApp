@@ -14,10 +14,16 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.arview.R;
 import com.example.arview.databaseClasses.nearPost;
+import com.example.arview.post.PostDetailsFragment;
+import com.example.arview.profile.ProfileFragment;
 import com.example.arview.utils.FirebaseMethods;
 
 import java.util.ArrayList;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -67,22 +73,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.Nlike.setText(nearPostList.get(position).getPost().getLikes());
 
 
-        holder.profileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(mContext, nearPostList.get(position).getOwnerId(), Toast.LENGTH_SHORT).show();
-                // to user profile
-            }
-        });
-
-        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(mContext, nearPostList.get(position).getPostId(), Toast.LENGTH_SHORT).show();
-                // to post details
-            }
-        });
-
         holder.direction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,6 +101,37 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 }
             }
         });
+
+
+        holder.profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ProfileFragment fragment = ProfileFragment.newInstance(nearPostList.get(position).getPost().getOwnerId());
+                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+                transaction.addToBackStack(null);
+                transaction.remove(fragment);
+                transaction.replace(R.id.fragment_container, fragment);
+                transaction.commit();
+            }
+        });
+
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PostDetailsFragment fragment = PostDetailsFragment.newInstance(nearPostList.get(position).getPost().getOwnerId(), nearPostList.get(position).getPost().getPostId(),
+                        String.valueOf(nearPostList.get(position).getPost().isPersonal())+ String.valueOf(nearPostList.get(position).getPost().isVisibilty()));
+                FragmentManager fragmentManager = ((FragmentActivity) mContext).getSupportFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+                transaction.addToBackStack(null);
+                transaction.remove(fragment);
+                transaction.replace(R.id.fragment_container, fragment);
+                transaction.commit();
+            }
+        });
+
     }
 
     @Override

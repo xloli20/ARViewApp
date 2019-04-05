@@ -28,7 +28,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
                                                                 UpdatedsFragment.OnFragmentInteractionListener,
                                                                 FriendsFragment.OnFragmentInteractionListener,
                                                                 AddChatFragment.OnFragmentInteractionListener,
-                                                                PostSettingFragment.OnFragmentInteractionListener {
+                                                                PostSettingFragment.OnFragmentInteractionListener,
+                                                                ARViewFragment.OnFragmentInteractionListener{
 
     private static final String TAG = "MainActivity";
 
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
 
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new SearchFragment()); //index 0
+        adapter.addFragment(new ARViewFragment()); //index 1
         adapter.addFragment(new CameraFragment()); //index 1
         adapter.addFragment(new UpdatedsFragment()); //index 2
 

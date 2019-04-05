@@ -42,6 +42,8 @@ import com.example.arview.databaseClasses.post;
 import com.example.arview.friend.FriendsPostRecyclerViewAdapter;
 import com.example.arview.login.SiginActivity;
 import com.example.arview.main.MainActivity;
+import com.example.arview.post.PostDetailsFragment;
+import com.example.arview.profile.ProfileFragment;
 import com.example.arview.utils.FirebaseMethods;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
@@ -84,7 +86,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback ,
+                                                                ProfileFragment.OnFragmentInteractionListener,
+                                                                PostDetailsFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "MapsActivity";
 

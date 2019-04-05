@@ -165,7 +165,7 @@ public class PostDetailsFragment extends Fragment {
             }
             if (PostPath.endsWith("false")) {
                 //post is private
-                DatabaseReference Pvpost = firebaseDatabase.getReference().child("posts").child("private").child(PostID);
+                DatabaseReference Pvpost = FirebaseDatabase.getInstance().getReference().child("posts").child("private").child(PostID);
                 Pvpost.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

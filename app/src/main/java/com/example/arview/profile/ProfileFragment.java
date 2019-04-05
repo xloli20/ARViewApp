@@ -44,6 +44,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
 
@@ -305,18 +307,26 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
 
 
         Plist.add(post);
-        adapter.notifyItemInserted(Plist.size());
+
+        Collections.sort(Plist, new Comparator<post>() {
+            public int compare(post o1, post o2) {
+                return o2.getPostCreatedDate().compareTo(o1.getPostCreatedDate());
+            }
+        });
+
+        adapter.notifyDataSetChanged();
 
         for (int i =0 ; i < Plist.size() ; i ++){
             if ( Plist.get(i).getPostId().equals(post.getPostId())){
 
                 if ( Plist.get(i).getLikes() != post.getLikes()){
                     Plist.set(i , post);
-                    Plist.remove(Plist.size()-1);
+                    Plist.remove(i+1);
                     adapter.notifyItemRangeChanged(i,Plist.size()-1);
                 }
             }
         }
+
 
     }
 

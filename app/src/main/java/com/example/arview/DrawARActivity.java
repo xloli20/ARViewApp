@@ -623,7 +623,7 @@ public class DrawARActivity extends AppCompatActivity implements GLSurfaceView.R
             settingsButton.setColorFilter(getResources().getColor(R.color.active));
         } else {
             mSettingsUI.setVisibility(View.GONE);
-            settingsButton.setColorFilter(getResources().getColor(R.color.gray));
+            settingsButton.setColorFilter(getResources().getColor(R.color.Dgray));
         }
     }
 

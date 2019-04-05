@@ -75,7 +75,7 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         public ImageView location, limit, like, comment;
-        public TextView PostName, desc, Nlike, Ncomment, limitTime;
+        public TextView userName, PostName, desc, Nlike, Ncomment, limitTime;
         public RelativeLayout relativeLayout;
         private CircleImageView profilePhoto;
 
@@ -90,6 +90,7 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
             like =  itemView.findViewById(R.id.imageButton2);
             comment = itemView.findViewById(R.id.imageButton3);
 
+            userName =  itemView.findViewById(R.id.userName);
             PostName =  itemView.findViewById(R.id.textView);
             desc =  itemView.findViewById(R.id.textView1);
             Nlike = itemView.findViewById(R.id.textView2);
@@ -105,7 +106,6 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called.");
-
 
 
         holder.PostName.setText(PostList.get(position).getPostName());
@@ -208,14 +208,17 @@ public class FriendsPostRecyclerViewAdapter extends RecyclerView.Adapter<Friends
 
     public void getProfilePhoto(String userID , final FriendsPostRecyclerViewAdapter.ViewHolder holder ){
 
-        DatabaseReference RR = FirebaseDatabase.getInstance().getReference().child("profile").child(userID).child("profilePhoto");
+        DatabaseReference RR = FirebaseDatabase.getInstance().getReference().child("profile").child(userID);
         RR.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Uri uri = Uri.parse(dataSnapshot.getValue(String.class));
+                Uri uri = Uri.parse(dataSnapshot.child("profilePhoto").getValue(String.class));
                 Glide.with(mContext)
                         .load(uri)
                         .into(holder.profilePhoto);
+
+                holder.userName.setText(dataSnapshot.child("name").getValue(String.class));
+
             }
 
             @Override
