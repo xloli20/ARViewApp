@@ -40,7 +40,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 public class AddChatFragment extends Fragment {
 
     private static final String TAG = "SearchFragment";
@@ -54,8 +53,7 @@ public class AddChatFragment extends Fragment {
     private DatabaseReference myRef;
     private FirebaseMethods firebaseMethods;
 
-    //wedgets
-
+    //widgets
     private EditText mInput;
     private ImageView mSearch;
     private ImageView backArrow;
@@ -66,12 +64,9 @@ public class AddChatFragment extends Fragment {
     private addChatAdapter suggAdapter;
     private addChatAdapter2 searchAdapter;
 
-
     //var
     private ArrayList<following> Suggested = new ArrayList<>();
     private ArrayList<addChat> results = new ArrayList<>();
-
-
 
     public AddChatFragment() {
     }
@@ -80,7 +75,6 @@ public class AddChatFragment extends Fragment {
         AddChatFragment fragment = new AddChatFragment();
         return fragment;
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,7 +88,6 @@ public class AddChatFragment extends Fragment {
 
         setupFirebaseAuth();
         setupWedgets(view);
-
 
         mSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,32 +117,25 @@ public class AddChatFragment extends Fragment {
                 } else {
                     suggLY.setVisibility(View.VISIBLE);
                     searchLY.setVisibility(View.INVISIBLE);
-
-
                 }
             }
-
             @Override
             public void afterTextChanged(Editable editable) {
             }
         });
-
-
         return view;
     }
 
     private void SuggestedList(){
-
-        DatabaseReference R = firebaseDatabase.getReference().child("profile").child(mAuth.getUid()).child("following");
-
+        DatabaseReference R = firebaseDatabase.getReference().child("profile").child(Objects.requireNonNull(mAuth.getUid())).child("following");
         R.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                 final String uid = dataSnapshot.getRef().getKey();
 
                 if (!ChatsFragment.chatUserList.contains(uid)){
 
+                    assert uid != null;
                     DatabaseReference R2 = firebaseDatabase.getReference().child("profile").child(uid);
 
                     R2.addValueEventListener(new ValueEventListener() {
@@ -161,42 +147,34 @@ public class AddChatFragment extends Fragment {
                             following f = new following();
 
                             f.setUid(uid);
-                            f.setUsername(map.get("userName").toString());
-                            f.setProfilePhoto(map.get("profilePhoto").toString());
-                            f.setName(map.get("name").toString());
+                            assert map != null;
+                            f.setUsername(Objects.requireNonNull(map.get("userName")).toString());
+                            f.setProfilePhoto(Objects.requireNonNull(map.get("profilePhoto")).toString());
+                            f.setName(Objects.requireNonNull(map.get("name")).toString());
 
                             Suggested.add(f);
                             suggAdapter.notifyDataSetChanged();
                         }
-
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                         }
                     });
-
                 }
-
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             }
-
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
             }
-
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
-
     }
-
     private void listenForData() {
         DatabaseReference usersDb = FirebaseDatabase.getInstance().getReference().child("profile");
         Query query = usersDb.orderByChild("userName").startAt(mInput.getText().toString()).endAt(mInput.getText().toString() + "\uf8ff");
@@ -207,7 +185,6 @@ public class AddChatFragment extends Fragment {
                 String name = "";
                 String uid = dataSnapshot.getRef().getKey();
                 String photo = "" ;
-
 
                 if(dataSnapshot.child("userName").getValue() != null){
                     username = Objects.requireNonNull(dataSnapshot.child("userName").getValue()).toString();
@@ -221,7 +198,6 @@ public class AddChatFragment extends Fragment {
                 if(!username.equals(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail())){
                     final addChat obj = new addChat(username,name, uid, photo);
 
-
                 DatabaseReference R = firebaseDatabase.getReference().child("userChat").child(mAuth.getUid()).child(uid);
 
                 R.addValueEventListener(new ValueEventListener() {
@@ -231,48 +207,32 @@ public class AddChatFragment extends Fragment {
                             userChat users = dataSnapshot.getValue(userChat.class);
                             obj.setChatId(users.getChatId());
                         }
-
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                     }
                 });
-
                 results.add(obj);
                 searchAdapter.notifyDataSetChanged();
-
                 }
-
             }
-
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String s) {
-
             }
-
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
             }
-
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String s) {
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
-
       /*
-    -------------------------------wedget on click-----------------------------------------
+    -------------------------------widget on click-----------------------------------------
      */
-
       private void setupWedgets(View view){
           mSearch = view.findViewById(R.id.search);
           mInput = view.findViewById(R.id.input);
@@ -282,7 +242,6 @@ public class AddChatFragment extends Fragment {
           SearchRecyclerView = view.findViewById(R.id.searchrecyclerView);
           suggLY = view.findViewById(R.id.suggLayout);
           searchLY = view.findViewById(R.id.searchLayout);
-
 
           backarrow();
 
@@ -295,9 +254,7 @@ public class AddChatFragment extends Fragment {
           SearchRecyclerView.setLayoutManager(layoutManager1);
           searchAdapter = new addChatAdapter2(getContext(),results);
           SearchRecyclerView.setAdapter(searchAdapter);
-
       }
-
 
     private void backarrow(){
           backArrow.setOnClickListener(new View.OnClickListener() {
@@ -312,21 +269,13 @@ public class AddChatFragment extends Fragment {
         getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
         getActivity().getSupportFragmentManager().popBackStack();
     }
-
-
-
-
         /*
-    -------------------------------wedget on click-----------------------------------------
+    -------------------------------widget on click-----------------------------------------
      */
-
-
 
      /*
     ------------------------------------ Firebase ---------------------------------------------
      */
-
-
     private void setupFirebaseAuth(){
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
 
@@ -334,7 +283,6 @@ public class AddChatFragment extends Fragment {
         firebaseDatabase = FirebaseDatabase.getInstance();
         myRef = firebaseDatabase.getReference();
         firebaseMethods = new FirebaseMethods(getActivity());
-
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -353,16 +301,12 @@ public class AddChatFragment extends Fragment {
                 // ...
             }
         };
-
-
     }
-
     @Override
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
     }
-
     @Override
     public void onStop() {
         super.onStop();
@@ -370,22 +314,16 @@ public class AddChatFragment extends Fragment {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
     /*
     ------------------------------------ Firebase ---------------------------------------------
      */
 
-
-
-
     /********************************************************************************/
-
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
     }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -396,14 +334,11 @@ public class AddChatFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
-
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
-
-
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }

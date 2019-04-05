@@ -1,5 +1,7 @@
 package com.example.arview.databaseClasses;
 
+import androidx.annotation.NonNull;
+
 public class following {
     private String username;
     private String name;
@@ -7,7 +9,7 @@ public class following {
     private String profilePhoto;
 
 
-    public following(){
+    public following() {
     }
 
     public following(String email, String uid, String profilePhoto) {
@@ -56,6 +58,7 @@ public class following {
     }
 
 
+    @NonNull
     @Override
     public String toString() {
         return "following{" +

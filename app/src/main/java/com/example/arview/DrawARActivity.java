@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -56,7 +57,6 @@ import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException;
 import com.example.arview.rendering.BackgroundRenderer;
 import com.example.arview.rendering.LineShaderRenderer;
-import com.example.arview.rendering.LineUtils;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -148,9 +148,9 @@ public class DrawARActivity extends AppCompatActivity implements GLSurfaceView.R
         mButtonBar = findViewById(R.id.button_bar);
 
         // Settings seek bars
-        mLineDistanceScaleBar = findViewById(R.id.distanceScale);
-        mLineWidthBar = findViewById(R.id.lineWidth);
-        mSmoothingBar = findViewById(R.id.smoothingSeekBar);
+        mLineDistanceScaleBar = (SeekBar) findViewById(R.id.distanceScale);
+        mLineWidthBar = (SeekBar) findViewById(R.id.lineWidth);
+        mSmoothingBar = (SeekBar) findViewById(R.id.smoothingSeekBar);
 
         mLineDistanceScaleBar.setProgress(sharedPref.getInt("mLineDistanceScale", 1));
         mLineWidthBar.setProgress(sharedPref.getInt("mLineWidth", 10));

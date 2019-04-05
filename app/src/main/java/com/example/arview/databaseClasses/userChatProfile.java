@@ -1,5 +1,7 @@
 package com.example.arview.databaseClasses;
 
+import androidx.annotation.NonNull;
+
 public class userChatProfile {
     private userChat userChat;
     private profile profile;
@@ -12,6 +14,7 @@ public class userChatProfile {
         this.profile = profile;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "userChatProfile{" +

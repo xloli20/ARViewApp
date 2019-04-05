@@ -38,11 +38,10 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.Objects;
 
-
 public class FriendsFragment extends Fragment {
 
     private static final String TAG = "FriendsFragment";
-    Context context;
+    private Context context;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -51,14 +50,13 @@ public class FriendsFragment extends Fragment {
     private DatabaseReference myRef;
     private FirebaseMethods firebaseMethods;
 
-    //wedgets
+    //widgets
     private RecyclerView recyclerView;
 
     private FriendsPostRecyclerViewAdapter adapter;
-   //var
-    private ArrayList<post> Plist = new ArrayList<>() ;
-    private ArrayList<String> Flist = new ArrayList<>() ;
-
+    //var
+    private ArrayList<post> Plist = new ArrayList<>();
+    private ArrayList<String> Flist = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
 
@@ -84,7 +82,7 @@ public class FriendsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
@@ -93,30 +91,28 @@ public class FriendsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.postRecyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new FriendsPostRecyclerViewAdapter(getContext(), Plist , mAuth.getUid() );
+        adapter = new FriendsPostRecyclerViewAdapter(getContext(), Plist, mAuth.getUid());
         recyclerView.setAdapter(adapter);
-
 
         getUserFollowingPosts();
 
         return view;
     }
 
-         /*
-    -------------------------------wedget on click-----------------------------------------
-     */
+    /*
+-------------------------------widget on click-----------------------------------------
+*/
+    private int count = 0;
 
-
-         int count = 0;
-    public void getUserFollowingPosts() {
-        DatabaseReference userFollowingDB = FirebaseDatabase.getInstance().getReference().child("profile").child(mAuth.getUid()).child("following");
+    private void getUserFollowingPosts() {
+        DatabaseReference userFollowingDB = FirebaseDatabase.getInstance().getReference().child("profile").child(Objects.requireNonNull(mAuth.getUid())).child("following");
 
         userFollowingDB.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
 
                 String uid = dataSnapshot.getRef().getKey();
-                if (uid != null && !Flist.contains(uid)){
+                if (uid != null && !Flist.contains(uid)) {
                     Flist.add(uid);
 
                     count++;
@@ -130,12 +126,10 @@ public class FriendsFragment extends Fragment {
 
                             Log.e(TAG, "postID " + postID);
 
-
-                            if(v.startsWith("true")){
+                            assert v != null;
+                            if (v.startsWith("true")) {
                                 //post is personal
-
                             } else {
-
                                 if (v.endsWith("true")) {
                                     //post is public
                                     DatabaseReference Pupost = firebaseDatabase.getReference().child("posts").child("public").child(postID);
@@ -145,11 +139,11 @@ public class FriendsFragment extends Fragment {
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             setPost(dataSnapshot);
                                         }
+
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError databaseError) {
                                         }
                                     });
-
                                 }
                                 if (v.endsWith("false")) {
                                     //post is private
@@ -159,63 +153,56 @@ public class FriendsFragment extends Fragment {
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             setPost(dataSnapshot);
                                         }
+
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError databaseError) {
                                         }
                                     });
                                 }
                             }
-
                         }
 
                         @Override
                         public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                         }
 
                         @Override
                         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
                         }
 
                         @Override
                         public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-
                         }
                     });
-
-                    if(count >= Flist.size() - 1){
-
+                    if (count >= Flist.size() - 1) {
                     }
                 }
-
-
             }
+
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String s) {
             }
+
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
             }
+
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String s) {
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
         Log.e(TAG, "getUserFollowing " + Flist);
-
     }
 
-    private post setPost(DataSnapshot dataSnapshot){
-
+    private post setPost(DataSnapshot dataSnapshot) {
         final post post = new post();
 
         post.setPostId(dataSnapshot.getKey());
@@ -238,34 +225,28 @@ public class FriendsFragment extends Fragment {
                 return o2.getPostCreatedDate().compareTo(o1.getPostCreatedDate());
             }
         });
-
         adapter.notifyDataSetChanged();
 
-        for (int i =0 ; i < Plist.size() ; i ++){
-            if ( Plist.get(i).getPostId().equals(post.getPostId())){
+        for (int i = 0; i < Plist.size(); i++) {
+            if (Plist.get(i).getPostId().equals(post.getPostId())) {
 
-                if ( Plist.get(i).getLikes() != post.getLikes()){
-                    Plist.set(i , post);
-                    Plist.remove(i+1);
-                    adapter.notifyItemRangeChanged(i,Plist.size()-1);
+                if (!Plist.get(i).getLikes().equals(post.getLikes())) {
+                    Plist.set(i, post);
+                    Plist.remove(i + 1);
+                    adapter.notifyItemRangeChanged(i, Plist.size() - 1);
                 }
             }
         }
-
         return post;
     }
-
-
      /*
     -------------------------------wedget on click-----------------------------------------
      */
 
-
-        /*
-    ------------------------------------ Firebase ---------------------------------------------
-     */
-
-    private void setupFirebaseAuth(){
+    /*
+------------------------------------ Firebase ---------------------------------------------
+ */
+    private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
 
         mAuth = FirebaseAuth.getInstance();
@@ -274,9 +255,8 @@ public class FriendsFragment extends Fragment {
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged( FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
@@ -289,7 +269,6 @@ public class FriendsFragment extends Fragment {
                 // ...
             }
         };
-
     }
 
     @Override
@@ -311,14 +290,11 @@ public class FriendsFragment extends Fragment {
         super.onPause();
         Plist.clear();
     }
-
-
     /*
     ------------------------------------ Firebase ---------------------------------------------
      */
 
     /***************************************************************/
-
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);

@@ -6,6 +6,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Date;
 
+import androidx.annotation.NonNull;
+
 public class post {
 
     private String postId;
@@ -164,6 +166,7 @@ public class post {
         this.personal = personal;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "post{" +

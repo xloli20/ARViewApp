@@ -8,8 +8,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-public class profile {
+import androidx.annotation.NonNull;
 
+public class profile {
 
     private String userName;
     private String name;
@@ -19,7 +20,6 @@ public class profile {
     private HashMap<String, Boolean> followers;
     private HashMap<String, Boolean> following;
     private HashMap<String, String> post;
-
 
     public profile(){
     }
@@ -35,6 +35,7 @@ public class profile {
         this.post = post;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "profile{" +

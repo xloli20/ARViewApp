@@ -6,6 +6,8 @@ import com.firebase.ui.auth.data.model.PhoneNumber;
 
 import java.util.Date;
 
+import androidx.annotation.NonNull;
+
 public class users {
 
     private String userName;
@@ -17,7 +19,7 @@ public class users {
     public users() {
     }
 
-    public users( String userName, String email, String createdAt, String updatedAt, long phoneNumber) {
+    public users(String userName, String email, String createdAt, String updatedAt, long phoneNumber) {
         this.userName = userName;
         this.email = email;
         this.createdAt = createdAt;
@@ -25,12 +27,13 @@ public class users {
         this.phoneNumber = phoneNumber;
     }
 
-    public users(String userName, String email){
+    public users(String userName, String email) {
         this.userName = userName;
         this.email = email;
     }
 
 
+    @NonNull
     @Override
     public String toString() {
         return "users{" +

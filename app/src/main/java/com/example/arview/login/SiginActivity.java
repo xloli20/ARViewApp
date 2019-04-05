@@ -32,10 +32,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class SiginActivity extends AppCompatActivity implements usenameFragment.OnFragmentInteractionListener{
+public class SiginActivity extends AppCompatActivity implements usenameFragment.OnFragmentInteractionListener {
     private static final String TAG = "SigninActivity";
     private Context mContext;
-
 
     //firebase
     private FirebaseAuth mAuth;
@@ -43,15 +42,11 @@ public class SiginActivity extends AppCompatActivity implements usenameFragment.
     GoogleSignInClient mGoogleSignInClient;
     int RC_SIGN_IN = 1;
 
-
     private FirebaseMethods firebaseMethods;
 
-
-    //wedgets
+    //widgets
     Button btnEmail;
     SignInButton btnGoogle;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +55,8 @@ public class SiginActivity extends AppCompatActivity implements usenameFragment.
 
         firebaseMethods = new FirebaseMethods(mContext);
 
-        btnEmail = (Button)findViewById(R.id.btn_login);
-        btnGoogle = (SignInButton)findViewById(R.id.btn_Glogin);
+        btnEmail = (Button) findViewById(R.id.btn_login);
+        btnGoogle = (SignInButton) findViewById(R.id.btn_Glogin);
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -69,8 +64,7 @@ public class SiginActivity extends AppCompatActivity implements usenameFragment.
                 .requestEmail()
                 .build();
 
-        mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
-
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         btnEmail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,11 +81,8 @@ public class SiginActivity extends AppCompatActivity implements usenameFragment.
                 signIn();
             }
         });
-
         setupFirebaseAuth();
-
     }
-
 
       /*
     ------------------------------------ Firebase ---------------------------------------------
@@ -149,17 +140,14 @@ public class SiginActivity extends AppCompatActivity implements usenameFragment.
                 });
     }
 
-
-
-
-    private void setupFirebaseAuth(){
+    private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
 
         mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged( FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
@@ -210,10 +198,11 @@ public class SiginActivity extends AppCompatActivity implements usenameFragment.
     }
 
 
-    public void onFragmentInteraction(Uri uri){
+    public void onFragmentInteraction(Uri uri) {
         //you can leave it empty
     }
-    public void OnFragmentInteractionListener(Uri uri){
+
+    public void OnFragmentInteractionListener(Uri uri) {
         //you can leave it empty
     }
 

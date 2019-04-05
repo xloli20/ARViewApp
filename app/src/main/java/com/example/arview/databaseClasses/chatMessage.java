@@ -4,23 +4,23 @@ public class chatMessage {
 
     private String text;
     private String sender;
-    private String photoURL ;
+    private String photoURL;
     //date and time
     private String postID;
 
     public chatMessage() {
     }
 
-    public chatMessage(String text, String sender, String photoURL){
+    public chatMessage(String text, String sender, String photoURL) {
         this.text = text;
         this.sender = sender;
         this.photoURL = photoURL;
     }
 
-    public chatMessage( String sender, String post) {
+    public chatMessage(String sender, String post) {
         this.sender = sender;
         this.postID = post;
-}
+    }
 
     @Override
     public String toString() {
