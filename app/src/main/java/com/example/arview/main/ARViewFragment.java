@@ -14,11 +14,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appoly.arcorelocation.LocationMarker;
 import uk.co.appoly.arcorelocation.LocationScene;
@@ -43,7 +40,6 @@ import com.example.arview.DrawActivity;
 import com.example.arview.R;
 import com.example.arview.location.MapsActivity;
 import com.example.arview.login.SiginActivity;
-import com.example.arview.post.PostDetailsFragment;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
@@ -178,7 +174,7 @@ public class ARViewFragment extends Fragment {
                                 // We know that here, the AR components have been initiated.
                                 locationScene = new LocationScene(getContext(), getActivity(), arSceneView);
 
-                                setplayouts();
+                                getPostsLocation();
                             }
 
                             Frame frame = arSceneView.getArFrame();
@@ -213,11 +209,8 @@ public class ARViewFragment extends Fragment {
         return view;
     }
 
-    List<LocationMarker> LocationMarkerList = new ArrayList<>();
-    int Count = 0;
-    @TargetApi(Build.VERSION_CODES.N)
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void setplayouts() {
+
+    private void getPostsLocation() {
 
 
         DatabaseReference PostsLocation = FirebaseDatabase.getInstance().getReference().child("postsLocations").child("public");
@@ -232,85 +225,16 @@ public class ARViewFragment extends Fragment {
         GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(location.getLongitude(), location.getLatitude()), 10000);
 
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @TargetApi(Build.VERSION_CODES.N)
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onKeyEntered(String key, GeoLocation location) {
 
-                Count ++;
+                Location postLocation = new Location(LocationManager.GPS_PROVIDER);
+                postLocation.setLatitude(location.latitude);
+                postLocation.setLongitude(location.longitude);
 
-                String PostID = key;
-
-
-
-                View eView = LayoutRenderable.getView();
-
-
-                DatabaseReference Postsinfo = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(key);
-
-                Postsinfo.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        TextView postName = eView.findViewById(R.id.postName);
-
-                        LocationMarker layoutLocationMarker = new LocationMarker(
-                                location.longitude,
-                                location.latitude,
-                                getExampleView(PostID, dataSnapshot.child("ownerId").getValue(String.class) )
-                        );
-
-                        LocationMarkerList.add(layoutLocationMarker);
-
-                        postName.setText(dataSnapshot.child("postName").getValue(String.class));
-
-                        DatabaseReference ProfilePhoto = FirebaseDatabase.getInstance().getReference().child("profile").child(dataSnapshot.child("ownerId").getValue(String.class));
-
-                        ProfilePhoto.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                Uri uri = Uri.parse(dataSnapshot.child("profilePhoto").getValue(String.class));
-                                CircleImageView profilePhoto = eView.findViewById(R.id.profile_photo);
-
-                                Glide.with(getActivity())
-                                        .load(uri)
-                                        .into(profilePhoto);
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-                        // An example "onRender" event, called every frame
-                        // Updates the layout with the markers distance
-                        layoutLocationMarker.setRenderEvent(new LocationNodeRender() {
-                            @Override
-                            public void render(LocationNode node) {
-                                View eView = LayoutRenderable.getView();
-                                TextView distanceTextView = eView.findViewById(R.id.distance);
-                                ImageView postImage =  eView.findViewById(R.id.postImage);
-                                postImage.setVisibility(View.GONE);
-                                distanceTextView.setText(node.getDistance() + "M");
-
-                                if ( node.getDistance() < 3){
-                                    //set image
-                                }
-                            }
-                        });
-                        // Adding the marker
-                        locationScene.mLocationMarkers.add(layoutLocationMarker);
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
-
+                setupLocationMarker(postLocation, key);
 
             }
 
@@ -339,6 +263,76 @@ public class ARViewFragment extends Fragment {
     }
 
 
+    List<LocationMarker> LocationMarkerList = new ArrayList<>();
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void setupLocationMarker(Location location, String PostID){
+
+
+        LocationMarkerList.add(new LocationMarker(
+                location.getLongitude(),
+                location.getLatitude(),
+                getExampleView()
+        ));
+
+        // An example "onRender" event, called every frame
+        // Updates the layout with the markers distance
+        LocationMarkerList.get(LocationMarkerList.size()-1).setRenderEvent(new LocationNodeRender() {
+            @Override
+            public void render(LocationNode node) {
+                View eView = LayoutRenderable.getView();
+                TextView distanceTextView = eView.findViewById(R.id.distance);
+                ImageView postImage =  eView.findViewById(R.id.postImage);
+                postImage.setVisibility(View.GONE);
+                distanceTextView.setText(node.getDistance() + "M");
+
+
+                DatabaseReference Postsinfo = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(PostID);
+
+                Postsinfo.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        TextView postName = eView.findViewById(R.id.postName);
+                        postName.setText(dataSnapshot.child("postName").getValue(String.class));
+
+                        DatabaseReference ProfilePhoto = FirebaseDatabase.getInstance().getReference().child("profile").child(dataSnapshot.child("ownerId").getValue(String.class));
+
+                        ProfilePhoto.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Uri uri = Uri.parse(dataSnapshot.child("profilePhoto").getValue(String.class));
+                                CircleImageView profilePhoto = eView.findViewById(R.id.profile_photo);
+
+                                Glide.with(getActivity())
+                                        .load(uri)
+                                        .into(profilePhoto);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                if ( node.getDistance() < 3){
+                    //set image
+                }
+            }
+        });
+        // Adding the marker
+        locationScene.mLocationMarkers.add(LocationMarkerList.get(LocationMarkerList.size()-1));
+    }
+
+
 
     /**
      * Example node of a layout
@@ -347,21 +341,16 @@ public class ARViewFragment extends Fragment {
      */
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private Node getExampleView( String PostID, String OwnerId ) {
+    private Node getExampleView() {
         Node base = new Node();
         base.setRenderable(LayoutRenderable);
         Context c = getContext();
         // Add  listeners etc here
         View eView = LayoutRenderable.getView();
         eView.setOnTouchListener((v, event) -> {
-            PostDetailsFragment fragment = PostDetailsFragment.newInstance(OwnerId, PostID, "falsetrue");
-            FragmentManager fragmentManager = getFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
-            transaction.addToBackStack(null);
-            transaction.remove(fragment);
-            transaction.replace(R.id.Ffragment_container, fragment);
-            transaction.commit();
+            Toast.makeText(
+                    c, "Location marker touched." , Toast.LENGTH_LONG)
+                    .show();
             return false;
         });
 
