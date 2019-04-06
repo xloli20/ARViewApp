@@ -1,6 +1,7 @@
 package com.example.arview.main;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -18,11 +19,11 @@ import com.example.arview.post.PostSettingFragment;
 import com.example.arview.profile.ProfileFragment;
 import com.example.arview.search.SearchFragment;
 import com.example.arview.utils.SectionsPagerAdapter;
+import com.example.arview.utils.SectionsStatePagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements SearchFragment.OnFragmentInteractionListener ,
-                                                                CameraFragment.OnFragmentInteractionListener,
                                                                 ChatsFragment.OnFragmentInteractionListener,
                                                                 ProfileFragment.OnFragmentInteractionListener,
                                                                 UpdatedsFragment.OnFragmentInteractionListener,
@@ -128,11 +129,37 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new SearchFragment()); //index 0
         adapter.addFragment(new ARViewFragment()); //index 1
-        adapter.addFragment(new CameraFragment()); //index 1
         adapter.addFragment(new UpdatedsFragment()); //index 2
+
 
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(1);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+                int C = viewPager.getCurrentItem();
+                Fragment ARV = adapter.getItem(1);
+
+                if (C == 0 || C == 2){
+                    ARV.onPause();
+                }else
+                    ARV.onResume();
+
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
     }
 

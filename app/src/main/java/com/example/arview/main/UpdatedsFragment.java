@@ -8,12 +8,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.example.arview.R;
 import com.example.arview.chat.ChatsFragment;
 import com.example.arview.friend.FriendsFragment;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.utils.SectionsPagerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
