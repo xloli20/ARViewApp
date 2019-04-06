@@ -1,12 +1,14 @@
 package com.example.arview.post;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -74,7 +76,7 @@ public class PostDetailsFragment extends Fragment {
 
 
     //widgets
-    private ImageView backArrow, heart, location, clock ;
+    private ImageView backArrow, heart, location, clock, delete ;
     private TextView userName, postName,vibilty, postDescription, likeCount, commentCount, limit;
     private CircleImageView profilePhoto;
 
@@ -222,6 +224,7 @@ public class PostDetailsFragment extends Fragment {
 
         like(dataSnapshot);
         time(post);
+
     }
 
     private void like(final DataSnapshot dataSnapshot){
@@ -307,6 +310,8 @@ public class PostDetailsFragment extends Fragment {
         });
 
     }
+
+
 
     private void CommentList(){
 
@@ -439,6 +444,7 @@ public class PostDetailsFragment extends Fragment {
         likeCount =  view.findViewById(R.id.likeNum);
         commentCount =  view.findViewById(R.id.comment);
         limit =  view.findViewById(R.id.limit);
+        delete =  view.findViewById(R.id.delete);
         recyclerView  =  view.findViewById(R.id.commentRecyclerView);
 
         backArrow();
@@ -448,6 +454,40 @@ public class PostDetailsFragment extends Fragment {
         CommentList();
     }
 
+    private void delete(){
+
+        if (mAuth.getUid().equals(UserID)){
+            delete.setVisibility(View.VISIBLE);
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Delete Post")
+                            .setMessage("Are you sure you want to delete this Post?")
+
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    String p = PostPath.substring(0,  PostPath.indexOf("e")+1);
+                                    String v = PostPath.substring(p.length(),  PostPath.length());
+
+                                    firebaseMethods.deletePost(PostID, UserID, Boolean.valueOf(v),  Boolean.valueOf(p));
+                                    closefragment();
+                                }
+                            })
+
+                            .setNegativeButton(android.R.string.no, null)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+            });
+
+        }else
+            delete.setVisibility(View.GONE);
+
+
+    }
     private void openComment(){
         commentCount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -540,6 +580,7 @@ public class PostDetailsFragment extends Fragment {
         };
 
 
+        delete();
 
     }
 

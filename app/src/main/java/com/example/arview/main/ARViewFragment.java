@@ -1,8 +1,12 @@
 package com.example.arview.main;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,12 +14,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import de.hdodenhof.circleimageview.CircleImageView;
 import uk.co.appoly.arcorelocation.LocationMarker;
 import uk.co.appoly.arcorelocation.LocationScene;
 import uk.co.appoly.arcorelocation.rendering.LocationNode;
 import uk.co.appoly.arcorelocation.rendering.LocationNodeRender;
 import uk.co.appoly.arcorelocation.utils.ARLocationPermissionHelper;
+import uk.co.appoly.arcorelocation.utils.LocationUtils;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,11 +37,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.arview.DrawARActivity;
 import com.example.arview.DrawActivity;
 import com.example.arview.R;
 import com.example.arview.location.MapsActivity;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.post.PostDetailsFragment;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Plane;
@@ -45,12 +61,19 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 
-public class ARViewFragment extends Fragment  {
+public class ARViewFragment extends Fragment {
 
     private static final String TAG = "ARViewFragment";
 
@@ -60,6 +83,8 @@ public class ARViewFragment extends Fragment  {
     private Snackbar loadingMessageSnackbar = null;
 
     private ArSceneView arSceneView;
+
+    private LocationManager locationManager;
 
     // Renderables for this example
     private ViewRenderable LayoutRenderable;
@@ -76,21 +101,22 @@ public class ARViewFragment extends Fragment  {
     private ImageView draw;
 
 
-
     private OnFragmentInteractionListener mListener;
+
     public ARViewFragment() {
     }
+
     public static ARViewFragment newInstance() {
         ARViewFragment fragment = new ARViewFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -102,6 +128,8 @@ public class ARViewFragment extends Fragment  {
 
         setupFirebaseAuth();
         setUpARViewWedget(view);
+
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         // Build a renderable from a 2D View.
         CompletableFuture<ViewRenderable> exampleLayout =
@@ -150,29 +178,7 @@ public class ARViewFragment extends Fragment  {
                                 // We know that here, the AR components have been initiated.
                                 locationScene = new LocationScene(getContext(), getActivity(), arSceneView);
 
-                                // Now lets create our location markers.
-                                // First, a layout
-                                LocationMarker layoutLocationMarker = new LocationMarker(
-                                        -4.849509,
-                                        42.814603,
-                                        getExampleView()
-                                );
-
-                                // An example "onRender" event, called every frame
-                                // Updates the layout with the markers distance
-                                layoutLocationMarker.setRenderEvent(new LocationNodeRender() {
-                                    @Override
-                                    public void render(LocationNode node) {
-                                        View eView = LayoutRenderable.getView();
-                                        TextView distanceTextView = eView.findViewById(R.id.distance);
-                                        ImageView postImage =  eView.findViewById(R.id.postImage);
-                                        postImage.setVisibility(View.GONE);
-                                        distanceTextView.setText(node.getDistance() + "M");
-                                    }
-                                });
-                                // Adding the marker
-                                locationScene.mLocationMarkers.add(layoutLocationMarker);
-
+                                setplayouts();
                             }
 
                             Frame frame = arSceneView.getArFrame();
@@ -207,6 +213,132 @@ public class ARViewFragment extends Fragment  {
         return view;
     }
 
+    List<LocationMarker> LocationMarkerList = new ArrayList<>();
+    int Count = 0;
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void setplayouts() {
+
+
+        DatabaseReference PostsLocation = FirebaseDatabase.getInstance().getReference().child("postsLocations").child("public");
+
+        if (ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        GeoFire geoFire = new GeoFire(PostsLocation);
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(location.getLongitude(), location.getLatitude()), 10000);
+
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+
+                Count ++;
+
+                String PostID = key;
+
+
+
+                View eView = LayoutRenderable.getView();
+
+
+                DatabaseReference Postsinfo = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(key);
+
+                Postsinfo.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        TextView postName = eView.findViewById(R.id.postName);
+
+                        LocationMarker layoutLocationMarker = new LocationMarker(
+                                location.longitude,
+                                location.latitude,
+                                getExampleView(PostID, dataSnapshot.child("ownerId").getValue(String.class) )
+                        );
+
+                        LocationMarkerList.add(layoutLocationMarker);
+
+                        postName.setText(dataSnapshot.child("postName").getValue(String.class));
+
+                        DatabaseReference ProfilePhoto = FirebaseDatabase.getInstance().getReference().child("profile").child(dataSnapshot.child("ownerId").getValue(String.class));
+
+                        ProfilePhoto.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Uri uri = Uri.parse(dataSnapshot.child("profilePhoto").getValue(String.class));
+                                CircleImageView profilePhoto = eView.findViewById(R.id.profile_photo);
+
+                                Glide.with(getActivity())
+                                        .load(uri)
+                                        .into(profilePhoto);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        // An example "onRender" event, called every frame
+                        // Updates the layout with the markers distance
+                        layoutLocationMarker.setRenderEvent(new LocationNodeRender() {
+                            @Override
+                            public void render(LocationNode node) {
+                                View eView = LayoutRenderable.getView();
+                                TextView distanceTextView = eView.findViewById(R.id.distance);
+                                ImageView postImage =  eView.findViewById(R.id.postImage);
+                                postImage.setVisibility(View.GONE);
+                                distanceTextView.setText(node.getDistance() + "M");
+
+                                if ( node.getDistance() < 3){
+                                    //set image
+                                }
+                            }
+                        });
+                        // Adding the marker
+                        locationScene.mLocationMarkers.add(layoutLocationMarker);
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
+
+
+    }
+
+
 
     /**
      * Example node of a layout
@@ -215,21 +347,28 @@ public class ARViewFragment extends Fragment  {
      */
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private Node getExampleView() {
+    private Node getExampleView( String PostID, String OwnerId ) {
         Node base = new Node();
         base.setRenderable(LayoutRenderable);
         Context c = getContext();
         // Add  listeners etc here
         View eView = LayoutRenderable.getView();
         eView.setOnTouchListener((v, event) -> {
-            Toast.makeText(
-                    c, "Location marker touched.", Toast.LENGTH_LONG)
-                    .show();
+            PostDetailsFragment fragment = PostDetailsFragment.newInstance(OwnerId, PostID, "falsetrue");
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+            transaction.addToBackStack(null);
+            transaction.remove(fragment);
+            transaction.replace(R.id.Ffragment_container, fragment);
+            transaction.commit();
             return false;
         });
 
         return base;
     }
+
+
 
     /**
      * Make sure we call locationScene.resume();
