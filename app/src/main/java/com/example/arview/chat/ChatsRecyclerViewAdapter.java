@@ -47,7 +47,7 @@ public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecycler
         Log.d(TAG, "onBindViewHolder: called.");
 
 
-        if (chatMessage.get(position).getSender().equals(userID)){
+        if (chatMessage.get(position).getSender() == userID){
             holder.left.setVisibility(View.GONE);
 
             if (chatMessage.get(position).getPhotoURL() != null) {
