@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import static com.example.arview.utils.CalTimeDiff.getTimestampDifference;
@@ -462,7 +463,7 @@ public class PostDetailsFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
 
-                    new AlertDialog.Builder(getActivity())
+                    new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
                             .setTitle("Delete Post")
                             .setMessage("Are you sure you want to delete this Post?")
 
@@ -476,7 +477,6 @@ public class PostDetailsFragment extends Fragment {
                                     closefragment();
                                 }
                             })
-
                             .setNegativeButton(android.R.string.no, null)
                             .setIcon(android.R.drawable.ic_dialog_alert)
                             .show();
@@ -485,15 +485,14 @@ public class PostDetailsFragment extends Fragment {
 
         }else
             delete.setVisibility(View.GONE);
-
-
     }
+
     private void openComment(){
         commentCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PostCommentsFragment fragment = PostCommentsFragment.newInstance(PostPath , PostID);
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
                 FragmentTransaction transaction = fragmentManager.beginTransaction();
                 transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
                 transaction.addToBackStack(null);
@@ -539,7 +538,7 @@ public class PostDetailsFragment extends Fragment {
         });
     }
     private void closefragment() {
-        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+        Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().remove(this).commit();
     }
 
 

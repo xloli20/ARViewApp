@@ -494,9 +494,7 @@ public class ARViewFragment extends Fragment {
                  drawing3d.setOnClickListener(new View.OnClickListener() {
                      @Override
                      public void onClick(View v) {
-                         Intent intent = new Intent(getActivity(), DrawARActivity.class);
-                         startActivity(intent);
-
+                         startNewActivity(getActivity(),"com.googlecreativelab.drawar");
                      }
                  });
                  drawing2d.setOnClickListener(new View.OnClickListener() {
@@ -528,6 +526,20 @@ public class ARViewFragment extends Fragment {
      }
 
 
+    public void startNewActivity(Context context, String packageName) {
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        if (intent != null) {
+            // We found the activity now start the activity
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } else {
+            // Bring user to the market or let them choose an app?
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setData(Uri.parse("market://details?id=" + packageName));
+            context.startActivity(intent);
+        }
+    }
 
          /*
     ------------------------------------ wedget ---------------------------------------------
