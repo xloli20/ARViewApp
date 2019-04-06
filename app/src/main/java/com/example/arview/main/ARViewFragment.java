@@ -165,6 +165,8 @@ public class ARViewFragment extends Fragment  {
                                     public void render(LocationNode node) {
                                         View eView = LayoutRenderable.getView();
                                         TextView distanceTextView = eView.findViewById(R.id.distance);
+                                        ImageView postImage =  eView.findViewById(R.id.postImage);
+                                        postImage.setVisibility(View.GONE);
                                         distanceTextView.setText(node.getDistance() + "M");
                                     }
                                 });

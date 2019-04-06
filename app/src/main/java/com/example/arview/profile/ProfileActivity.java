@@ -387,7 +387,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
         //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
         transaction.addToBackStack(null);
         transaction.remove(fragment);
-        transaction.replace(R.id.fragment_container, fragment);
+        transaction.replace(R.id.fragment_container2, fragment);
         transaction.commit();
     }
 

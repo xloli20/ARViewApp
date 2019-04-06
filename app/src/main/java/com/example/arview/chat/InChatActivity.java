@@ -87,6 +87,8 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
         chatID = getIntent().getStringExtra("ChatID");
         otherUserID = getIntent().getStringExtra("OtherUserId");
 
+        Log.e(TAG, "chatID" + chatID);
+
         setupFirebaseAuth();
         setupWedgets();
     }
@@ -122,14 +124,14 @@ public class InChatActivity extends AppCompatActivity implements ProfileFragment
         backArrow();
         otherUser();
 
-        if (chatID != null){
+        if (chatID == null || chatID.equals("")){
+            startChating();
+            showPopup.setEnabled(false);
+        }
+        else if (chatID != null && !chatID.equals("") ){
             Message();
             initRecyclerView();
             showPopup.setEnabled(true);
-        }
-        else if (chatID == null || chatID == ""){
-            startChating();
-            showPopup.setEnabled(false);
         }
     }
 

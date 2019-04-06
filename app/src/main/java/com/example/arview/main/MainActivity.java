@@ -147,7 +147,8 @@ public class MainActivity extends AppCompatActivity implements SearchFragment.On
                 int C = viewPager.getCurrentItem();
                 Fragment ARV = adapter.getItem(1);
 
-                if (C == 0 || C == 2){
+
+                if (C != 1){
                     ARV.onPause();
                 }else
                     ARV.onResume();
