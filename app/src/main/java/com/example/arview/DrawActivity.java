@@ -21,6 +21,7 @@ public class DrawActivity extends AppCompatActivity {
     private StorageReference storageReference;
 
     private ImageView send;
+    private ImageView clear;
 
     Context context;
 
@@ -43,6 +44,14 @@ public class DrawActivity extends AppCompatActivity {
 
             }
         });*/
+
+        clear = (ImageView) findViewById(R.id.trash);
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                canvas.clearCanvas();
+            }
+        });
 
         send = (ImageView) findViewById(R.id.send);
         send.setOnClickListener(new View.OnClickListener() {

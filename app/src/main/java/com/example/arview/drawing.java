@@ -29,14 +29,14 @@ public class drawing extends View {
         path = new Path();
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
+
         mPaint.setColor(Color.BLACK);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(15f);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
-
     }
-    public drawing(Context context, AttributeSet attrs)
-    {
+
+    public drawing(Context context, AttributeSet attrs){
         super(context, attrs);
         this.context = context;
 
@@ -48,6 +48,7 @@ public class drawing extends View {
         mPaint.setStrokeWidth(15f);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
     }
+
     public drawing(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.context = context;
@@ -94,13 +95,13 @@ public class drawing extends View {
     private void moveTouch(float x, float y){
         float fx = Math.abs(x-mx);
         float fy = Math.abs(y-my);
-        if(fx>= TOLRANCE || fy >= TOLRANCE){
+        if(fx >= TOLRANCE || fy >= TOLRANCE){
             path.quadTo(mx,my,(x+mx)/2,(y+my)/2);
             mx = x;
             my = y;
 
-        }    }
-
+        }
+    }
 
     public boolean onTouchEvent(MotionEvent motionEvent) {
         float x = motionEvent.getX();
