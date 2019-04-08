@@ -537,11 +537,11 @@ public class PostDetailsFragment extends Fragment {
             }
         });
     }
+
     private void closefragment() {
-        Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().remove(this).commit();
+        getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+        getActivity().getSupportFragmentManager().popBackStack();
     }
-
-
 
       /*
     -------------------------------wedget on click-----------------------------------------
