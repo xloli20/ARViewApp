@@ -22,42 +22,18 @@ public class post {
     private boolean visibilty;
     private boolean personal;
 
+    private String PostImage;
+
 
     public post() {
     }
 
 
-    public post(String postId, String ownerId, String postName, String postDesc, Location postLocation, String postCreatedDate, String likesCount, String commentsCount,
-                String postEndTime, boolean visibilty, boolean personal) {
-        this.postId = postId;
-        this.ownerId = ownerId;
-        this.postName = postName;
-        this.postDesc = postDesc;
-        this.postLocation = postLocation;
-        this.postCreatedDate = postCreatedDate;
-        this.likes = likesCount;
-        this.comments = commentsCount;
-        this.postEndTime = postEndTime;
-        this.visibilty = visibilty;
-        this.personal = personal;
-    }
 
-    public post(String postId, String ownerId, String postName, String postDesc, String postCreatedDate, String likesCount, String commentsCount,
-                String postEndTime, boolean visibilty, boolean personal) {
-        this.postId = postId;
-        this.ownerId = ownerId;
-        this.postName = postName;
-        this.postDesc = postDesc;
-        this.postCreatedDate = postCreatedDate;
-        this.likes = likesCount;
-        this.comments = commentsCount;
-        this.postEndTime = postEndTime;
-        this.visibilty = visibilty;
-        this.personal = personal;
-    }
 
-    public post(String postId, String ownerId, String postName, String postDesc, String postCreatedDate,
+    public post(String PostImage, String postId, String ownerId, String postName, String postDesc, String postCreatedDate,
                 String postEndTime, boolean visibilty, boolean personal) {
+        this.PostImage = PostImage;
         this.postId = postId;
         this.ownerId = ownerId;
         this.postName = postName;
@@ -166,7 +142,14 @@ public class post {
         this.personal = personal;
     }
 
-    @NonNull
+    public String getPostImage() {
+        return PostImage;
+    }
+
+    public void setPostImage(String postImage) {
+        PostImage = postImage;
+    }
+
     @Override
     public String toString() {
         return "post{" +
@@ -181,6 +164,7 @@ public class post {
                 ", postEndTime='" + postEndTime + '\'' +
                 ", visibilty=" + visibilty +
                 ", personal=" + personal +
+                ", PostImage='" + PostImage + '\'' +
                 '}';
     }
 }

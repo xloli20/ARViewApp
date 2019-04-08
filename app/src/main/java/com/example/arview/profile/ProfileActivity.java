@@ -189,7 +189,9 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
                         Pupost.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                setPost(dataSnapshot);
+                                if (dataSnapshot.exists()){
+                                    setPost(dataSnapshot);
+                                }
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -203,7 +205,9 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
                         Pvpost.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                setPost(dataSnapshot);
+                                if (dataSnapshot.exists()){
+                                    setPost(dataSnapshot);
+                                }
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -218,6 +222,7 @@ public class ProfileActivity extends AppCompatActivity implements PostDetailsFra
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
             }
 
             @Override

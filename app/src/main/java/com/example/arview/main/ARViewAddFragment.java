@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,13 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Plane;
@@ -67,6 +75,8 @@ import uk.co.appoly.arcorelocation.rendering.LocationNode;
 import uk.co.appoly.arcorelocation.rendering.LocationNodeRender;
 import uk.co.appoly.arcorelocation.utils.ARLocationPermissionHelper;
 
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
+
 
 public class ARViewAddFragment extends Fragment implements PostSettingFragment.OnFragmentInteractionListener {
 
@@ -81,8 +91,6 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
 
     private ArSceneView arSceneView;
 
-    private LocationManager locationManager;
-
     // Renderables for this example
     private ViewRenderable LayoutRenderable;
 
@@ -95,6 +103,7 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
 
     //wedget
     private RelativeLayout next, back;
+    private ImageView unseen;
 
 
     private OnFragmentInteractionListener mListener;
@@ -130,7 +139,7 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
         setupFirebaseAuth();
         setUpARViewWedget(view);
 
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
 
         // Build a renderable from a 2D View.
@@ -180,40 +189,9 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
                                 // We know that here, the AR components have been initiated.
                                 locationScene = new LocationScene(getContext(), getActivity(), arSceneView);
 
-                                if (ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                                        ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                    return;
-                                }
-                                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-                                Location L = getLocation5m(location);
+                                location();
 
-                                LocationMarker locationMarker = new LocationMarker(
-                                        L.getLongitude(),
-                                        L.getLatitude(),
-                                        getExampleView()
-                                );
-
-                                // An example "onRender" event, called every frame
-                                // Updates the layout with the markers distance
-                                locationMarker.setRenderEvent(new LocationNodeRender() {
-                                  @Override
-                                  public void render(LocationNode node) {
-                                      View eView = LayoutRenderable.getView();
-                                      ImageView postImage = eView.findViewById(R.id.postImage);
-
-                                      Log.e (TAG, "distance "+ node.getDistance() );
-
-                                      Uri uri = Uri.parse(PostImage);
-
-                                      Glide.with(getActivity())
-                                              .load(uri)
-                                              .into(postImage);
-
-                                  }});
-
-                                // Adding the marker
-                                    locationScene.mLocationMarkers.add(locationMarker);
 
                             }
 
@@ -241,6 +219,84 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
         return view;
     }
 
+    LocationRequest mLocationRequest;
+    private FusedLocationProviderClient mFusedLocationClient;
+
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void location(){
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        if (ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            for (Location location : locationResult.getLocations()) {
+                if (getContext() != null) {
+
+                    ARimage(location);
+
+                }
+            }
+        }
+    };
+
+
+    LocationMarker locationMarker;
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void ARimage(Location location){
+
+        Location L = getLocation5m(location);
+
+        locationMarker = new LocationMarker(
+                L.getLongitude(),
+                L.getLatitude(),
+                getExampleView()
+        );
+
+        Log.e (TAG, "Location  getLongitude "+ location.getLongitude() );
+        Log.e (TAG, "Location  getLatitude "+ location.getLatitude() );
+
+
+        // An example "onRender" event, called every frame
+        // Updates the layout with the markers distance
+        locationMarker.setRenderEvent(new LocationNodeRender() {
+            @Override
+            public void render(LocationNode node) {
+                View eView = LayoutRenderable.getView();
+                ImageView postImage = eView.findViewById(R.id.postImage);
+                Uri uri = Uri.parse(PostImage);
+                Glide.with(getActivity())
+                        .load(uri)
+                        .into(postImage);
+
+
+                Log.e (TAG, "distance "+ node.getDistance() );
+
+            }});
+
+        locationScene.clearMarkers();
+        locationScene.mLocationMarkers.add(locationMarker);
+
+        Log.e (TAG, "locationScene "+ locationScene.mLocationMarkers.size() );
+
+
+    }
 
     private Location getLocation5m(Location location){
 
@@ -251,8 +307,8 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
         //Earth’s radius, sphere
         double R=6378137;
 
-        double dLat = 3/R;
-        double dLon = 3/(R* Math.cos(Math.PI*lat/180));
+        double dLat = 2/R;
+        double dLon = 2/(R* Math.cos(Math.PI*lat/180));
 
         double latO = lat + dLat * 180/Math.PI;
         double lonO = lon + dLon * 180/Math.PI;
@@ -333,6 +389,8 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
     /**
      * Make sure we call locationScene.pause();
      */
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onPause() {
         super.onPause();
@@ -341,6 +399,7 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
             locationScene.pause();
         }
         arSceneView.pause();
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
 
     }
 
@@ -372,9 +431,12 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
     ------------------------------------ wedget ---------------------------------------------
      */
 
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
      private void setUpARViewWedget(View view){
          next = view.findViewById(R.id.next);
          back = view.findViewById(R.id.back);
+         unseen = view.findViewById(R.id.unseen);
          arSceneView = view.findViewById(R.id.ar_scene_view);
 
 
@@ -382,14 +444,32 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
              @Override
              public void onClick(View v) {
 
-                 PostSettingFragment fragment = PostSettingFragment.newInstance();
-                 FragmentManager fragmentManager = getFragmentManager();
-                 FragmentTransaction transaction = fragmentManager.beginTransaction();
-                 //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
-                 transaction.addToBackStack(null);
-                 transaction.remove(fragment);
-                 transaction.replace(R.id.Sfragment_container, fragment);
-                 transaction.commit();
+                 mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+                 //arSceneView.pause();
+
+                 if (ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                         ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                     return;
+                 }
+
+                 mFusedLocationClient.getLastLocation()
+                         .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                             @Override
+                             public void onSuccess(Location location) {
+                                 // Got last known location. In some rare situations this can be null.
+                                 if (location != null) {
+                                     Log.e (TAG, "getLastLocation "+ location );
+                                     PostSettingFragment fragment = PostSettingFragment.newInstance(PostImage, location);
+                                     FragmentManager fragmentManager = getFragmentManager();
+                                     FragmentTransaction transaction = fragmentManager.beginTransaction();
+                                     //transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_right);
+                                     transaction.addToBackStack(null);
+                                     transaction.remove(fragment);
+                                     transaction.replace(R.id.Sfragment_container, fragment);
+                                     transaction.commit();
+                                 }
+                             }
+                         });
 
              }
          });

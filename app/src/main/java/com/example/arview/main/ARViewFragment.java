@@ -329,7 +329,9 @@ public class ARViewFragment extends Fragment {
             }
         });
         // Adding the marker
-        locationScene.mLocationMarkers.add(LocationMarkerList.get(LocationMarkerList.size()-1));
+        locationScene.mLocationMarkers.clear();
+        locationScene.mLocationMarkers.addAll(LocationMarkerList);
+
     }
 
 

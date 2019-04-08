@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -30,6 +31,7 @@ import android.widget.Toast;
 import com.example.arview.DrawActivity;
 import com.example.arview.R;
 import com.example.arview.login.SiginActivity;
+import com.example.arview.main.ARViewAddFragment;
 import com.example.arview.main.MainActivity;
 import com.example.arview.utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,9 +51,11 @@ public class PostSettingFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM3 = "param3";
 
-    private String mParam1;
-    private String mParam2;
+
+    private String PostImage;
+    private Location PostLocation;
 
     private OnFragmentInteractionListener mListener;
 
@@ -85,12 +89,11 @@ public class PostSettingFragment extends Fragment {
     }
 
 
-    //public static PostSettingFragment newInstance(String param1, String param2) {
-    public static PostSettingFragment newInstance() {
+    public static PostSettingFragment newInstance(String PostImage, Location postLocation) {
     PostSettingFragment fragment = new PostSettingFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM1, PostImage);
+        args.putParcelable(ARG_PARAM2, postLocation);
         fragment.setArguments(args);
         return fragment;
     }
@@ -99,8 +102,8 @@ public class PostSettingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            PostImage = getArguments().getString(ARG_PARAM1);
+            PostLocation = getArguments().getParcelable(ARG_PARAM2);
         }
     }
 
@@ -156,14 +159,16 @@ public class PostSettingFragment extends Fragment {
                         if (! PostEndTime.equals("")) {
 
                             if (PostEndTime.equals("off")) {
-                                firebaseMethods.addPost(PN, PD, null, null, Pvisibelty, Ppersonal);
-                                Toast.makeText(getActivity(), "Your post saved as personal post", Toast.LENGTH_LONG).show();
-                            }
-                            else{
-                                firebaseMethods.addPost(PN, PD, null, PostEndTime, Pvisibelty, Ppersonal);
+                                firebaseMethods.addPost(PostImage, PN, PD, PostLocation, null, Pvisibelty, Ppersonal);
                                 Toast.makeText(getActivity(), "published", Toast.LENGTH_LONG).show();
                                 Intent intent = new Intent(getActivity(), MainActivity.class);
-                                startActivity(intent);
+                                startActivityForResult(intent, 1 );
+                            }
+                            else{
+                                firebaseMethods.addPost(PostImage, PN, PD, PostLocation, PostEndTime, Pvisibelty, Ppersonal);
+                                Toast.makeText(getActivity(), "published", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                startActivityForResult(intent, 1 );
                             }
 
                         }else Toast.makeText(getActivity(), "should set all post Setting Make Sure date not empty", Toast.LENGTH_LONG).show();
@@ -310,6 +315,8 @@ public class PostSettingFragment extends Fragment {
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Fragment fragment = new ARViewAddFragment();
+                //fragment.onResume();
                 closefragment();
             }
         });

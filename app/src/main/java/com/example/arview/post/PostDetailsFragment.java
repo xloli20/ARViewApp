@@ -143,7 +143,9 @@ public class PostDetailsFragment extends Fragment {
             Prpost.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    setPost(dataSnapshot, "PERSONAL");
+                    if (dataSnapshot.exists()){
+                        setPost(dataSnapshot, "PERSONAL");
+                    }
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -159,7 +161,9 @@ public class PostDetailsFragment extends Fragment {
                 Pupost.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        setPost(dataSnapshot, "PUBLIC");
+                        if (dataSnapshot.exists()){
+                            setPost(dataSnapshot, "PUBLIC");
+                        }
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -172,7 +176,10 @@ public class PostDetailsFragment extends Fragment {
                 Pvpost.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        setPost(dataSnapshot, "PRIVATE");
+
+                        if (dataSnapshot.exists()){
+                            setPost(dataSnapshot, "PRIVATE");
+                        }
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
