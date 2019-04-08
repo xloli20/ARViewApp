@@ -24,6 +24,7 @@ import uk.co.appoly.arcorelocation.rendering.LocationNodeRender;
 import uk.co.appoly.arcorelocation.utils.ARLocationPermissionHelper;
 import uk.co.appoly.arcorelocation.utils.LocationUtils;
 
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,11 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Plane;
@@ -75,8 +81,6 @@ public class ARViewFragment extends Fragment {
 
     private boolean installRequested;
     private boolean hasFinishedLoading = false;
-
-    private Snackbar loadingMessageSnackbar = null;
 
     private ArSceneView arSceneView;
 
@@ -125,17 +129,17 @@ public class ARViewFragment extends Fragment {
         setupFirebaseAuth();
         setUpARViewWedget(view);
 
-        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         // Build a renderable from a 2D View.
-        CompletableFuture<ViewRenderable> exampleLayout =
+        CompletableFuture<ViewRenderable> Layout =
                 ViewRenderable.builder()
                         .setView(getActivity(), R.layout.layout_arview)
                         .build();
 
 
         CompletableFuture.allOf(
-                exampleLayout)
+                Layout)
                 .handle(
                         (notUsed, throwable) -> {
                             // When you build a Renderable, Sceneform loads its resources in the background while
@@ -148,7 +152,7 @@ public class ARViewFragment extends Fragment {
                             }
 
                             try {
-                                LayoutRenderable = exampleLayout.get();
+                                LayoutRenderable = Layout.get();
                                 hasFinishedLoading = true;
 
                             } catch (InterruptedException | ExecutionException ex) {
@@ -174,7 +178,7 @@ public class ARViewFragment extends Fragment {
                                 // We know that here, the AR components have been initiated.
                                 locationScene = new LocationScene(getContext(), getActivity(), arSceneView);
 
-                                getPostsLocation();
+                                location();
                             }
 
                             Frame frame = arSceneView.getArFrame();
@@ -191,14 +195,6 @@ public class ARViewFragment extends Fragment {
                             }
 
 
-                            if (loadingMessageSnackbar != null) {
-                                for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
-                                    if (plane.getTrackingState() == TrackingState.TRACKING) {
-                                        hideLoadingMessage();
-                                    }
-                                }
-                            }
-
                         });
 
 
@@ -210,19 +206,51 @@ public class ARViewFragment extends Fragment {
     }
 
 
-    private void getPostsLocation() {
 
+    LocationRequest mLocationRequest;
+    private FusedLocationProviderClient mFusedLocationClient;
 
-        DatabaseReference PostsLocation = FirebaseDatabase.getInstance().getReference().child("postsLocations").child("public");
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void location(){
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         if (ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        GeoFire geoFire = new GeoFire(PostsLocation);
-        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(location.getLongitude(), location.getLatitude()), 10000);
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            for (Location location : locationResult.getLocations()) {
+                if (getContext() != null) {
+
+                    getPostsLocation(location);
+
+                }
+            }
+        }
+    };
+
+
+    private void getPostsLocation(Location lastlocation) {
+
+
+        DatabaseReference GRefP = FirebaseDatabase.getInstance().getReference().child("postsLocations").child("public");
+
+        GeoFire geoFire = new GeoFire(GRefP);
+        GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(lastlocation.getLongitude(), lastlocation.getLatitude()), 10000);
 
         geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
             @TargetApi(Build.VERSION_CODES.N)
@@ -233,6 +261,8 @@ public class ARViewFragment extends Fragment {
                 Location postLocation = new Location(LocationManager.GPS_PROVIDER);
                 postLocation.setLatitude(location.latitude);
                 postLocation.setLongitude(location.longitude);
+
+                Log.e(TAG, "key " + key);
 
                 setupLocationMarker(postLocation, key);
 
@@ -263,21 +293,21 @@ public class ARViewFragment extends Fragment {
     }
 
 
-    List<LocationMarker> LocationMarkerList = new ArrayList<>();
+    LocationMarker locationMarker;
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void setupLocationMarker(Location location, String PostID){
 
 
-        LocationMarkerList.add(new LocationMarker(
+        locationMarker = new LocationMarker(
                 location.getLongitude(),
                 location.getLatitude(),
                 getExampleView()
-        ));
+        );
 
         // An example "onRender" event, called every frame
         // Updates the layout with the markers distance
-        LocationMarkerList.get(LocationMarkerList.size()-1).setRenderEvent(new LocationNodeRender() {
+        locationMarker.setRenderEvent(new LocationNodeRender() {
             @Override
             public void render(LocationNode node) {
                 View eView = LayoutRenderable.getView();
@@ -328,9 +358,14 @@ public class ARViewFragment extends Fragment {
                 }
             }
         });
-        // Adding the marker
-        locationScene.mLocationMarkers.clear();
-        locationScene.mLocationMarkers.addAll(LocationMarkerList);
+
+        if (! locationScene.mLocationMarkers.contains(locationMarker)){
+            // Adding the marker
+            locationScene.mLocationMarkers.add(locationMarker);
+        }
+
+
+        Log.e (TAG, "locationScene "+ locationScene.mLocationMarkers.size() );
 
     }
 
@@ -396,14 +431,13 @@ public class ARViewFragment extends Fragment {
             return;
         }
 
-        if (arSceneView.getSession() != null) {
-            showLoadingMessage();
-        }
     }
 
     /**
      * Make sure we call locationScene.pause();
      */
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onPause() {
         super.onPause();
@@ -412,7 +446,7 @@ public class ARViewFragment extends Fragment {
             locationScene.pause();
         }
         arSceneView.pause();
-        hideLoadingMessage();
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
 
     }
 
@@ -435,30 +469,6 @@ public class ARViewFragment extends Fragment {
                         .show();
             }
         }
-    }
-
-
-    private void showLoadingMessage() {
-        if (loadingMessageSnackbar != null && loadingMessageSnackbar.isShownOrQueued()) {
-            return;
-        }
-
-        loadingMessageSnackbar =
-                Snackbar.make(
-                        getActivity().findViewById(android.R.id.content),
-                        R.string.plane_finding,
-                        Snackbar.LENGTH_INDEFINITE);
-        loadingMessageSnackbar.getView().setBackgroundColor(0xbf323232);
-        loadingMessageSnackbar.show();
-    }
-
-    private void hideLoadingMessage() {
-        if (loadingMessageSnackbar == null) {
-            return;
-        }
-
-        loadingMessageSnackbar.dismiss();
-        loadingMessageSnackbar = null;
     }
 
 

@@ -449,8 +449,11 @@ public class FirebaseMethods {
                     GeoFire.CompletionListener(){
                         @Override
                         public void onComplete(String key, DatabaseError error) {
-                            Log.e(TAG, "GeoFire Complete");
-                        }
+                            if (error != null) {
+                                Log.e(TAG, "There was an error saving the location to GeoFire: " + error);
+                            } else {
+                                Log.e(TAG, "Location saved on server successfully!");
+                            }                        }
                     });
 
 
@@ -474,7 +477,11 @@ public class FirebaseMethods {
                         GeoFire.CompletionListener(){
                             @Override
                             public void onComplete(String key, DatabaseError error) {
-                                Log.e(TAG, "GeoFire Complete");
+                                if (error != null) {
+                                    Log.e(TAG, "There was an error saving the location to GeoFire: " + error);
+                                } else {
+                                    Log.e(TAG, "Location saved on server successfully!");
+                                }
                             }
                         });
 
@@ -494,8 +501,11 @@ public class FirebaseMethods {
                         GeoFire.CompletionListener(){
                             @Override
                             public void onComplete(String key, DatabaseError error) {
-                                Log.e(TAG, "GeoFire Complete");
-                            }
+                                if (error != null) {
+                                    Log.e(TAG, "There was an error saving the location to GeoFire: " + error);
+                                } else {
+                                    Log.e(TAG, "Location saved on server successfully!");
+                                }                            }
                         });
 
 
