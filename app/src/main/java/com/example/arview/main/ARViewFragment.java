@@ -323,27 +323,30 @@ public class ARViewFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        TextView postName = eView.findViewById(R.id.postName);
-                        postName.setText(dataSnapshot.child("postName").getValue(String.class));
+                        if (dataSnapshot.exists()){
+                            TextView postName = eView.findViewById(R.id.postName);
+                            postName.setText(dataSnapshot.child("postName").getValue(String.class));
 
-                        DatabaseReference ProfilePhoto = FirebaseDatabase.getInstance().getReference().child("profile").child(dataSnapshot.child("ownerId").getValue(String.class));
+                            DatabaseReference ProfilePhoto = FirebaseDatabase.getInstance().getReference().child("profile").child(dataSnapshot.child("ownerId").getValue(String.class));
 
-                        ProfilePhoto.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                Uri uri = Uri.parse(dataSnapshot.child("profilePhoto").getValue(String.class));
-                                CircleImageView profilePhoto = eView.findViewById(R.id.profile_photo);
+                            ProfilePhoto.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    Uri uri = Uri.parse(dataSnapshot.child("profilePhoto").getValue(String.class));
+                                    CircleImageView profilePhoto = eView.findViewById(R.id.profile_photo);
 
-                                Glide.with(getActivity())
-                                        .load(uri)
-                                        .into(profilePhoto);
-                            }
+                                    Glide.with(getActivity())
+                                            .load(uri)
+                                            .into(profilePhoto);
+                                }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            }
-                        });
+                                }
+                            });
+                        }
+
 
                     }
 

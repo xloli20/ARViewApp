@@ -173,76 +173,79 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        nearPost.getPost().setOwnerId(dataSnapshot.child("ownerId").getValue(String.class));
-                        nearPost.getPost().setPostName(dataSnapshot.child("postName").getValue(String.class));
-                        nearPost.getPost().setLikes(String.valueOf(dataSnapshot.child("likes").getChildrenCount()));
-                        nearPost.getPost().setVisibilty(dataSnapshot.child("visibilty").getValue(Boolean.class));
-                        nearPost.getPost().setPersonal(dataSnapshot.child("personal").getValue(Boolean.class));
+                        if (dataSnapshot.exists()){
+                            nearPost.getPost().setOwnerId(dataSnapshot.child("ownerId").getValue(String.class));
+                            nearPost.getPost().setPostName(dataSnapshot.child("postName").getValue(String.class));
+                            nearPost.getPost().setLikes(String.valueOf(dataSnapshot.child("likes").getChildrenCount()));
+                            nearPost.getPost().setVisibilty(dataSnapshot.child("visibilty").getValue(Boolean.class));
+                            nearPost.getPost().setPersonal(dataSnapshot.child("personal").getValue(Boolean.class));
 
-                        DatabaseReference OwnerREf = FirebaseDatabase.getInstance().getReference().child("profile").child(nearPost.getPost().getOwnerId());
-                        OwnerREf.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()) {
-                                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                                    if (map.get("name") != null) {
-                                        nearPost.setOwnerName(map.get("name").toString());
+                            DatabaseReference OwnerREf = FirebaseDatabase.getInstance().getReference().child("profile").child(nearPost.getPost().getOwnerId());
+                            OwnerREf.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                                        if (map.get("name") != null) {
+                                            nearPost.setOwnerName(map.get("name").toString());
+                                        }
+                                        if (map.get("profilePhoto") != null) {
+                                            nearPost.setProfilePhoto(map.get("profilePhoto").toString());
+                                        }
+
+                                        final LatLng PostLocation = new LatLng(location.latitude, location.longitude);
+                                        nearPost.setLocation(PostLocation);
+
+                                        final Uri uri = Uri.parse(nearPost.getProfilePhoto());
+
+                                        Glide.with(getApplicationContext()).asBitmap()
+                                                .load(uri)
+                                                .into(new SimpleTarget<Bitmap>() {
+                                                    @Override
+                                                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+
+                                                        Bitmap icone = Bitmap.createScaledBitmap(resource, 70, 70, false);
+
+                                                        Marker mPostMarker = mMap.addMarker(new MarkerOptions().position(PostLocation)
+                                                                .title(nearPost.getPost().getPostName())
+                                                                .icon(BitmapDescriptorFactory.fromBitmap(icone)));
+
+                                                        mPostMarker.setTag(nearPost.getPost().getPostName());
+
+                                                        markers.add(mPostMarker);
+                                                    }
+                                                });
                                     }
-                                    if (map.get("profilePhoto") != null) {
-                                        nearPost.setProfilePhoto(map.get("profilePhoto").toString());
-                                    }
 
-                                    final LatLng PostLocation = new LatLng(location.latitude, location.longitude);
-                                    nearPost.setLocation(PostLocation);
+                                    nearPostsList.add(nearPost);
 
-                                    final Uri uri = Uri.parse(nearPost.getProfilePhoto());
+                                    Collections.sort(nearPostsList, new Comparator<nearPost>() {
+                                        public int compare(nearPost o1, nearPost o2) {
+                                            return o1.getDestinace().compareTo(o2.getDestinace());
+                                        }
+                                    });
 
-                                    Glide.with(getApplicationContext()).asBitmap()
-                                            .load(uri)
-                                            .into(new SimpleTarget<Bitmap>() {
-                                                @Override
-                                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                    adapter.notifyDataSetChanged();
 
-                                                    Bitmap icone = Bitmap.createScaledBitmap(resource, 70, 70, false);
+                                    for (int i = 0; i < nearPostsList.size(); i++) {
+                                        if (nearPostsList.get(i).getPost().getPostId().equals(nearPost.getPost().getPostId())) {
 
-                                                    Marker mPostMarker = mMap.addMarker(new MarkerOptions().position(PostLocation)
-                                                            .title(nearPost.getPost().getPostName())
-                                                            .icon(BitmapDescriptorFactory.fromBitmap(icone)));
-
-                                                    mPostMarker.setTag(nearPost.getPost().getPostName());
-
-                                                    markers.add(mPostMarker);
-                                                }
-                                            });
-                                }
-
-                                nearPostsList.add(nearPost);
-
-                                Collections.sort(nearPostsList, new Comparator<nearPost>() {
-                                    public int compare(nearPost o1, nearPost o2) {
-                                        return o1.getDestinace().compareTo(o2.getDestinace());
-                                    }
-                                });
-
-                                adapter.notifyDataSetChanged();
-
-                                for (int i = 0; i < nearPostsList.size(); i++) {
-                                    if (nearPostsList.get(i).getPost().getPostId().equals(nearPost.getPost().getPostId())) {
-
-                                        if (nearPostsList.get(i).getPost().getLikes() != nearPost.getPost().getLikes()) {
-                                            Log.e(TAG, "diff ");
-                                            nearPostsList.set(i, nearPost);
-                                            nearPostsList.remove(i + 1);
-                                            adapter.notifyItemRangeChanged(i, nearPostsList.size() - 1);
+                                            if (nearPostsList.get(i).getPost().getLikes() != nearPost.getPost().getLikes()) {
+                                                Log.e(TAG, "diff ");
+                                                nearPostsList.set(i, nearPost);
+                                                nearPostsList.remove(i + 1);
+                                                adapter.notifyItemRangeChanged(i, nearPostsList.size() - 1);
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                            }
-                        });
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }
+                            });
+                        }
+
                     }
 
                     @Override
