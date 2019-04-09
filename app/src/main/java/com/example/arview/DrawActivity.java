@@ -44,7 +44,7 @@ public class DrawActivity extends AppCompatActivity implements ARViewAddFragment
     private ImageView send;
     private ImageView clear;
     private ImageView mPhotoPickerButton;
-    private ImageView backArrow;
+    private ImageView finish;
 
 
     Context context;
@@ -55,7 +55,13 @@ public class DrawActivity extends AppCompatActivity implements ARViewAddFragment
         setContentView(R.layout.activity_draw);
         canvas = findViewById(R.id.draw);
 
-        backarrow();
+        finish = (ImageView) findViewById(R.id.finish);
+        finish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         user = FirebaseAuth.getInstance().getCurrentUser();
         String userId = user.getUid();
@@ -142,20 +148,6 @@ public class DrawActivity extends AppCompatActivity implements ARViewAddFragment
         Canvas canvas = new Canvas(bitmap);
         view.draw(canvas);
         return bitmap;
-    }
-
-    private void backarrow(){
-        backArrow = (ImageView) findViewById(R.id.backArrow);
-
-        //setup the backarrow
-        backArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: navigating back to 'ProfileActivity'");
-                finish();
-            }
-        });
-
     }
 
     @Override
