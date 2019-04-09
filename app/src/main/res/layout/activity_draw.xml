@@ -14,18 +14,64 @@
 
     </com.example.arview.drawing>
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginBottom="32dp"
+        android:background="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/profileToolBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="2d Drawing "
+                    android:textColor="#000000"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/backArrow"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/ic_back_arrow" />
+
+            </RelativeLayout>
+
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <ImageView
         android:id="@+id/image"
         android:layout_width="33dp"
         android:layout_height="27dp"
-        android:layout_marginStart="156dp"
+        android:layout_marginStart="148dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:src="@mipmap/ic_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023" />
+        app:layout_constraintVertical_bias="0.072" />
 
     <ImageView
         android:id="@+id/trash"
@@ -39,10 +85,10 @@
         android:src="@drawable/ic_delete_black_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.212"
+        app:layout_constraintHorizontal_bias="0.222"
         app:layout_constraintStart_toEndOf="@+id/image"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.05" />
 
 
     <ImageView

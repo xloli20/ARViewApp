@@ -38,11 +38,13 @@ public class DrawActivity extends AppCompatActivity implements ARViewAddFragment
 
     private FirebaseStorage mFirebaseStorage;
     private StorageReference mPhotosStorageReference;
+    private FirebaseUser user;
 
 
     private ImageView send;
     private ImageView clear;
     private ImageView mPhotoPickerButton;
+    private ImageView backArrow;
 
 
     Context context;
@@ -53,8 +55,9 @@ public class DrawActivity extends AppCompatActivity implements ARViewAddFragment
         setContentView(R.layout.activity_draw);
         canvas = findViewById(R.id.draw);
 
+        backarrow();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user = FirebaseAuth.getInstance().getCurrentUser();
         String userId = user.getUid();
         mFirebaseStorage = FirebaseStorage.getInstance();
         mPhotosStorageReference = mFirebaseStorage.getReference().child(userId).child("2dDrawings");
@@ -83,7 +86,8 @@ public class DrawActivity extends AppCompatActivity implements ARViewAddFragment
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                screenShot(canvas);
+                Bitmap bitmap = screenShot(canvas);
+
 
                 String postImage = "https://firebasestorage.googleapis.com/v0/b/arview-b5eb3.appspot.com/o/LFvmo0NrcATUG4Y0O1IXNJrdw4a2%2FChats%2F-LaxU9NdBLoG5vpkfWiR%2Fimage%3A823?alt=media&token=d7a18e9d-d9fa-447b-9635-5caf2e6f423c";
                 ARViewAddFragment fragment = ARViewAddFragment.newInstance(postImage);
@@ -96,7 +100,6 @@ public class DrawActivity extends AppCompatActivity implements ARViewAddFragment
                 transaction.commit();
             }
         });
-
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -133,14 +136,27 @@ public class DrawActivity extends AppCompatActivity implements ARViewAddFragment
                     });
         }
     }
+
     public Bitmap screenShot(View view) {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),
-                view.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         view.draw(canvas);
         return bitmap;
     }
 
+    private void backarrow(){
+        backArrow = (ImageView) findViewById(R.id.backArrow);
+
+        //setup the backarrow
+        backArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: navigating back to 'ProfileActivity'");
+                finish();
+            }
+        });
+
+    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
