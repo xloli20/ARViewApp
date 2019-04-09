@@ -163,6 +163,9 @@ public class PostDetailsFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()){
                             setPost(dataSnapshot, "PUBLIC");
+                        }else {
+                            Log.e(TAG, "datasnapshot not found " + dataSnapshot.getKey());
+                            delete.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.ic_deleted));
                         }
                     }
                     @Override

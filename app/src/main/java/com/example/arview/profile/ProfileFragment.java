@@ -169,9 +169,7 @@ public class ProfileFragment extends Fragment implements PostDetailsFragment.OnF
         profileMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getActivity(), SettingActivity.class);
-                i.setAction(Intent.ACTION_EDIT);
-                startActivity(i);
+
             }
         });
     }
