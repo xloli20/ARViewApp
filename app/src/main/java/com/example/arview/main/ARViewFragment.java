@@ -44,6 +44,7 @@ import com.example.arview.login.SiginActivity;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
+import com.firebase.geofire.GeoQueryDataEventListener;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -228,6 +229,7 @@ public class ARViewFragment extends Fragment {
 
     }
 
+    boolean once = false;
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -236,7 +238,10 @@ public class ARViewFragment extends Fragment {
             for (Location location : locationResult.getLocations()) {
                 if (getContext() != null) {
 
-                    getPostsLocation(location);
+                    //if (! once){
+                        getPostsLocation(location);
+                      //  once = true;
+                    //}
 
                 }
             }
@@ -252,29 +257,46 @@ public class ARViewFragment extends Fragment {
         GeoFire geoFire = new GeoFire(GRefP);
         GeoQuery geoQuery = geoFire.queryAtLocation(new GeoLocation(lastlocation.getLongitude(), lastlocation.getLatitude()), 10000);
 
-        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+        geoQuery.addGeoQueryDataEventListener(new GeoQueryDataEventListener() {
             @TargetApi(Build.VERSION_CODES.N)
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
-            public void onKeyEntered(String key, GeoLocation location) {
+            public void onDataEntered(DataSnapshot dataSnapshot, GeoLocation location) {
 
-                Location postLocation = new Location(LocationManager.GPS_PROVIDER);
-                postLocation.setLatitude(location.latitude);
-                postLocation.setLongitude(location.longitude);
+                boolean stop = setupLocationMarker(null, null);
 
-                Log.e(TAG, "key " + key);
+                if (! stop){
+                    for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()) {
+                        if (singleSnapshot.exists()) {
+                            Location postLocation = new Location(LocationManager.GPS_PROVIDER);
+                            postLocation.setLatitude(location.latitude);
+                            postLocation.setLongitude(location.longitude);
 
-                setupLocationMarker(postLocation, key);
+                            Log.e(TAG, "key " + dataSnapshot.getKey());
+
+                            setupLocationMarker(postLocation, dataSnapshot.getKey());
+
+                            Log.e(TAG, "key getRadius " + dataSnapshot.getKey() + " " +  geoQuery.getRadius());
+                        }
+                    }
+                    setupLocationMarker(null, "  ");
+                }
+
 
             }
 
             @Override
-            public void onKeyExited(String key) {
+            public void onDataExited(DataSnapshot dataSnapshot) {
 
             }
 
             @Override
-            public void onKeyMoved(String key, GeoLocation location) {
+            public void onDataMoved(DataSnapshot dataSnapshot, GeoLocation location) {
+
+            }
+
+            @Override
+            public void onDataChanged(DataSnapshot dataSnapshot, GeoLocation location) {
 
             }
 
@@ -289,90 +311,137 @@ public class ARViewFragment extends Fragment {
             }
         });
 
-
     }
 
 
-    LocationMarker locationMarker;
+    boolean stop = false;
+    int i = 0;
+    List<LocationMarker> locationMarkerList = new ArrayList<>();
     @TargetApi(Build.VERSION_CODES.N)
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void setupLocationMarker(Location location, String PostID){
+    private boolean setupLocationMarker(Location location, String PostID){
 
-
-        locationMarker = new LocationMarker(
-                location.getLongitude(),
-                location.getLatitude(),
-                getExampleView()
-        );
-
-        // An example "onRender" event, called every frame
-        // Updates the layout with the markers distance
-        locationMarker.setRenderEvent(new LocationNodeRender() {
-            @Override
-            public void render(LocationNode node) {
-                View eView = LayoutRenderable.getView();
-                TextView distanceTextView = eView.findViewById(R.id.distance);
-                ImageView postImage =  eView.findViewById(R.id.postImage);
-                postImage.setVisibility(View.GONE);
-                distanceTextView.setText(node.getDistance() + "M");
-
-
-                DatabaseReference Postsinfo = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(PostID);
-
-                Postsinfo.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        if (dataSnapshot.exists()){
-                            TextView postName = eView.findViewById(R.id.postName);
-                            postName.setText(dataSnapshot.child("postName").getValue(String.class));
-
-                            DatabaseReference ProfilePhoto = FirebaseDatabase.getInstance().getReference().child("profile").child(dataSnapshot.child("ownerId").getValue(String.class));
-
-                            ProfilePhoto.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    Uri uri = Uri.parse(dataSnapshot.child("profilePhoto").getValue(String.class));
-                                    CircleImageView profilePhoto = eView.findViewById(R.id.profile_photo);
-
-                                    Glide.with(getActivity())
-                                            .load(uri)
-                                            .into(profilePhoto);
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-                if ( node.getDistance() < 3){
-                    //set image
-                }
-            }
-        });
-
-        if (! locationScene.mLocationMarkers.contains(locationMarker)){
-            // Adding the marker
-            locationScene.mLocationMarkers.add(locationMarker);
+         if (PostID == null && location == null && i == 0){
+             stop = false;
+         }
+        if (PostID == null && location == null && i == 1){
+            stop = true;
         }
+         if (PostID != null && location == null){
+             stop = true;
+             i = 1;
+         }
+         if (PostID != null && location != null){
+
+             locationMarkerList.add(new LocationMarker(
+                     location.getLongitude(),
+                     location.getLatitude(),
+                     getExampleView()
+             ));
+
+             // An example "onRender" event, called every frame
+             // Updates the layout with the markers distance
+             locationMarkerList.get(locationMarkerList.size()-1).setRenderEvent(new LocationNodeRender() {
+                 @Override
+                 public void render(LocationNode node) {
+                     View eView = LayoutRenderable.getView();
+                     TextView distanceTextView = eView.findViewById(R.id.distance);
+                     ImageView postImage =  eView.findViewById(R.id.postImage);
+
+                     distanceTextView.setText(distance(node.getDistance()));
+
+                     DatabaseReference Postsinfo = FirebaseDatabase.getInstance().getReference().child("posts").child("public").child(PostID);
+
+                     if ( node.getDistance() < 3){
+                         postImage.setVisibility(View.VISIBLE);
+                         distanceTextView.setText("");
+
+                     }else{
+                         postImage.setVisibility(View.GONE);
+                         distanceTextView.setText(distance(node.getDistance()));
+                     }
 
 
-        Log.e (TAG, "locationScene "+ locationScene.mLocationMarkers.size() );
 
+                     Postsinfo.addListenerForSingleValueEvent(new ValueEventListener() {
+                         @Override
+                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                             if (dataSnapshot.exists()){
+                                 TextView postName = eView.findViewById(R.id.postName);
+                                 postName.setText(dataSnapshot.child("postName").getValue(String.class));
+
+                                 if (dataSnapshot.child("postImage").exists()){
+
+                                     Uri uri2 = Uri.parse(dataSnapshot.child("postImage").getValue(String.class));
+                                     Glide.with(getActivity())
+                                             .load(uri2)
+                                             .into(postImage);
+                                 }
+
+
+                                 DatabaseReference ProfilePhoto = FirebaseDatabase.getInstance().getReference().child("profile").child(dataSnapshot.child("ownerId").getValue(String.class));
+
+                                 ProfilePhoto.addListenerForSingleValueEvent(new ValueEventListener() {
+                                     @Override
+                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                         Uri uri = Uri.parse(dataSnapshot.child("profilePhoto").getValue(String.class));
+                                         CircleImageView profilePhoto = eView.findViewById(R.id.profile_photo);
+
+                                         Glide.with(getActivity())
+                                                 .load(uri)
+                                                 .into(profilePhoto);
+
+
+                                     }
+
+                                     @Override
+                                     public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                     }
+                                 });
+                             }
+
+
+                         }
+
+                         @Override
+                         public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                         }
+                     });
+
+
+                 }
+             });
+
+             locationScene.mLocationMarkers.add(locationMarkerList.get(locationMarkerList.size()-1));
+
+             Log.e (TAG, "locationScene "+ locationScene.mLocationMarkers.size() );
+
+         }
+
+
+
+        return stop;
     }
 
+    private String distance(int distanceM){
+        String StrDistance ;
 
+        if (distanceM < 1000){
+            // in m
+            StrDistance = String.valueOf(distanceM)+ " m";
+
+        }else {
+            // in km
+            double distanceKM = distanceM/ 1000;
+            StrDistance = distanceKM + " Km";
+
+        }
+
+        return StrDistance;
+    }
 
     /**
      * Example node of a layout
@@ -450,6 +519,7 @@ public class ARViewFragment extends Fragment {
         }
         arSceneView.pause();
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+
 
     }
 

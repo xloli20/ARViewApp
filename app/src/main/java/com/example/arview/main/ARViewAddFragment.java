@@ -290,7 +290,9 @@ public class ARViewAddFragment extends Fragment implements PostSettingFragment.O
 
             }});
 
-        locationScene.clearMarkers();
+        if (locationScene.mLocationMarkers.size() >=3){
+            locationScene.clearMarkers();
+        }
         locationScene.mLocationMarkers.add(locationMarker);
 
         Log.e (TAG, "locationScene "+ locationScene.mLocationMarkers.size() );
