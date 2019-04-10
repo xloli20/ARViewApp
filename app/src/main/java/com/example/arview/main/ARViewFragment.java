@@ -145,6 +145,7 @@ public class ARViewFragment extends Fragment implements PostDetailsFragment.OnFr
                         .build();
 
 
+
         CompletableFuture.allOf(
                 Layout)
                 .handle(
@@ -263,11 +264,7 @@ public class ARViewFragment extends Fragment implements PostDetailsFragment.OnFr
 
                 for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()) {
 
-
                     Log.e(TAG, "key " + singleSnapshot.getKey());
-
-                    //Log.e(TAG, "key location " + getPostLocation(singleSnapshot.getKey()));
-
                     getPostLocation(singleSnapshot.getKey());
 
                 }
@@ -459,8 +456,6 @@ public class ARViewFragment extends Fragment implements PostDetailsFragment.OnFr
         eView.setOnTouchListener((v, event) -> {
 
             openPostDetails(PostID, OwnerId);
-
-
 
             return true;
         });
