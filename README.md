@@ -8,8 +8,8 @@ technologies used in ARView project:
 * Google Maps.
 
 ## Developers
-Alaa Alzahrani.
-Renad Yaser.
+* Alaa Alzahrani.
+* Renad Yaser.
 
 
 ![0001](https://user-images.githubusercontent.com/32674646/56648217-90f56780-668b-11e9-9bd1-71b563042f23.jpg)
